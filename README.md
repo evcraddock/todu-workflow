@@ -35,6 +35,19 @@ ln -s ~/todu-workflow/skills/task-close-preflight ~/.pi/agent/skills/
 ln -s ~/todu-workflow/skills/task-start-preflight ~/.pi/agent/skills/
 ```
 
+#### Required Extensions
+
+Some skills use pi extensions for interactive workflows. Install from pi's example extensions:
+
+```bash
+# Find pi's installation path
+PI_PATH=$(dirname $(which pi))/../lib/node_modules/@mariozechner/pi-coding-agent
+
+# Install questionnaire extension (used by project-init)
+mkdir -p ~/.pi/agent/extensions
+cp $PI_PATH/examples/extensions/questionnaire.ts ~/.pi/agent/extensions/
+```
+
 ### Claude Code
 
 Claude Code only looks one level deep, so symlink individual skills:
@@ -59,6 +72,8 @@ ln -s ~/todu-workflow/skills ~/.codex/skills/todu-workflow
 - [todu](https://github.com/evcraddock/todu) - Task management CLI
 - [gh](https://cli.github.com/) - GitHub CLI (for PR operations)
 - [tmux](https://github.com/tmux/tmux) - Terminal multiplexer (for request-review)
+- [pi](https://github.com/badlogic/pi-mono) - Required for skills that use pi extensions (project-init)
+- [fj](https://codeberg.org/Cyborus/forgejo-cli) - Forgejo CLI (for project-init with Forgejo)
 
 ## License
 
