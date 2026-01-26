@@ -1,9 +1,12 @@
 ---
 name: tmux
 description: "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output."
+based-on: https://github.com/mitsuhiko/agent-stuff
 ---
 
 # tmux Skill
+
+> Based on the [tmux skill](https://github.com/mitsuhiko/agent-stuff/tree/main/skills/tmux) from [mitsuhiko/agent-stuff](https://github.com/mitsuhiko/agent-stuff).
 
 Use tmux as a programmable terminal multiplexer for interactive work. Works on Linux and macOS with stock tmux; avoid custom config by using a private socket.
 
