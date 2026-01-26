@@ -21,54 +21,30 @@ Development workflow skills for AI coding agents. Compatible with [pi](https://g
 |-----------|-------------|
 | [repo-create](extensions/repo-create.ts) | Create remote repo, clone locally, register with todu |
 
-## Installation
-
-### pi-coding-agent
-
-Clone the repo and symlink into pi's user skills directory:
+## Quick Start (pi)
 
 ```bash
-# Clone to a convenient location
+# Clone
 git clone https://github.com/evcraddock/todu-workflow ~/.local/share/todu-workflow
 
-# Create symlinks (pi scans recursively, so one symlink works)
+# Install skills
 mkdir -p ~/.pi/agent/skills
 ln -s ~/.local/share/todu-workflow/skills ~/.pi/agent/skills/todu-workflow
-```
 
-Or symlink individual skills:
-
-```bash
-ln -s ~/.local/share/todu-workflow/skills/pr-review ~/.pi/agent/skills/
-ln -s ~/.local/share/todu-workflow/skills/request-review ~/.pi/agent/skills/
-ln -s ~/.local/share/todu-workflow/skills/task-close-preflight ~/.pi/agent/skills/
-ln -s ~/.local/share/todu-workflow/skills/task-start-preflight ~/.pi/agent/skills/
-```
-
-#### Extensions
-
-Some skills use pi extensions. Symlink the extensions directory:
-
-```bash
+# Install extensions
 mkdir -p ~/.pi/agent/extensions
 ln -s ~/.local/share/todu-workflow/extensions ~/.pi/agent/extensions/todu-workflow
-```
 
-#### Required External Extensions
-
-The `project-init` skill requires the `questionnaire` extension from pi's examples:
-
-```bash
-# Find pi's installation path
+# Install questionnaire (required for project-init)
 PI_PATH=$(dirname $(which pi))/../lib/node_modules/@mariozechner/pi-coding-agent
-
-# Install questionnaire extension
 cp $PI_PATH/examples/extensions/questionnaire.ts ~/.pi/agent/extensions/
 ```
 
-### Claude Code
+Restart pi to load the new skills and extensions.
 
-Claude Code only looks one level deep, so symlink individual skills:
+## Other Agents
+
+### Claude Code
 
 ```bash
 mkdir -p ~/.claude/skills
@@ -77,6 +53,8 @@ ln -s ~/.local/share/todu-workflow/skills/request-review ~/.claude/skills/
 ln -s ~/.local/share/todu-workflow/skills/task-close-preflight ~/.claude/skills/
 ln -s ~/.local/share/todu-workflow/skills/task-start-preflight ~/.claude/skills/
 ```
+
+Note: Claude Code only looks one level deep, so symlink individual skills. Extensions and project-init are not supported.
 
 ### Codex CLI
 
