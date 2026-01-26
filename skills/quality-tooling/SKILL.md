@@ -51,7 +51,7 @@ And devDependencies:
 {
   "devDependencies": {
     "eslint": "^9.0.0",
-    "typescript-eslint": "^7.0.0",
+    "typescript-eslint": "^8.0.0",
     "prettier": "^3.0.0",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0",
