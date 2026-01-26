@@ -41,20 +41,25 @@ fi
 
 **Note:** Forgejo CLI (`fj`) requires `zsh -ic` wrapper for keyring access.
 
-## Model Configuration
+## Configuration
 
-The review agent model is configurable:
+### Model
 
-1. Check `$PI_REVIEW_MODEL` environment variable
-2. If not set, omit `--model` flag (uses pi's default)
+Determine the review model in this order:
 
-```bash
-if [ -n "$PI_REVIEW_MODEL" ]; then
-  MODEL_FLAG="--model $PI_REVIEW_MODEL"
-else
-  MODEL_FLAG=""
-fi
-```
+1. **User request** — If user says "review with claude-sonnet", "use opus for review", etc., use that
+2. **Project config** — Check AGENTS.md for a `review-model` preference
+3. **Default** — Omit `--model` flag (uses pi's default)
+
+### Visibility
+
+The review session can be **visible** (user can watch) or **detached** (runs in background).
+
+Determine visibility in this order:
+
+1. **User request** — If user says "review visibly", "review in background", "watch the review", etc., use that
+2. **Project config** — Check AGENTS.md for a `review-visibility` preference (visible/detached)
+3. **Default** — If neither specified, use **visible**
 
 ## Steps
 
@@ -111,7 +116,7 @@ PROJECT_PATH=$(pwd)
 
 ### 5. Spawn Review Session
 
-Use the **tmux skill** to create a visible session for the review agent.
+Use the **tmux skill** to create a session for the review agent.
 
 The command to run:
 
@@ -120,9 +125,10 @@ cd $PROJECT_PATH && pi $MODEL_FLAG -p "Review PR #<number> (Task #<task-id>) usi
 ```
 
 Use the tmux skill's **run and capture** pattern:
-1. Start a visible session with the review command
-2. Wait for completion (session ends when pi exits)
-3. The window closes automatically
+1. Determine visibility (see Configuration above)
+2. Start session with `--visible` or `--detached`
+3. Wait for completion (session ends when pi exits)
+4. If visible, window closes automatically
 
 ### 6. Check Review Results
 
