@@ -48,13 +48,10 @@ Restart pi to load the new skills and extensions.
 
 ```bash
 mkdir -p ~/.claude/skills
-ln -s ~/.local/share/todu-workflow/skills/pr-review ~/.claude/skills/
-ln -s ~/.local/share/todu-workflow/skills/request-review ~/.claude/skills/
-ln -s ~/.local/share/todu-workflow/skills/task-close-preflight ~/.claude/skills/
-ln -s ~/.local/share/todu-workflow/skills/task-start-preflight ~/.claude/skills/
+ln -s ~/.local/share/todu-workflow/skills ~/.claude/skills/todu-workflow
 ```
 
-Note: Claude Code only looks one level deep, so symlink individual skills. Extensions and project-init are not supported.
+Note: Extensions are not supported in Claude Code, so project-init will not work.
 
 ### Codex CLI
 
