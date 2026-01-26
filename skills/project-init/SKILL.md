@@ -9,24 +9,17 @@ Initialize a new project from scratch. This skill orchestrates the full setup fl
 
 ## Prerequisites
 
-Before starting, verify required extensions are installed:
+Before starting, verify required extensions are available:
 
 ```bash
-# Check for questionnaire extension
-ls ~/.pi/agent/extensions/questionnaire.ts 2>/dev/null || echo "MISSING: questionnaire.ts"
+# Check for questionnaire tool
+pi -p "List available tools" 2>&1 | grep -q questionnaire && echo "OK: questionnaire" || echo "MISSING: questionnaire"
 
-# Check for repo-create extension (in todu-workflow)
-ls ~/todu-workflow/extensions/repo-create.ts 2>/dev/null || echo "MISSING: repo-create.ts"
+# Check for repo_create tool  
+pi -p "List available tools" 2>&1 | grep -q repo_create && echo "OK: repo_create" || echo "MISSING: repo_create"
 ```
 
-If missing, install from todu-workflow:
-```bash
-# Questionnaire (from pi examples)
-PI_PATH=$(dirname $(which pi))/../lib/node_modules/@mariozechner/pi-coding-agent
-cp $PI_PATH/examples/extensions/questionnaire.ts ~/.pi/agent/extensions/
-
-# Repo-create should be available if todu-workflow is installed
-```
+If missing, see installation instructions in the todu-workflow README.
 
 **Do not proceed if extensions are missing.**
 
