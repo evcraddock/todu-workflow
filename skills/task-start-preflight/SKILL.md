@@ -1,6 +1,6 @@
 ---
 name: task-start-preflight
-description: Prepare to work on a task. Use before "start task", "work on task", "begin task", "pick up task", or similar.
+description: Prepare to work on a task. Use when user says "start task", "work on task", "begin task", "pick up task", "get started", "get started on", "let's do task", "do task", "tackle task", or any variation of starting work on a task.
 ---
 
 # Task Start Preflight
@@ -46,18 +46,24 @@ todu task comments <task-id>
 Look for project-specific guidelines that apply to this work:
 
 ```bash
+# Check for AGENTS.md (primary project guidelines)
+cat AGENTS.md 2>/dev/null || cat docs/AGENTS.md 2>/dev/null
+
 # Check for contributing guidelines
-cat docs/CONTRIBUTING.md 2>/dev/null || cat CONTRIBUTING.md 2>/dev/null
+cat CONTRIBUTING.md 2>/dev/null || cat docs/CONTRIBUTING.md 2>/dev/null
 
 # Check for code standards
-cat docs/CODE_STANDARDS.md 2>/dev/null || cat CODE_STANDARDS.md 2>/dev/null
+cat CODE_STANDARDS.md 2>/dev/null || cat docs/CODE_STANDARDS.md 2>/dev/null
 ```
+
+**IMPORTANT:** Read and internalize these documents. You MUST follow these guidelines throughout your work on this task.
 
 **Extract and surface:**
 - Branching strategy (e.g., create feature branch for PRs)
 - PR requirements (reviews, CI checks)
 - Testing requirements
 - Code style requirements
+- Workflow requirements (e.g., how to request reviews)
 - Any task-specific conventions
 
 **If branching is required:**

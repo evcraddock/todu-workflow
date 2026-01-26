@@ -11,16 +11,43 @@ Guide for reviewing another agent's pull request before human approval.
 
 When a human asks you to review a PR that was created by a different agent. You should NOT review PRs you created yourself.
 
+## Host Detection
+
+Detect the git host from the remote URL:
+
+```bash
+REMOTE_URL=$(git remote get-url origin 2>/dev/null)
+if echo "$REMOTE_URL" | grep -q "github.com"; then
+  HOST="github"
+else
+  HOST="forgejo"
+fi
+```
+
+## CLI Commands by Host
+
+| Operation | GitHub | Forgejo |
+|-----------|--------|---------|
+| View PR | `gh pr view <num>` | `zsh -ic "fj pr view <num>"` |
+| View diff | `gh pr diff <num>` | `zsh -ic "fj pr diff <num>"` |
+| Comment on PR | `gh pr comment <num> --body-file <file>` | `zsh -ic "fj pr comment <num> --body-file <file>"` |
+
+**Note:** Forgejo CLI (`fj`) requires `zsh -ic` wrapper for keyring access.
+
 ## Review Process
 
 ### 1. Fetch PR Details
 
+**GitHub:**
 ```bash
-# View PR metadata
 gh pr view <number>
-
-# View the diff
 gh pr diff <number>
+```
+
+**Forgejo:**
+```bash
+zsh -ic "fj pr view <number>"
+zsh -ic "fj pr diff <number>"
 ```
 
 ### 2. Understand the Change
@@ -104,10 +131,16 @@ LGTM / Please address the issues above
 EOF
 ```
 
-Then post to the PR (use `gh pr comment`, NOT `gh pr review`):
+Then post to the PR:
 
+**GitHub:**
 ```bash
 gh pr comment <number> --body-file /tmp/review-<number>.md
+```
+
+**Forgejo:**
+```bash
+zsh -ic "fj pr comment <number> --body-file /tmp/review-<number>.md"
 ```
 
 Do NOT use `gh pr review` - it doesn't work for self-reviews.

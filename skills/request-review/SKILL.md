@@ -14,7 +14,8 @@ After creating a PR and confirming CI passes, use this to request an independent
 ## Prerequisites
 
 - tmux installed (uses the tmux skill for session management)
-- PR must exist and CI should be passing
+- PR must exist
+- CI should be passing (GitHub) or skipped (Forgejo — CI check optional)
 - Current directory should be the project root
 
 ## Host Detection
@@ -92,7 +93,7 @@ zsh -ic "fj pr view <number>"
 
 Verify:
 - PR exists
-- CI has passed (or is passing)
+- CI has passed or is passing (GitHub only — skip for Forgejo)
 
 ### 3. Extract Task ID
 
@@ -121,7 +122,7 @@ Use the **tmux skill** to create a session for the review agent.
 The command to run:
 
 ```
-cd $PROJECT_PATH && pi $MODEL_FLAG -p "Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit."
+cd $PROJECT_PATH && pi $MODEL_FLAG "Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit."
 ```
 
 Use the tmux skill's **run and capture** pattern:
@@ -152,12 +153,28 @@ Report the review findings to the user and ask how to proceed:
 
 **User:** "Request a review for PR 17"
 
-**Agent:**
+**Agent (GitHub):**
 ```
-Detecting host... GitHub (github.com)
+Detecting host... GitHub
 Checking PR #17...
 ✓ PR exists: "docs: add README with project overview"
 ✓ CI passed
+✓ Task ID: #1232
+
+Spawning review session (using tmux skill)...
+Opened visible session 'pr-review-17-a3f9'
+
+Waiting for review to complete...
+```
+
+*[Review agent runs in visible tmux window. User can watch.]*
+
+**Agent (Forgejo):**
+```
+Detecting host... Forgejo
+Checking PR #17...
+✓ PR exists: "docs: add README with project overview"
+- CI check skipped (Forgejo)
 ✓ Task ID: #1232
 
 Spawning review session (using tmux skill)...
