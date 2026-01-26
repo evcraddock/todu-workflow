@@ -6,10 +6,20 @@ Development workflow skills for AI coding agents. Compatible with [pi](https://g
 
 | Skill | Description |
 |-------|-------------|
+| [project-init](skills/project-init/SKILL.md) | Initialize a new project end-to-end |
+| [project-scaffold](skills/project-scaffold/SKILL.md) | Generate project scaffolding files |
+| [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing |
+| [dev-environment](skills/dev-environment/SKILL.md) | Set up Procfile, Makefile, Docker services |
 | [pr-review](skills/pr-review/SKILL.md) | Review a pull request from another agent |
 | [request-review](skills/request-review/SKILL.md) | Spawn a separate agent to review a PR |
 | [task-close-preflight](skills/task-close-preflight/SKILL.md) | Verify work is complete before closing a task |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Prepare to work on a task |
+
+## Extensions
+
+| Extension | Description |
+|-----------|-------------|
+| [repo-create](extensions/repo-create.ts) | Create remote repo, clone locally, register with todu |
 
 ## Installation
 
@@ -35,16 +45,24 @@ ln -s ~/todu-workflow/skills/task-close-preflight ~/.pi/agent/skills/
 ln -s ~/todu-workflow/skills/task-start-preflight ~/.pi/agent/skills/
 ```
 
-#### Required Extensions
+#### Extensions
 
-Some skills use pi extensions for interactive workflows. Install from pi's example extensions:
+Some skills use pi extensions. Symlink the extensions directory:
+
+```bash
+mkdir -p ~/.pi/agent/extensions
+ln -s ~/todu-workflow/extensions ~/.pi/agent/extensions/todu-workflow
+```
+
+#### Required External Extensions
+
+The `project-init` skill requires the `questionnaire` extension from pi's examples:
 
 ```bash
 # Find pi's installation path
 PI_PATH=$(dirname $(which pi))/../lib/node_modules/@mariozechner/pi-coding-agent
 
-# Install questionnaire extension (used by project-init)
-mkdir -p ~/.pi/agent/extensions
+# Install questionnaire extension
 cp $PI_PATH/examples/extensions/questionnaire.ts ~/.pi/agent/extensions/
 ```
 
