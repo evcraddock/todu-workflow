@@ -119,16 +119,21 @@ PROJECT_PATH=$(pwd)
 
 Use the **tmux skill** to create a session for the review agent.
 
-The command to run:
+#### Determine Agent CLI
+
+1. If `$CODING_AGENT_CMD` is set, use it
+2. Otherwise, use your own CLI (you know what agent you're running in from your system prompt — e.g., `pi`, `claude`, etc.)
+
+#### The command to run:
 
 ```
-cd $PROJECT_PATH && pi $MODEL_FLAG "Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit."
+cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG "Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit."
 ```
 
 Use the tmux skill's **run and capture** pattern:
 1. Determine visibility (see Configuration above)
 2. Start session with `--visible` or `--detached`
-3. Wait for completion (session ends when pi exits)
+3. Wait for completion (session ends when agent exits)
 4. If visible, window closes automatically
 
 ### 6. Check Review Results
@@ -211,4 +216,4 @@ Review passed. Merge the PR? [yes/no]
 - Review is posted as both a PR comment and a task comment
 - Window closing signals review completion
 - After review, check the comment and decide whether to merge
-- Set `PI_REVIEW_MODEL` env var to use a specific model for reviews
+- Set `CODING_AGENT_CMD` env var to override the agent CLI (e.g., `export CODING_AGENT_CMD=claude`)
