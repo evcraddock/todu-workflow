@@ -1,0 +1,45 @@
+# Pre-commit hooks configuration
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+# Add stack-specific hooks below based on your stack:
+#
+# TypeScript:
+#   - repo: local
+#     hooks:
+#       - id: eslint
+#         name: eslint
+#         entry: npm run lint
+#         language: system
+#         types: [typescript]
+#
+# Go:
+#   - repo: https://github.com/golangci/golangci-lint
+#     rev: v1.55.2
+#     hooks:
+#       - id: golangci-lint
+#
+# Python:
+#   - repo: https://github.com/astral-sh/ruff-pre-commit
+#     rev: v0.1.9
+#     hooks:
+#       - id: ruff
+#       - id: ruff-format
+#
+# Rust:
+#   - repo: local
+#     hooks:
+#       - id: cargo-fmt
+#         name: cargo fmt
+#         entry: cargo fmt --check
+#         language: system
+#         types: [rust]
