@@ -29,20 +29,20 @@ Clone the repo and symlink into pi's user skills directory:
 
 ```bash
 # Clone to a convenient location
-git clone https://github.com/evcraddock/todu-workflow ~/todu-workflow
+git clone https://github.com/evcraddock/todu-workflow ~/.local/share/todu-workflow
 
 # Create symlinks (pi scans recursively, so one symlink works)
 mkdir -p ~/.pi/agent/skills
-ln -s ~/todu-workflow/skills ~/.pi/agent/skills/todu-workflow
+ln -s ~/.local/share/todu-workflow/skills ~/.pi/agent/skills/todu-workflow
 ```
 
 Or symlink individual skills:
 
 ```bash
-ln -s ~/todu-workflow/skills/pr-review ~/.pi/agent/skills/
-ln -s ~/todu-workflow/skills/request-review ~/.pi/agent/skills/
-ln -s ~/todu-workflow/skills/task-close-preflight ~/.pi/agent/skills/
-ln -s ~/todu-workflow/skills/task-start-preflight ~/.pi/agent/skills/
+ln -s ~/.local/share/todu-workflow/skills/pr-review ~/.pi/agent/skills/
+ln -s ~/.local/share/todu-workflow/skills/request-review ~/.pi/agent/skills/
+ln -s ~/.local/share/todu-workflow/skills/task-close-preflight ~/.pi/agent/skills/
+ln -s ~/.local/share/todu-workflow/skills/task-start-preflight ~/.pi/agent/skills/
 ```
 
 #### Extensions
@@ -51,7 +51,7 @@ Some skills use pi extensions. Symlink the extensions directory:
 
 ```bash
 mkdir -p ~/.pi/agent/extensions
-ln -s ~/todu-workflow/extensions ~/.pi/agent/extensions/todu-workflow
+ln -s ~/.local/share/todu-workflow/extensions ~/.pi/agent/extensions/todu-workflow
 ```
 
 #### Required External Extensions
@@ -72,17 +72,17 @@ Claude Code only looks one level deep, so symlink individual skills:
 
 ```bash
 mkdir -p ~/.claude/skills
-ln -s ~/todu-workflow/skills/pr-review ~/.claude/skills/
-ln -s ~/todu-workflow/skills/request-review ~/.claude/skills/
-ln -s ~/todu-workflow/skills/task-close-preflight ~/.claude/skills/
-ln -s ~/todu-workflow/skills/task-start-preflight ~/.claude/skills/
+ln -s ~/.local/share/todu-workflow/skills/pr-review ~/.claude/skills/
+ln -s ~/.local/share/todu-workflow/skills/request-review ~/.claude/skills/
+ln -s ~/.local/share/todu-workflow/skills/task-close-preflight ~/.claude/skills/
+ln -s ~/.local/share/todu-workflow/skills/task-start-preflight ~/.claude/skills/
 ```
 
 ### Codex CLI
 
 ```bash
 mkdir -p ~/.codex/skills
-ln -s ~/todu-workflow/skills ~/.codex/skills/todu-workflow
+ln -s ~/.local/share/todu-workflow/skills ~/.codex/skills/todu-workflow
 ```
 
 ## Requirements
