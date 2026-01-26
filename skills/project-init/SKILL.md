@@ -168,16 +168,11 @@ If exists, ask user whether to abort or use existing directory.
 
 ## Phase 2-3: Create Repository
 
-Call the `repo_create` tool:
-
-```json
-{
-  "name": "{name}",
-  "host": "{host}",
-  "description": "{description}",
-  "localPath": "{localPath}"
-}
-```
+Apply the `repo-create` skill with:
+- `name` - from Phase 1a
+- `host` - from Phase 1a
+- `description` - from Phase 1a
+- `localPath` - from Phase 1b
 
 ### Error Handling
 
@@ -188,7 +183,7 @@ Call the `repo_create` tool:
 | Repo already exists | Ask: clone existing, or abort? |
 | Directory exists | Ask: use existing, or abort? |
 
-Store the returned `repoUrl` and `localPath` for later phases.
+On success, proceed to Phase 4.
 
 ---
 
@@ -368,5 +363,4 @@ After all phases complete, show summary:
 
 - If any phase fails, stop and report the error
 - User can re-run the skill after fixing issues
-- Phase 1a uses sequential prompts - works with any coding agent
-- Phase 2-3 requires the `repo_create` extension (pi) or manual repo creation (other agents)
+- All phases use skills and shell scripts - works with any coding agent

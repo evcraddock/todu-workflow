@@ -1,0 +1,201 @@
+#!/usr/bin/env bash
+#
+# repo-create - Create a remote repository, clone locally, register with todu
+#
+# Usage:
+#   repo-create --name NAME --host HOST --description DESC --path PATH
+#
+# Options:
+#   --name, -n        Repository name (required)
+#   --host, -h        Host: "github" or "forgejo" (required)
+#   --description, -d Description (required)
+#   --path, -p        Local path to clone to (required)
+#   --help            Show this help message
+#
+# Examples:
+#   repo-create --name myapp --host github --description "My app" --path ~/code/github/myapp
+#   repo-create -n myapp -h forgejo -d "My app" -p ~/code/forgejo/myapp
+
+set -euo pipefail
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+error() { echo -e "${RED}Error:${NC} $1" >&2; exit 1; }
+success() { echo -e "${GREEN}✓${NC} $1"; }
+warn() { echo -e "${YELLOW}⚠${NC} $1"; }
+info() { echo -e "  $1"; }
+
+# Parse arguments
+NAME=""
+HOST=""
+DESCRIPTION=""
+LOCAL_PATH=""
+
+show_help() {
+    sed -n '2,/^$/p' "$0" | sed 's/^# //' | sed 's/^#//'
+    exit 0
+}
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --name|-n) NAME="$2"; shift 2 ;;
+        --host|-h) HOST="$2"; shift 2 ;;
+        --description|-d) DESCRIPTION="$2"; shift 2 ;;
+        --path|-p) LOCAL_PATH="$2"; shift 2 ;;
+        --help) show_help ;;
+        *) error "Unknown option: $1" ;;
+    esac
+done
+
+# Validate required arguments
+[[ -z "$NAME" ]] && error "Missing required argument: --name"
+[[ -z "$HOST" ]] && error "Missing required argument: --host"
+[[ -z "$DESCRIPTION" ]] && error "Missing required argument: --description"
+[[ -z "$LOCAL_PATH" ]] && error "Missing required argument: --path"
+
+# Normalize host
+HOST=$(echo "$HOST" | tr '[:upper:]' '[:lower:]')
+[[ "$HOST" != "github" && "$HOST" != "forgejo" ]] && error "Host must be 'github' or 'forgejo', got: $HOST"
+
+# Expand ~ in path
+LOCAL_PATH="${LOCAL_PATH/#\~/$HOME}"
+
+# Step 1: Check if directory already exists
+if [[ -d "$LOCAL_PATH" ]]; then
+    error "Directory already exists: $LOCAL_PATH"
+fi
+
+# Step 2: Check CLI installed and authenticated
+if [[ "$HOST" == "github" ]]; then
+    # Check gh installed
+    if ! command -v gh &>/dev/null; then
+        error "gh CLI not installed.
+
+Install from: https://cli.github.com/
+
+Then authenticate:
+  gh auth login"
+    fi
+
+    # Check gh authenticated
+    if ! gh auth status &>/dev/null; then
+        error "gh CLI not authenticated.
+
+Run:
+  gh auth login"
+    fi
+    success "GitHub CLI authenticated"
+
+elif [[ "$HOST" == "forgejo" ]]; then
+    # Check fj installed
+    if ! command -v fj &>/dev/null; then
+        error "fj CLI not installed.
+
+Install with:
+  Arch: paru -S forgejo-cli
+  Other: cargo install forgejo-cli
+
+Then authenticate:
+  fj auth login forgejo.caradoc.com"
+    fi
+
+    # Check fj authenticated (needs zsh -ic for keyring access)
+    if ! zsh -ic "fj whoami" &>/dev/null; then
+        error "fj CLI not authenticated.
+
+Run:
+  fj auth login forgejo.caradoc.com"
+    fi
+    success "Forgejo CLI authenticated"
+fi
+
+# Step 3: Create remote repository
+REPO_URL=""
+
+if [[ "$HOST" == "github" ]]; then
+    echo "Creating repository on GitHub..."
+    
+    if ! OUTPUT=$(gh repo create "$NAME" --public --description "$DESCRIPTION" 2>&1); then
+        if echo "$OUTPUT" | grep -qi "already exists"; then
+            error "Repository \"$NAME\" already exists on GitHub.
+
+Options:
+  1. Choose a different name
+  2. Delete the existing repo first"
+        fi
+        error "Failed to create repository on GitHub:\n$OUTPUT"
+    fi
+    
+    # gh repo create outputs the URL
+    REPO_URL=$(echo "$OUTPUT" | grep -oE 'https://github.com/[^ ]+' | head -1)
+    if [[ -z "$REPO_URL" ]]; then
+        # Construct URL from username
+        USERNAME=$(gh api user -q '.login')
+        REPO_URL="https://github.com/$USERNAME/$NAME"
+    fi
+    success "Repository created: $REPO_URL"
+
+elif [[ "$HOST" == "forgejo" ]]; then
+    echo "Creating repository on Forgejo..."
+    
+    if ! OUTPUT=$(zsh -ic "fj repo create $NAME -d \"$DESCRIPTION\"" 2>&1); then
+        if echo "$OUTPUT" | grep -qi "already exists\|409"; then
+            error "Repository \"$NAME\" already exists on Forgejo.
+
+Options:
+  1. Choose a different name
+  2. Delete the existing repo first"
+        fi
+        error "Failed to create repository on Forgejo:\n$OUTPUT"
+    fi
+    
+    # Extract URL from output or construct it
+    REPO_URL=$(echo "$OUTPUT" | grep -oE 'https?://[^ ]+' | head -1)
+    if [[ -z "$REPO_URL" ]]; then
+        # Get username and host from whoami
+        WHOAMI=$(zsh -ic "fj whoami" 2>/dev/null)
+        # Output is like "currently signed in to erik@forgejo.caradoc.com"
+        if [[ "$WHOAMI" =~ signed\ in\ to\ ([a-zA-Z0-9_-]+)@([^ ]+) ]]; then
+            FJ_USER="${BASH_REMATCH[1]}"
+            FJ_HOST="${BASH_REMATCH[2]}"
+            REPO_URL="https://$FJ_HOST/$FJ_USER/$NAME"
+        else
+            REPO_URL="(URL not detected - check Forgejo)"
+        fi
+    fi
+    success "Repository created: $REPO_URL"
+fi
+
+# Step 4: Clone repository
+echo "Cloning to $LOCAL_PATH..."
+
+# Create parent directory if needed
+PARENT_DIR=$(dirname "$LOCAL_PATH")
+mkdir -p "$PARENT_DIR"
+
+if ! git clone "$REPO_URL" "$LOCAL_PATH" 2>&1; then
+    error "Failed to clone repository.
+
+Repository was created at: $REPO_URL
+You may need to clone manually."
+fi
+success "Cloned to $LOCAL_PATH"
+
+# Step 5: Register with todu
+echo "Registering with todu..."
+
+if ! todu project add --name "$NAME" --description "$DESCRIPTION" 2>&1; then
+    warn "Failed to register with todu (non-fatal)"
+else
+    success "Registered with todu"
+fi
+
+# Summary
+echo ""
+echo -e "${GREEN}Repository created successfully!${NC}"
+info "URL:  $REPO_URL"
+info "Path: $LOCAL_PATH"
