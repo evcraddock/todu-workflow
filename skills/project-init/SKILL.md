@@ -9,19 +9,18 @@ Initialize a new project from scratch. This skill orchestrates the full setup fl
 
 ## Prerequisites
 
-Before starting, verify required extensions are available:
+Verify required CLI tools are available:
 
 ```bash
-# Check for questionnaire tool
-pi -p "List available tools" 2>&1 | grep -q questionnaire && echo "OK: questionnaire" || echo "MISSING: questionnaire"
+# Check for GitHub CLI (if using GitHub)
+command -v gh &>/dev/null && echo "OK: gh" || echo "MISSING: gh (install from https://cli.github.com/)"
 
-# Check for repo_create tool  
-pi -p "List available tools" 2>&1 | grep -q repo_create && echo "OK: repo_create" || echo "MISSING: repo_create"
+# Check for Forgejo CLI (if using Forgejo)
+command -v fj &>/dev/null && echo "OK: fj" || echo "MISSING: fj (cargo install forgejo-cli)"
+
+# Check for todu
+command -v todu &>/dev/null && echo "OK: todu" || echo "MISSING: todu"
 ```
-
-If missing, see installation instructions in the todu-workflow README.
-
-**Do not proceed if extensions are missing.**
 
 ## Overview
 
@@ -38,89 +37,71 @@ If missing, see installation instructions in the todu-workflow README.
 
 ## Phase 1a: Gather Project Info
 
-Call the `questionnaire` tool with these questions:
+Ask the user these questions sequentially. Use your agent's native prompting capability (e.g., ask a question and wait for response before proceeding to the next).
 
-```json
-{
-  "questions": [
-    {
-      "id": "name",
-      "label": "Name",
-      "prompt": "What is the project name?",
-      "options": [],
-      "allowOther": true
-    },
-    {
-      "id": "host",
-      "label": "Host",
-      "prompt": "Where will this project be hosted?",
-      "options": [
-        { "value": "forgejo", "label": "Forgejo" },
-        { "value": "github", "label": "GitHub" }
-      ]
-    },
-    {
-      "id": "stack",
-      "label": "Stack",
-      "prompt": "What tech stack will you use?",
-      "options": [
-        { "value": "typescript", "label": "TypeScript" },
-        { "value": "go", "label": "Go" },
-        { "value": "python", "label": "Python" },
-        { "value": "rust", "label": "Rust" }
-      ],
-      "allowOther": true
-    },
-    {
-      "id": "framework",
-      "label": "Framework",
-      "prompt": "What framework? (optional)",
-      "options": [
-        { "value": "none", "label": "None / CLI tool" },
-        { "value": "hono", "label": "Hono (TS)" },
-        { "value": "express", "label": "Express (TS)" },
-        { "value": "gin", "label": "Gin (Go)" },
-        { "value": "echo", "label": "Echo (Go)" },
-        { "value": "fastapi", "label": "FastAPI (Python)" },
-        { "value": "flask", "label": "Flask (Python)" },
-        { "value": "axum", "label": "Axum (Rust)" }
-      ],
-      "allowOther": true
-    },
-    {
-      "id": "description",
-      "label": "Description",
-      "prompt": "Brief project description:",
-      "options": [],
-      "allowOther": true
-    },
-    {
-      "id": "database",
-      "label": "Database",
-      "prompt": "Database needed?",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "postgres", "label": "PostgreSQL" },
-        { "value": "sqlite", "label": "SQLite" }
-      ],
-      "allowOther": true
-    },
-    {
-      "id": "services",
-      "label": "Services",
-      "prompt": "Additional services?",
-      "options": [
-        { "value": "none", "label": "None" },
-        { "value": "redis", "label": "Redis" },
-        { "value": "s3", "label": "Object Storage (S3-compatible)" }
-      ],
-      "allowOther": true
-    }
-  ]
-}
+### Question 1: Project Name
 ```
+What is the project name?
+```
+→ Store as `name`
 
-Store the answers for use in subsequent phases.
+### Question 2: Host
+```
+Where will this project be hosted?
+Options: forgejo, github
+```
+→ Store as `host`
+
+### Question 3: Tech Stack
+```
+What tech stack will you use?
+Options: typescript, go, python, rust
+```
+→ Store as `stack`
+
+### Question 4: Framework
+```
+What framework? (optional)
+
+For TypeScript: none, hono, express
+For Go: none, gin, echo
+For Python: none, fastapi, flask
+For Rust: none, axum
+
+(Use "none" for CLI tools or libraries)
+```
+→ Store as `framework`
+
+### Question 5: Description
+```
+Brief project description:
+```
+→ Store as `description`
+
+### Question 6: Database
+```
+Database needed?
+Options: none, postgres, sqlite
+```
+→ Store as `database`
+
+### Question 7: Additional Services
+```
+Additional services?
+Options: none, redis, s3
+```
+→ Store as `services`
+
+### Collected Variables
+
+After gathering, you should have:
+- `name` - project name
+- `host` - forgejo or github
+- `stack` - typescript, go, python, or rust
+- `framework` - none, hono, express, gin, echo, fastapi, flask, or axum
+- `description` - brief description
+- `database` - none, postgres, or sqlite
+- `services` - none, redis, or s3
 
 ---
 
@@ -137,21 +118,20 @@ echo $PROJECT_INIT_SHELL_CONFIG
 
 ### If env var NOT set for selected host:
 
-1. **Check shell config preference**
+1. **Ask for shell config preference**
 
-   If `$PROJECT_INIT_SHELL_CONFIG` is not set, ask using the `question` tool:
+   If `$PROJECT_INIT_SHELL_CONFIG` is not set, ask the user:
    
    ```
-   Which shell config should I update?
-   Options: ~/.zshrc, ~/.bashrc, ~/.profile, Other
+   Which shell config should I update to save your project directory preference?
+   Options: ~/.zshrc, ~/.bashrc, ~/.profile, or specify another
    ```
    
 2. **Ask for projects directory**
 
-   Use `question` tool:
    ```
    Where do you keep your {host} projects?
-   Options: ~/Private/code/{host}, ~/Projects/{host}, ~/code/{host}, Other
+   Common options: ~/Private/code/{host}, ~/Projects/{host}, ~/code/{host}
    ```
 
 3. **Save to shell config**
@@ -221,11 +201,11 @@ cd {localPath}
 ```
 
 Apply the `project-scaffold` skill with:
-- `name` - from questionnaire
-- `description` - from questionnaire
-- `stack` - from questionnaire
-- `framework` - from questionnaire
-- `host` - from questionnaire (for PR template location)
+- `name` - from Phase 1a
+- `description` - from Phase 1a
+- `stack` - from Phase 1a
+- `framework` - from Phase 1a
+- `host` - from Phase 1a (for PR template location)
 - `localPath` - from Phase 2-3
 
 This generates:
@@ -242,8 +222,8 @@ This generates:
 ## Phase 5: Quality Tooling
 
 Apply the `quality-tooling` skill with:
-- `name` - from questionnaire
-- `stack` - from questionnaire
+- `name` - from Phase 1a
+- `stack` - from Phase 1a
 - `localPath` - from Phase 2-3
 
 This generates:
@@ -267,11 +247,11 @@ Options: Yes, No (skip)
 ```
 
 If yes, apply the `dev-environment` skill with:
-- `name` - from questionnaire
-- `stack` - from questionnaire
-- `framework` - from questionnaire
-- `database` - from questionnaire
-- `services` - from questionnaire
+- `name` - from Phase 1a
+- `stack` - from Phase 1a
+- `framework` - from Phase 1a
+- `database` - from Phase 1a
+- `services` - from Phase 1a
 - `localPath` - from Phase 2-3
 
 This generates:
@@ -388,5 +368,5 @@ After all phases complete, show summary:
 
 - If any phase fails, stop and report the error
 - User can re-run the skill after fixing issues
-- The questionnaire extension must be installed for Phase 1a
-- The repo_create extension must be installed for Phase 2-3
+- Phase 1a uses sequential prompts - works with any coding agent
+- Phase 2-3 requires the `repo_create` extension (pi) or manual repo creation (other agents)

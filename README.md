@@ -35,10 +35,6 @@ ln -s ~/.local/share/todu-workflow/skills ~/.pi/agent/skills/todu-workflow
 # Install extensions (symlink each file individually)
 mkdir -p ~/.pi/agent/extensions
 ln -s ~/.local/share/todu-workflow/extensions/repo-create.ts ~/.pi/agent/extensions/
-
-# Install questionnaire (required for project-init)
-PI_PATH=$(dirname $(which pi))/../lib/node_modules/@mariozechner/pi-coding-agent
-cp $PI_PATH/examples/extensions/questionnaire.ts ~/.pi/agent/extensions/
 ```
 
 Restart pi to load the new skills and extensions.
@@ -52,7 +48,7 @@ mkdir -p ~/.claude/skills
 ln -s ~/.local/share/todu-workflow/skills ~/.claude/skills/todu-workflow
 ```
 
-Note: Extensions are not supported in Claude Code, so project-init will not work.
+Note: The `repo_create` extension is not available in Claude Code, so project-init Phase 2-3 (repo creation) requires manual steps or using `gh`/`fj` CLI directly. All other skills work fully.
 
 ### Codex CLI
 
@@ -64,10 +60,13 @@ ln -s ~/.local/share/todu-workflow/skills ~/.codex/skills/todu-workflow
 ## Requirements
 
 - [todu](https://github.com/evcraddock/todu) - Task management CLI
-- [gh](https://cli.github.com/) - GitHub CLI (for PR operations)
+- [gh](https://cli.github.com/) - GitHub CLI (for PR and repo operations)
 - [tmux](https://github.com/tmux/tmux) - Terminal multiplexer (for tmux skill and request-review)
-- [pi](https://github.com/badlogic/pi-mono) - Required for skills that use pi extensions (project-init)
-- [fj](https://codeberg.org/Cyborus/forgejo-cli) - Forgejo CLI (for project-init with Forgejo)
+- [fj](https://codeberg.org/Cyborus/forgejo-cli) - Forgejo CLI (optional, for Forgejo support)
+
+### Optional (pi-only features)
+
+- [pi](https://github.com/badlogic/pi-mono) - Required for `repo_create` extension (used by project-init)
 
 ## License
 
