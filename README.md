@@ -65,7 +65,7 @@ ln -s ~/.local/share/todu-workflow/skills ~/.codex/skills/todu-workflow
 
 - [todu](https://github.com/evcraddock/todu) - Task management CLI
 - [gh](https://cli.github.com/) - GitHub CLI (for PR operations)
-- [tmux](https://github.com/tmux/tmux) - Terminal multiplexer (for request-review)
+- [tmux](https://github.com/tmux/tmux) - Terminal multiplexer (for tmux skill and request-review)
 - [pi](https://github.com/badlogic/pi-mono) - Required for skills that use pi extensions (project-init)
 - [fj](https://codeberg.org/Cyborus/forgejo-cli) - Forgejo CLI (for project-init with Forgejo)
 
