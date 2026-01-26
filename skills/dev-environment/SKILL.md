@@ -111,6 +111,47 @@ ls -la {localPath}/compose.yaml  # if services
 ls -la {localPath}/.env.example
 ```
 
+## Accessing Overmind Logs
+
+When services are running via `make dev` (overmind), access logs using tmux commands.
+
+### Find the overmind socket
+
+```bash
+OVERMIND_SOCKET=$(ls /tmp/overmind-*/overmind.sock 2>/dev/null | head -1)
+```
+
+### Capture logs from a service
+
+Pane names match Procfile.dev entries (`app`, `db`, `redis`, etc.):
+
+```bash
+# Last 200 lines from app
+tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -200
+
+# Last 500 lines from db
+tmux -S "$OVERMIND_SOCKET" capture-pane -p -t db -S -500
+```
+
+### Search logs
+
+```bash
+# Find errors
+tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -500 | grep -i error
+
+# Find a specific pattern (e.g., magic link)
+tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -500 | grep -i "magic\|token\|link"
+
+# Tail-like view (last 50 lines)
+tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -50
+```
+
+### List available panes
+
+```bash
+tmux -S "$OVERMIND_SOCKET" list-panes -a
+```
+
 ## Notes
 
 - This skill is optional in project-init flow (Phase 6)
