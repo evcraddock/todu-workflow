@@ -14,6 +14,7 @@ Development workflow skills for AI coding agents. Compatible with [pi](https://g
 | [request-review](skills/request-review/SKILL.md) | Spawn a separate agent to review a PR |
 | [task-close-preflight](skills/task-close-preflight/SKILL.md) | Verify work is complete before closing a task |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Prepare to work on a task |
+| [tmux](skills/tmux/SKILL.md) | Control interactive CLIs (python, gdb, lldb) via tmux |
 
 ## Extensions
 
@@ -31,9 +32,9 @@ git clone https://github.com/evcraddock/todu-workflow ~/.local/share/todu-workfl
 mkdir -p ~/.pi/agent/skills
 ln -s ~/.local/share/todu-workflow/skills ~/.pi/agent/skills/todu-workflow
 
-# Install extensions
+# Install extensions (symlink each file individually)
 mkdir -p ~/.pi/agent/extensions
-ln -s ~/.local/share/todu-workflow/extensions ~/.pi/agent/extensions/todu-workflow
+ln -s ~/.local/share/todu-workflow/extensions/repo-create.ts ~/.pi/agent/extensions/
 
 # Install questionnaire (required for project-init)
 PI_PATH=$(dirname $(which pi))/../lib/node_modules/@mariozechner/pi-coding-agent
