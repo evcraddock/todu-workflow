@@ -1,21 +1,21 @@
 ---
 name: dev-environment
-description: Set up local development environment with process management (overmind) and optional services (postgres, redis). Use when asked to "set up dev environment", "add docker services", "create Makefile", or similar.
+description: Set up local development environment with process management (overmind). Use when asked to "set up dev environment", "create Makefile", or as part of project-init.
 ---
 
 # Dev Environment
 
-Set up local development environment with process management and optional Docker services.
+Set up local development environment scaffolding and create a task for detailed configuration.
 
 ## When to Use
 
-- After project scaffolding and quality tooling to add dev environment
-- On existing projects to add Makefile, Procfile, or Docker services
-- When asked to set up overmind, add postgres, add redis, etc.
+- During project-init (Phase 6)
+- When asked to set up dev environment on existing project
+- When asked to add Makefile or overmind support
 
 ## Required Inputs
 
-- `name` - Project name (for DB name, etc.)
+- `name` - Project name
 - `stack` - typescript, go, python, or rust
 - `framework` - (optional) hono, express, gin, echo, fastapi, flask, axum
 - `database` - none, postgres, or sqlite
@@ -24,92 +24,89 @@ Set up local development environment with process management and optional Docker
 
 ## Files to Generate
 
-| File | When | Template |
-|------|------|----------|
-| Procfile.dev | Always | Based on services selected |
-| Makefile | Always | `templates/Makefile` |
-| compose.yaml | If postgres or redis | Compose from service snippets |
-| .env.example | Always | Based on services selected |
+| File | Template |
+|------|----------|
+| `.env.example` | `templates/env.example` |
+| `Makefile` | `templates/Makefile` |
 
 ## Process
 
-1. **Determine run command**
-   - Read from `templates/run-commands/{stack}-{framework}.txt`
-   - If no framework, use `templates/run-commands/{stack}-none.txt`
+### 1. Generate .env.example
 
-2. **Generate Procfile.dev**
-   - Base: `app: {run_command}`
-   - If postgres: add `db: docker compose up postgres`
-   - If redis: add `redis: docker compose up redis`
+Copy from `templates/env.example`. This provides a minimal starting point.
 
-3. **Generate Makefile**
-   - Use `templates/Makefile`
-   - Replace `{check_command}` with stack-appropriate command:
-     - typescript: `npm run lint && npm test`
-     - go: `golangci-lint run && go test ./...`
-     - python: `ruff check . && pytest`
-     - rust: `cargo clippy && cargo test`
+### 2. Generate Makefile
 
-4. **Generate compose.yaml** (if services selected)
-   ```yaml
-   services:
-   {postgres_service}
-   {redis_service}
+Copy from `templates/Makefile`, replacing `{check_command}` with stack-appropriate command:
 
-   volumes:
-     postgres_data:
-   ```
-   - Include service snippets from `templates/compose/`
-   - Only include volumes section if postgres selected
-
-5. **Generate .env.example**
-   - Select appropriate template based on services
-
-6. **Check for overmind**
-   ```bash
-   which overmind
-   ```
-   If not installed, notify user:
-   > overmind not found. Install with:
-   > - Arch: `paru -S overmind`
-   > - Mac: `brew install overmind`
-   > - Other: https://github.com/DarthSim/overmind
-
-## Run Commands
-
-| Stack | Framework | Command |
-|-------|-----------|---------|
-| typescript | hono | `bun run --hot src/index.ts` |
-| typescript | express | `npx tsx watch src/index.ts` |
-| typescript | none | `npx tsx watch src/index.ts` |
-| go | gin | `go run .` |
-| go | echo | `go run .` |
-| go | none | `go run .` |
-| python | fastapi | `uvicorn app.main:app --reload` |
-| python | flask | `flask run --reload` |
-| python | none | `python -m {name}` |
-| rust | axum | `cargo watch -x run` |
-| rust | none | `cargo watch -x run` |
-
-## Check Commands
-
-| Stack | Command |
-|-------|---------|
+| Stack | Check Command |
+|-------|---------------|
 | typescript | `npm run lint && npm test` |
 | go | `golangci-lint run && go test ./...` |
 | python | `ruff check . && pytest` |
 | rust | `cargo clippy && cargo test` |
 
-## Verification
-
-After generating files:
+### 3. Check for overmind
 
 ```bash
-ls -la {localPath}/Procfile.dev
-ls -la {localPath}/Makefile
-ls -la {localPath}/compose.yaml  # if services
-ls -la {localPath}/.env.example
+which overmind
 ```
+
+If not installed, notify user:
+> overmind not found. Install with:
+> - Arch: `paru -S overmind`
+> - Mac: `brew install overmind`
+> - Other: https://github.com/DarthSim/overmind
+
+### 4. Create Dev Environment Setup Task
+
+Create a task in the project for configuring the dev environment:
+
+```
+Title: Set up dev environment
+Project: {name}
+Priority: medium
+Labels: setup, dev-environment
+
+Description:
+Configure the local development environment for {name}.
+
+## Context (from project-init)
+- Stack: {stack}
+- Framework: {framework}
+- Database: {database}
+- Services: {services}
+
+## To Configure
+- [ ] Create Procfile.dev with appropriate services
+- [ ] Create compose.yaml if database/services need Docker
+- [ ] Update .env.example with required variables
+- [ ] Verify `make dev` starts everything correctly
+- [ ] Document any manual setup steps in README
+
+## Makefile Targets Available
+- `make help` - Show available commands
+- `make dev` - Start dev environment (needs Procfile.dev)
+- `make dev-stop` - Stop dev environment
+- `make dev-status` - Check if running
+- `make dev-logs` - View logs
+- `make check` - Run linting and tests
+- `make pre-pr` - Run pre-PR checks
+```
+
+## Makefile Targets
+
+The generated Makefile includes:
+
+| Target | Description |
+|--------|-------------|
+| `help` | Show available commands (auto-generated from comments) |
+| `dev` | Start dev environment (idempotent - checks if already running) |
+| `dev-stop` | Stop dev environment |
+| `dev-status` | Check if running (outputs "running" or "stopped") |
+| `dev-logs` | Connect to overmind logs |
+| `check` | Run linting and tests |
+| `pre-pr` | Run pre-PR checks |
 
 ## Accessing Overmind Logs
 
@@ -154,8 +151,8 @@ tmux -S "$OVERMIND_SOCKET" list-panes -a
 
 ## Notes
 
-- This skill is optional in project-init flow (Phase 6)
-- compose.yaml only generated if postgres or redis selected
-- sqlite doesn't need Docker - just creates local file
-- s3 (object storage) support not yet implemented
-- Detect existing Makefile/compose.yaml and offer to merge
+- This skill creates scaffolding, not full configuration
+- The created task allows user/agent to discuss actual needs
+- Procfile.dev is NOT created - that's part of the setup task
+- compose.yaml is NOT created - that's part of the setup task if needed
+- `make dev` will fail until Procfile.dev exists (prompts setup)
