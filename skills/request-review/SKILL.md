@@ -13,7 +13,7 @@ After creating a PR and confirming CI passes, use this to request an independent
 
 ## Prerequisites
 
-- Must be in a tmux session (or will create one)
+- tmux installed (uses the tmux skill for session management)
 - PR must exist and CI should be passing
 - Current directory should be the project root
 
@@ -109,56 +109,22 @@ zsh -ic "fj pr view <number>" | grep -oP 'Task:?\s*#?\K\d+' | head -1
 PROJECT_PATH=$(pwd)
 ```
 
-### 5. Set Up tmux Session
+### 5. Spawn Review Session
 
-Use the tmux skill patterns. Set up socket and session:
+Use the **tmux skill** to create a visible session for the review agent.
 
-```bash
-SOCKET_DIR=${TMPDIR:-/tmp}/claude-tmux-sockets
-mkdir -p "$SOCKET_DIR"
-SOCKET="$SOCKET_DIR/claude.sock"
-SESSION="pr-review-<number>"
+The command to run:
+
+```
+cd $PROJECT_PATH && pi $MODEL_FLAG -p "Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit."
 ```
 
-### 6. Spawn Review Session
+Use the tmux skill's **run and capture** pattern:
+1. Start a visible session with the review command
+2. Wait for completion (session ends when pi exits)
+3. The window closes automatically
 
-Create a new tmux window with the review agent:
-
-```bash
-# Build model flag
-if [ -n "$PI_REVIEW_MODEL" ]; then
-  MODEL_FLAG="--model $PI_REVIEW_MODEL"
-else
-  MODEL_FLAG=""
-fi
-
-# Spawn review session
-tmux -S "$SOCKET" new-window -n "$SESSION" \
-  "cd $PROJECT_PATH && pi $MODEL_FLAG -p \"Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit.\""
-```
-
-**Tell the user how to monitor:**
-```
-To monitor the review session:
-  tmux -S $SOCKET attach -t $SESSION
-
-Or capture output:
-  tmux -S $SOCKET capture-pane -p -J -t $SESSION:0.0 -S -200
-```
-
-### 7. Wait for Review to Complete
-
-Poll until the tmux window closes:
-
-```bash
-echo "Waiting for review to complete..."
-while tmux -S "$SOCKET" list-windows -F '#{window_name}' 2>/dev/null | grep -q "$SESSION"; do
-  sleep 3
-done
-echo "Review complete."
-```
-
-### 8. Check Review Results
+### 6. Check Review Results
 
 After the window closes, fetch the review comment:
 
@@ -188,15 +154,13 @@ Checking PR #17...
 ✓ CI passed
 ✓ Task ID: #1232
 
-Spawning review session...
-
-To monitor the review session:
-  tmux -S /tmp/claude-tmux-sockets/claude.sock attach -t pr-review-17
+Spawning review session (using tmux skill)...
+Opened visible session 'pr-review-17-a3f9'
 
 Waiting for review to complete...
 ```
 
-*[Agent waits while reviewer works in other window]*
+*[Review agent runs in visible tmux window. User can watch.]*
 
 ```
 Review complete.
