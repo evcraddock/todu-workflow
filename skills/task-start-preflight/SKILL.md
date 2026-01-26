@@ -89,7 +89,32 @@ git status
 - Suggest creating a feature branch
 - Propose branch name: `feature/<task-id>-<short-description>`
 
-### 5. Understand Context
+### 5. Check Dev Environment
+
+If project has a Makefile with `dev-status` target:
+
+```bash
+if [ -f Makefile ] && grep -q "dev-status:" Makefile; then
+  STATUS=$(make -s dev-status 2>/dev/null)
+  echo "Dev environment: $STATUS"
+fi
+```
+
+**If stopped:**
+- Ask: "Dev environment is stopped. Start it? [yes / no / skip]"
+- If yes, run `make dev`
+- If no or skip, note it and proceed
+
+**If running:**
+- Note: "Dev environment is running ✓"
+
+**If no Makefile or no dev-status target:**
+- Skip this check silently
+
+**Skip for docs-only tasks:**
+- If task title/labels indicate documentation-only work, skip this check
+
+### 6. Understand Context
 
 **Check for related files mentioned in task:**
 - If task references specific files, verify they exist
@@ -101,7 +126,7 @@ git status
 todu task show <task-id> | grep "Source URL"
 ```
 
-### 6. Establish the Plan
+### 7. Establish the Plan
 
 Summarize for the user:
 
@@ -113,6 +138,7 @@ Task: <title>
 Dependencies: ✅ None | ⚠️ Depends on #X (incomplete)
 Git Status: ✅ Clean | ⚠️ <n> uncommitted files
 Branch: <current-branch> | 💡 Suggest: feature/<id>-<name>
+Dev Environment: ✅ Running | ⚠️ Stopped | ⏭️ N/A
 
 Project Requirements:
 - <relevant guidelines from CONTRIBUTING.md>
@@ -182,6 +208,9 @@ No CODE_STANDARDS.md found.
 ⚠️ 3 modified files (unrelated to task)
 
 💡 Recommend: Create feature branch for this work
+
+=== Dev Environment ===
+✅ Running (overmind)
 
 === Acceptance Criteria ===
 - [ ] Skill file created at ~/.local/dotfiles/common/ai-assistant/skills/task-start-preflight/SKILL.md
