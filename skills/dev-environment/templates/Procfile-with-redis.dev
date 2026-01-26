@@ -1,0 +1,2 @@
+app: {run_command}
+redis: docker compose up redis

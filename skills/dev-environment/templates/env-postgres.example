@@ -1,0 +1,6 @@
+# Database
+DATABASE_URL=postgres://dev:dev@localhost:5432/{name}
+
+# App
+PORT=3000
+NODE_ENV=development

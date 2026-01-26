@@ -1,0 +1,3 @@
+app: {run_command}
+db: docker compose up postgres
+redis: docker compose up redis
