@@ -65,6 +65,11 @@ export default function repoCreate(pi: ExtensionAPI) {
 			// Step 2: Check CLI installed and authenticated
 			onUpdate?.({ content: [{ type: "text", text: `Checking ${normalizedHost} CLI...` }] });
 
+			// Helper to run fj commands through zsh (needed for keyring access)
+			const fjExec = async (args: string[], opts: { signal?: AbortSignal; timeout?: number } = {}) => {
+				return pi.exec("zsh", ["-ic", `fj ${args.join(" ")}`], opts);
+			};
+
 			if (normalizedHost === "forgejo") {
 				// Check fj installed
 				const fjCheck = await pi.exec("which", ["fj"], { signal });
@@ -75,17 +80,17 @@ export default function repoCreate(pi: ExtensionAPI) {
 							"  Arch: paru -S forgejo-cli\n" +
 							"  Other: cargo install forgejo-cli\n\n" +
 							"Then authenticate:\n" +
-							"  fj --host forgejo.caradoc.com auth login"
+							"  fj auth login forgejo.caradoc.com"
 					);
 				}
 
-				// Check fj authenticated (try listing user repos)
-				const authCheck = await pi.exec("fj", ["user"], { signal, timeout: 10000 });
-				if (authCheck.code !== 0) {
+				// Check fj authenticated
+				const authCheck = await fjExec(["whoami"], { signal, timeout: 10000 });
+				if (authCheck.code !== 0 || authCheck.stderr?.includes("not logged in")) {
 					return errorResult(
 						"fj CLI not authenticated.\n\n" +
 							"Run:\n" +
-							"  fj --host forgejo.caradoc.com auth login"
+							"  fj auth login forgejo.caradoc.com"
 					);
 				}
 			} else if (normalizedHost === "github") {
@@ -119,9 +124,8 @@ export default function repoCreate(pi: ExtensionAPI) {
 			let repoUrl = "";
 
 			if (normalizedHost === "forgejo") {
-				const createResult = await pi.exec(
-					"fj",
-					["repo", "create", name, "--description", description],
+				const createResult = await fjExec(
+					["repo", "create", name, "-d", `"${description}"`],
 					{ signal, timeout: 30000 }
 				);
 
@@ -146,9 +150,12 @@ export default function repoCreate(pi: ExtensionAPI) {
 					repoUrl = urlMatch[0];
 				} else {
 					// Construct URL - need to get username
-					const userResult = await pi.exec("fj", ["user"], { signal });
-					const username = userResult.stdout?.trim().split("\n")[0] || "user";
-					repoUrl = `https://forgejo.caradoc.com/${username}/${name}`;
+					const userResult = await fjExec(["whoami"], { signal });
+					// Output is like "currently signed in to erik@forgejo.caradoc.com"
+					const match = userResult.stdout?.match(/signed in to (\w+)@([^\s]+)/);
+					const username = match?.[1] || "user";
+					const host = match?.[2] || "forgejo.caradoc.com";
+					repoUrl = `https://${host}/${username}/${name}`;
 				}
 			} else {
 				// GitHub
