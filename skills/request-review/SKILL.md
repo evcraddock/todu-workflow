@@ -1,6 +1,6 @@
 ---
 name: request-review
-description: Request a PR review from a separate agent session. Use when PR is ready and you say "request review", "get this reviewed", "need a review on PR #*", or similar.
+description: Request a PR review from a separate agent session. Use immediately after creating a PR, or when user says "request review", "get this reviewed", etc.
 ---
 
 # Request Review
