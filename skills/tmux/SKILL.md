@@ -7,35 +7,35 @@ description: "Remote control tmux sessions for interactive CLIs (python, gdb, et
 
 Use tmux as a programmable terminal multiplexer for interactive work. Works on Linux and macOS with stock tmux; avoid custom config by using a private socket.
 
-## Quickstart (isolated socket)
+## Quickstart
 
 ```bash
-SOCKET_DIR=${TMPDIR:-/tmp}/claude-tmux-sockets  # well-known dir for all agent sockets
-mkdir -p "$SOCKET_DIR"
-SOCKET="$SOCKET_DIR/claude.sock"                # keep agent sessions separate from your personal tmux
-SESSION=claude-python                           # slug-like names; avoid spaces
-tmux -S "$SOCKET" new -d -s "$SESSION" -n shell
-tmux -S "$SOCKET" send-keys -t "$SESSION":0.0 -- 'python3 -q' Enter
-tmux -S "$SOCKET" capture-pane -p -J -t "$SESSION":0.0 -S -200  # watch output
-tmux -S "$SOCKET" kill-session -t "$SESSION"                   # clean up
+# Start a session (detached by default)
+./scripts/start-session.sh -s claude-python
+# Output: Created session 'claude-python-4b5a' on socket '/tmp/claude-tmux-sockets/claude.sock'
+
+# Or start visible (opens window in current tmux)
+./scripts/start-session.sh -s claude-python --visible
+
+# Start with a command
+./scripts/start-session.sh -s claude-python -c 'PYTHON_BASIC_REPL=1 python3 -q' --visible
 ```
 
-After starting a session ALWAYS tell the user how to monitor the session by giving them a command to copy paste:
+The script outputs the actual session name (with unique suffix) and socket path. Use these for subsequent commands:
 
+```bash
+SOCKET="/tmp/claude-tmux-sockets/claude.sock"
+SESSION="claude-python-4b5a"  # from script output
+tmux -S "$SOCKET" send-keys -t "$SESSION" 'print("hello")' Enter
+tmux -S "$SOCKET" capture-pane -p -t "$SESSION" -S -50
+tmux -S "$SOCKET" kill-session -t "$SESSION"
 ```
-To monitor this session yourself:
-  tmux -S "$SOCKET" attach -t claude-lldb
-
-Or to capture the output once:
-  tmux -S "$SOCKET" capture-pane -p -J -t claude-lldb:0.0 -S -200
-```
-
-This must ALWAYS be printed right after a session was started and once again at the end of the tool loop. But the earlier you send it, the happier the user will be.
 
 ## Socket convention
 
-- Agents MUST place tmux sockets under `CLAUDE_TMUX_SOCKET_DIR` (defaults to `${TMPDIR:-/tmp}/claude-tmux-sockets`) and use `tmux -S "$SOCKET"` so we can enumerate/clean them. Create the dir first: `mkdir -p "$CLAUDE_TMUX_SOCKET_DIR"`.
-- Default socket path to use unless you must isolate further: `SOCKET="$CLAUDE_TMUX_SOCKET_DIR/claude.sock"`.
+Sessions use an isolated socket at `$CLAUDE_TMUX_SOCKET_DIR/claude.sock` (defaults to `${TMPDIR:-/tmp}/claude-tmux-sockets/claude.sock`). This keeps agent sessions separate from your personal tmux.
+
+The `start-session.sh` script handles socket setup automatically. For manual commands, always use `-S "$SOCKET"`.
 
 ## Targeting panes and naming
 
@@ -105,7 +105,7 @@ Some special rules for processes:
 
 - Use timed polling to avoid races with interactive tools. Example: wait for a Python prompt before sending code:
   ```bash
-  ./scripts/wait-for-text.sh -t "$SESSION":0.0 -p '^>>>' -T 15 -l 4000
+  ./scripts/wait-for-text.sh -S "$SOCKET" -t "$SESSION":0.0 -p '^>>>' -T 15 -l 4000
   ```
 - For long-running commands, poll for completion text (`"Type quit to exit"`, `"Program exited"`, etc.) before proceeding.
 
@@ -116,20 +116,67 @@ Some special rules for processes:
 - **gdb**: `tmux ... send-keys -- 'gdb --quiet ./a.out' Enter`; disable paging `tmux ... send-keys -- 'set pagination off' Enter`; break with `C-c`; issue `bt`, `info locals`, etc.; exit via `quit` then confirm `y`.
 - **Other TTY apps** (ipdb, psql, mysql, node, bash): same pattern—start the program, poll for its prompt, then send literal text and Enter.
 
+## Run and capture
+
+For one-shot commands where you need the output:
+
+```bash
+SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.sock"
+
+# 1. Start session
+OUTPUT=$(./scripts/start-session.sh -s my-task --visible)
+SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
+
+# 2. Send command with completion marker
+tmux -S "$SOCKET" send-keys -t "$SESSION" 'pi "do something"; echo "===DONE==="' Enter
+
+# 3. Wait for completion
+./scripts/wait-for-text.sh -S "$SOCKET" -t "$SESSION" -p '===DONE===' -T 300
+
+# 4. Capture output
+OUTPUT=$(tmux -S "$SOCKET" capture-pane -p -t "$SESSION" -S -500)
+echo "$OUTPUT"
+
+# 5. Kill session (window closes automatically)
+tmux -S "$SOCKET" kill-session -t "$SESSION"
+```
+
+The `===DONE===` marker lets you know the command finished. Adjust the timeout (`-T 300`) based on expected duration.
+
 ## Cleanup
 
 - Kill a session when done: `tmux -S "$SOCKET" kill-session -t "$SESSION"`.
 - Kill all sessions on a socket: `tmux -S "$SOCKET" list-sessions -F '#{session_name}' | xargs -r -n1 tmux -S "$SOCKET" kill-session -t`.
 - Remove everything on the private socket: `tmux -S "$SOCKET" kill-server`.
 
+## Helper: start-session.sh
+
+`./scripts/start-session.sh` creates a tmux session on an isolated socket.
+
+```bash
+./scripts/start-session.sh -s session-name [options]
+```
+
+- `-s`/`--session` session name base (required, alphanumeric with dashes/underscores)
+- `-S`/`--socket-path` tmux socket path (default: `$CLAUDE_TMUX_SOCKET_DIR/claude.sock`)
+- `-n`/`--window-name` initial window name (default: shell)
+- `-c`/`--command` command to run in the session
+- `-v`/`--visible` open a window in current tmux to show session
+- `-d`/`--detached` run detached, print attach command (default)
+
+Session names are auto-suffixed with a random ID (e.g., `claude-python` becomes `claude-python-4b5a`) to avoid collisions. The actual session name is printed in the output.
+
+If `--visible` and inside tmux, opens a new window attached to the session. Window closes automatically when session is killed.
+
 ## Helper: wait-for-text.sh
 
 `./scripts/wait-for-text.sh` polls a pane for a regex (or fixed string) with a timeout. Works on Linux/macOS with bash + tmux + grep.
 
 ```bash
-./scripts/wait-for-text.sh -t session:0.0 -p 'pattern' [-F] [-T 20] [-i 0.5] [-l 2000]
+./scripts/wait-for-text.sh -S "$SOCKET" -t session:0.0 -p 'pattern' [-F] [-T 20] [-i 0.5] [-l 2000]
 ```
 
+- `-S`/`--socket-path` tmux socket path (optional, uses default socket if omitted)
 - `-t`/`--target` pane target (required)
 - `-p`/`--pattern` regex to match (required); add `-F` for fixed string
 - `-T` timeout seconds (integer, default 15)
