@@ -64,131 +64,16 @@ SOFTWARE.
 
 ### 2. .gitignore (Stack-Specific)
 
-#### TypeScript
-```
-# Dependencies
-node_modules/
+Use the appropriate template from `templates/gitignore/`:
 
-# Build
-dist/
-build/
-*.tsbuildinfo
+| Stack | Template |
+|-------|----------|
+| typescript | `templates/gitignore/typescript.gitignore` |
+| go | `templates/gitignore/go.gitignore` |
+| python | `templates/gitignore/python.gitignore` |
+| rust | `templates/gitignore/rust.gitignore` |
 
-# Environment
-.env
-.env.local
-.env.*.local
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-
-# Test
-coverage/
-
-# Logs
-*.log
-
-# AI agent config
-.claude/
-```
-
-#### Go
-```
-# Binary
-/{name}
-*.exe
-
-# Build
-/bin/
-/dist/
-
-# Dependencies
-/vendor/
-
-# Environment
-.env
-.env.local
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-
-# Test
-coverage.out
-
-# AI agent config
-.claude/
-```
-
-#### Python
-```
-# Virtual environment
-venv/
-.venv/
-env/
-.env/
-
-# Byte-compiled
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-# Distribution
-dist/
-build/
-*.egg-info/
-*.egg
-
-# Environment
-.env
-.env.local
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-
-# Test
-.coverage
-htmlcov/
-.pytest_cache/
-
-# Type checking
-.mypy_cache/
-
-# AI agent config
-.claude/
-```
-
-#### Rust
-```
-# Build
-/target/
-
-# Environment
-.env
-.env.local
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-
-# AI agent config
-.claude/
-```
+Read the template file and write it to `.gitignore` in the project.
 
 ### 3. README.md
 
