@@ -1,7 +1,6 @@
 ---
 name: tmux
-description: "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output."
-based-on: https://github.com/mitsuhiko/agent-stuff
+description: Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output.
 ---
 
 # tmux Skill
