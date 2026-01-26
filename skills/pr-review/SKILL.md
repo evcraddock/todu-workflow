@@ -29,7 +29,7 @@ fi
 | Operation | GitHub | Forgejo |
 |-----------|--------|---------|
 | View PR | `gh pr view <num>` | `zsh -ic "fj pr view <num>"` |
-| View diff | `gh pr diff <num>` | `zsh -ic "fj pr diff <num>"` |
+| View diff | `gh pr diff <num>` | `zsh -ic "fj pr view <num> diff"` |
 | Comment on PR | `gh pr comment <num> --body-file <file>` | `zsh -ic "fj pr comment <num> --body-file <file>"` |
 
 **Note:** Forgejo CLI (`fj`) requires `zsh -ic` wrapper for keyring access.
@@ -47,7 +47,7 @@ gh pr diff <number>
 **Forgejo:**
 ```bash
 zsh -ic "fj pr view <number>"
-zsh -ic "fj pr diff <number>"
+zsh -ic "fj pr view <number> diff"
 ```
 
 ### 2. Understand the Change

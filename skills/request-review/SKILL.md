@@ -36,8 +36,9 @@ fi
 | Operation | GitHub | Forgejo |
 |-----------|--------|---------|
 | View PR | `gh pr view <num>` | `zsh -ic "fj pr view <num>"` |
-| View PR JSON | `gh pr view <num> --json ...` | `zsh -ic "fj pr view <num> --json ..."` |
-| Comment on PR | `gh pr comment <num> --body "..."` | `zsh -ic "fj pr comment <num> --body '...'"` |
+| View PR body | `gh pr view <num> --json body` | `zsh -ic "fj pr view <num> body"` |
+| View PR comments | `gh pr view <num> --json comments` | `zsh -ic "fj pr view <num> comments"` |
+| Comment on PR | `gh pr comment <num> --body "..."` | `zsh -ic "fj pr comment <num> '...'"` |
 | Comment from file | `gh pr comment <num> --body-file <file>` | `zsh -ic "fj pr comment <num> --body-file <file>"` |
 
 **Note:** Forgejo CLI (`fj`) requires `zsh -ic` wrapper for keyring access.
@@ -147,7 +148,7 @@ gh pr view <number> --json comments --jq '.comments[-1].body'
 
 **Forgejo:**
 ```bash
-zsh -ic "fj pr view <number> --comments" | tail -50
+zsh -ic "fj pr view <number> comments" | tail -50
 ```
 
 Report the review findings to the user and ask how to proceed:
