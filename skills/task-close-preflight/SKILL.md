@@ -1,6 +1,6 @@
 ---
 name: task-close-preflight
-description: Verify work is complete before closing a task. Use before "close task", "complete task", "mark task as done", or similar.
+description: Verify work is complete before closing a task. Use when user says "close task", "complete task", "finish task", "verify and close", or similar.
 ---
 
 # Task Close Preflight
