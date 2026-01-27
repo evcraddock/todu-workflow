@@ -127,23 +127,29 @@ Use the **tmux skill** to create a session for the review agent.
 
 #### Start the session with the review command
 
-Use `-c` to run the agent command directly. When pi exits, the session closes automatically:
+Generate the session name and channel first, then pass the signal command to the reviewing agent:
 
 ```bash
 SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.sock"
-REVIEW_CMD="cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG \"Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit.\""
 
-# Start session with command (visible or detached based on Configuration)
-OUTPUT=$(./scripts/start-session.sh -s pr-review-<number> -c "$REVIEW_CMD" --visible)
-SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
+# Generate session name and channel upfront
+SESSION_BASE="pr-review-<number>"
+SUFFIX=$(printf '%04x' $RANDOM)
+SESSION="${SESSION_BASE}-${SUFFIX}"
 CHANNEL="review-done-$SESSION"
 
-# Set hook: when session closes, signal the channel
-tmux -S "$SOCKET" set-hook -t "$SESSION" session-closed \
-  "run-shell 'tmux -S $SOCKET wait-for -S $CHANNEL'"
+# Build prompt with signal command included
+SIGNAL_CMD="tmux -S $SOCKET wait-for -S $CHANNEL"
+REVIEW_PROMPT="Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task. When completely done, run this bash command to signal completion: $SIGNAL_CMD"
+
+REVIEW_CMD="cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG \"$REVIEW_PROMPT\""
+
+# Start session with command (visible or detached based on Configuration)
+# Note: We create the session name ourselves to know the channel before starting
+OUTPUT=$(./scripts/start-session.sh -s "$SESSION_BASE" -c "$REVIEW_CMD" --visible)
 ```
 
-When the user closes pi (Ctrl+D or `/exit`), the session closes and the hook signals completion.
+The reviewing agent runs the signal command when it finishes, notifying the calling agent.
 
 ### 6. Wait for Review Completion
 

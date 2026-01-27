@@ -262,4 +262,4 @@ Focus your review on what automation misses:
 - Acknowledge good patterns you see
 - If unsure, ask rather than assume
 - Remember: a different agent wrote this, not the human
-- **Just exit normally when done** - don't run `tmux kill-window`. The request-review skill chains a signal command after the agent, and killing the window prevents the signal from being sent. The calling agent handles cleanup.
+- **Run the signal command when done** - Your prompt will include a `tmux wait-for -S` command to run when the review is complete. Execute it using bash after posting the review. This signals the calling agent that you're finished.
