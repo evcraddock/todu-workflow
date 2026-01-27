@@ -26,6 +26,18 @@ You MUST follow these guidelines throughout your work.
 - Language: Rust
 - Framework: {framework}
 
+## Development
+
+**ALWAYS start the dev server using `make dev`** - this runs all services (app, database, etc.) via the Makefile.
+
+Key Makefile targets:
+- `make dev` - Start development server (REQUIRED)
+- `make test` - Run tests
+- `make lint` - Run linter
+- `make fmt` - Format code
+
+Read the Makefile to understand available commands before starting work.
+
 ## Task Lifecycle
 
 - **Starting**: ALWAYS run `task-start-preflight` skill first
