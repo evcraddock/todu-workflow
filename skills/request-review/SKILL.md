@@ -125,21 +125,53 @@ Use the **tmux skill** to create a session for the review agent.
 1. If `$CODING_AGENT_CMD` is set, use it
 2. Otherwise, use your own CLI (you know what agent you're running in from your system prompt — e.g., `pi`, `claude`, etc.)
 
-#### The command to run:
+#### Start the session
 
+```bash
+SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.sock"
+
+# Start session (visible or detached based on Configuration)
+OUTPUT=$(./scripts/start-session.sh -s pr-review-<number> --visible)
+SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
+CHANNEL="review-done-$SESSION"
 ```
-cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG "Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit."
+
+#### Send the review command with completion signal
+
+The command MUST end with `; tmux wait-for -S` to signal completion:
+
+```bash
+tmux -S "$SOCKET" send-keys -t "$SESSION" \
+  "cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG \"Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit.\"; tmux -S $SOCKET wait-for -S $CHANNEL" Enter
 ```
 
-Use the tmux skill's **run and capture** pattern:
-1. Determine visibility (see Configuration above)
-2. Start session with `--visible` or `--detached`
-3. Wait for completion (session ends when agent exits)
-4. If visible, window closes automatically
+### 6. Wait for Review Completion
 
-### 6. Check Review Results
+Block until the review agent finishes:
 
-After the window closes, fetch the review comment:
+```bash
+# Wait up to 10 minutes for review to complete
+timeout 600 tmux -S "$SOCKET" wait-for "$CHANNEL"
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 124 ]; then
+  echo "Review timed out after 10 minutes"
+elif [ $EXIT_CODE -ne 0 ]; then
+  echo "Review session ended unexpectedly"
+fi
+
+# Clean up the session
+tmux -S "$SOCKET" kill-session -t "$SESSION" 2>/dev/null || true
+```
+
+Tell the user you're waiting:
+```
+Waiting for review to complete...
+```
+
+### 7. Check Review Results
+
+After the wait completes, fetch the review comment:
 
 **GitHub:**
 ```bash
@@ -215,6 +247,7 @@ Review passed. Merge the PR? [yes/no]
 - Reviewer agent starts fresh with no context from this session
 - Reviewer uses `pr-review` skill which has its own checklist
 - Review is posted as both a PR comment and a task comment
-- Window closing signals review completion
+- Uses `tmux wait-for` signaling to know when review completes (no polling)
+- 10 minute timeout prevents hanging if session crashes
 - After review, check the comment and decide whether to merge
 - Set `CODING_AGENT_CMD` env var to override the agent CLI (e.g., `export CODING_AGENT_CMD=claude`)

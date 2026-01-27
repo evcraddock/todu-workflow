@@ -120,30 +120,47 @@ Some special rules for processes:
 
 ## Run and capture
 
-For one-shot commands where you need the output:
+For one-shot commands where you need to know when they complete, use `tmux wait-for` channel signaling:
 
 ```bash
 SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.sock"
 
-# 1. Start session
+# 1. Start session with command that signals when done
 OUTPUT=$(./scripts/start-session.sh -s my-task --visible)
 SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
+CHANNEL="done-$SESSION"
 
-# 2. Send command with completion marker
-tmux -S "$SOCKET" send-keys -t "$SESSION" 'pi "do something"; echo "===DONE==="' Enter
+# 2. Send command with completion signal
+tmux -S "$SOCKET" send-keys -t "$SESSION" "pi \"do something\"; tmux -S $SOCKET wait-for -S $CHANNEL" Enter
 
-# 3. Wait for completion
-./scripts/wait-for-text.sh -S "$SOCKET" -t "$SESSION" -p '===DONE===' -T 300
+# 3. Wait for signal (blocks until command completes)
+# Use timeout to avoid hanging forever if session crashes
+timeout 600 tmux -S "$SOCKET" wait-for "$CHANNEL"
 
-# 4. Capture output
+# 4. Capture output (if needed)
 OUTPUT=$(tmux -S "$SOCKET" capture-pane -p -t "$SESSION" -S -500)
 echo "$OUTPUT"
 
-# 5. Kill session (window closes automatically)
+# 5. Kill session
 tmux -S "$SOCKET" kill-session -t "$SESSION"
 ```
 
-The `===DONE===` marker lets you know the command finished. Adjust the timeout (`-T 300`) based on expected duration.
+### How wait-for signaling works
+
+1. The command ends with `; tmux -S $SOCKET wait-for -S $CHANNEL`
+2. When the main command exits, it signals the channel with `-S` (signal)
+3. The calling process blocks on `wait-for $CHANNEL` (no flag = wait)
+4. When signaled, the caller unblocks and continues
+
+**Benefits over pattern matching:**
+- No polling or regex matching on terminal output
+- Clean synchronization primitive built into tmux
+- No race conditions with partial output
+
+**Timeout:** Always wrap `wait-for` with `timeout` to avoid hanging if the session crashes:
+```bash
+timeout 600 tmux -S "$SOCKET" wait-for "$CHANNEL" || echo "Timed out or session died"
+```
 
 ## Cleanup
 
