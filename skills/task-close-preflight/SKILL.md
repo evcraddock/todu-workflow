@@ -71,7 +71,48 @@ Checking acceptance criteria for Task #<id>:
 - Is there a merged PR for this work?
 - Or is this preparatory work before a PR?
 
-### 4. Prepare Closing Comment
+### 4. Check Application Logs
+
+Check dev server logs for runtime errors that tests might miss.
+
+**Skip this step if:**
+- Task is documentation-only (no code changes)
+- Project has no dev server / Makefile
+
+**Check if dev server is running:**
+```bash
+if [ -f Makefile ] && grep -q "dev-status:" Makefile; then
+  STATUS=$(make -s dev-status 2>/dev/null)
+  if [ "$STATUS" != "running" ]; then
+    echo "Dev server not running"
+  fi
+fi
+```
+
+**If dev server not running:**
+- Warn: "⚠️ Dev server not running - cannot check logs"
+- Ask: "Start dev server to check logs? [yes / skip]"
+- If yes: run `make dev`, wait for startup, then check logs
+- If skip: note in closing comment that logs were not checked
+
+**Check for errors in logs:**
+```bash
+make dev-tail 2>&1 | grep -iE "(error|warn|exception)" | head -20
+```
+
+**If errors found:**
+- Warn: "⚠️ Found errors in application logs:"
+- Show the matching log lines (up to 20)
+- Ask: "Fix these before opening PR? [yes / ignore / show more]"
+  - **yes**: Stop and let user fix the issues
+  - **ignore**: Require explanation to include in PR description
+  - **show more**: Run `make dev-logs` or show additional context
+
+**If no errors:**
+- Show: "✅ No errors in logs"
+- Proceed to next step
+
+### 5. Prepare Closing Comment
 
 Generate a summary comment that includes:
 
@@ -91,7 +132,7 @@ Generate a summary comment that includes:
 - <Any blockers or dependencies noted>
 ```
 
-### 5. Final Confirmation
+### 6. Final Confirmation
 
 Present summary to user:
 
@@ -100,6 +141,8 @@ Present summary to user:
 
 Git Status: ✅ Clean | ⚠️ <n> uncommitted files
 Acceptance Criteria: ✅ <n>/<n> complete | ⚠️ <n> incomplete
+Tests: ✅ All passing | ⚠️ <n> failing | ⏭️ N/A
+Logs: ✅ No errors | ⚠️ <n> errors found | ⏭️ Skipped
 Artifacts: ✅ All present | ⚠️ Missing <x>
 
 Proposed closing comment:
@@ -140,6 +183,9 @@ Running preflight for Task #1223...
 ✅ Documentation updated
 ℹ️ No code changes requiring tests
 
+=== Application Logs ===
+⏭️ Skipped - documentation-only task
+
 === Proposed Comment ===
 ## Summary
 Created AI-first development process documentation.
@@ -160,6 +206,30 @@ Created AI-first development process documentation.
 ---
 
 Proceed with close? [yes / no / edit]
+```
+
+### Example: Errors Found in Logs
+
+**Agent:**
+```
+=== Application Logs ===
+⚠️ Found errors in application logs:
+
+  [ERROR] 2026-01-27 10:23:45 - Failed to connect to database
+  [WARN]  2026-01-27 10:23:46 - Retrying connection (attempt 2/3)
+  [ERROR] 2026-01-27 10:23:47 - Database connection timeout
+
+Fix these before opening PR? [yes / ignore / show more]
+```
+
+**User:** "ignore - these are from my local db being down, not related to code changes"
+
+**Agent:**
+```
+Noted. Will include in PR description:
+> Logs showed database connection errors - confirmed unrelated to code changes (local db was down)
+
+Proceeding with PR creation...
 ```
 
 ## Notes
