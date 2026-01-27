@@ -85,10 +85,10 @@ Go through each item:
 - [ ] TypeScript strict mode respected (no `any`, no `@ts-ignore`)
 - [ ] Functions are small and focused
 - [ ] Names are clear and descriptive
-- [ ] No obvious logic errors
+- [ ] No obvious logic errors or potential bugs
 
 **Testing:**
-- [ ] Tests added for new functionality
+- [ ] Tests added for code with logic (REQUIRED - see Approval Criteria)
 - [ ] Edge cases considered
 - [ ] Tests actually test the behavior (not just coverage)
 
@@ -102,7 +102,39 @@ Go through each item:
 - [ ] Comments explain "why" not "what"
 - [ ] API changes documented
 
-### 5. Post Review
+### 5. Approval Criteria
+
+**CRITICAL: Do not approve unless you are CERTAIN all requirements are met.**
+
+Identifying a problem and approving anyway is contradictory. When in doubt, request changes.
+
+**Approve ONLY when:**
+- All acceptance criteria from the task are verified complete
+- All checklist items pass
+- No potential bugs identified
+- No policy violations
+- Tests exist for any code with logic
+
+**Request changes when ANY of these apply:**
+- Missing tests for code with logic (functions, conditionals, loops)
+- Potential bugs identified, even if "minor"
+- Acceptance criteria unclear or unverified
+- Policy violations (even if "could be fixed later")
+- Any correctness concerns
+
+**"Non-blocking" is ONLY for:**
+- Style preferences (naming, formatting beyond linter)
+- Optional refactoring suggestions
+- "Nice to have" improvements
+
+**"Non-blocking" is NEVER for:**
+- Missing tests
+- Potential bugs
+- Logic errors
+- Policy violations
+- Correctness issues
+
+### 6. Post Review
 
 **IMPORTANT: Use `gh pr comment`, NOT `gh pr review`.**
 
@@ -145,7 +177,7 @@ zsh -ic "fj pr comment <number> --body-file /tmp/review-<number>.md"
 
 Do NOT use `gh pr review` - it doesn't work for self-reviews.
 
-### 6. Add Task Comment
+### 7. Add Task Comment
 
 **If a task ID was provided in your prompt, you MUST also add the review to the task:**
 
@@ -157,7 +189,7 @@ todu task comment <task-id> -m "## PR Review for #<pr-number>
 
 This keeps the task history complete with review feedback.
 
-### 7. Close the Tmux Window
+### 8. Close the Tmux Window
 
 **IMPORTANT: You MUST close this tmux window when done so the requesting agent knows you're finished.**
 
@@ -176,13 +208,14 @@ Or type `exit` or press `Ctrl+D` - any of these will close the window.
 ### Checklist
 - [x] PR description clear
 - [x] Code follows standards  
-- [x] Tests present (or N/A for docs)
+- [x] Tests present for code with logic
+- [x] No potential bugs identified
 - [x] No security concerns
 
 LGTM 🚀
 ```
 
-**If issues found:**
+**If issues found (missing tests, bugs, policy violations):**
 ```markdown
 ## Code Review: Changes Requested ❌
 
@@ -199,18 +232,26 @@ LGTM 🚀
 Please address these and push updates.
 ```
 
-**If minor suggestions only:**
+**If style suggestions only (NO correctness issues):**
 ```markdown
-## Code Review: Approved ✅ (with suggestions)
+## Code Review: Approved ✅
 
-### Suggestions (non-blocking)
-1. Consider doing X instead of Y
-2. Could simplify Z
+### Style Suggestions (non-blocking)
+1. Consider doing X instead of Y (style preference)
+2. Could rename Z for clarity (optional)
 
-Overall looks good. These are optional improvements.
+These are optional style improvements only. No correctness issues found.
 
 LGTM 🚀
 ```
+
+**WARNING:** Do NOT use "Approved with suggestions" if you identified:
+- Missing tests for code with logic
+- Potential bugs (even "minor" ones)
+- Policy violations
+- Any correctness concerns
+
+If you found ANY of the above, use "Changes Requested" instead.
 
 ## Things CI Can't Catch
 
