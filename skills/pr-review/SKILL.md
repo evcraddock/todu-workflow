@@ -189,16 +189,6 @@ todu task comment <task-id> -m "## PR Review for #<pr-number>
 
 This keeps the task history complete with review feedback.
 
-### 8. Close the Tmux Window
-
-**IMPORTANT: You MUST close this tmux window when done so the requesting agent knows you're finished.**
-
-```bash
-tmux kill-window
-```
-
-Or type `exit` or press `Ctrl+D` - any of these will close the window.
-
 ## Review Templates
 
 **If all good:**
@@ -272,4 +262,4 @@ Focus your review on what automation misses:
 - Acknowledge good patterns you see
 - If unsure, ask rather than assume
 - Remember: a different agent wrote this, not the human
-- **ALWAYS close the tmux window when done** (run `tmux kill-window`) so the requesting agent knows you're finished
+- **Just exit normally when done** - don't run `tmux kill-window`. The request-review skill chains a signal command after the agent, and killing the window prevents the signal from being sent. The calling agent handles cleanup.
