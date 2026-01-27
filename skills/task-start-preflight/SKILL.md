@@ -1,6 +1,6 @@
 ---
 name: task-start-preflight
-description: Prepare to work on a task. Use when user says "start task", "work on task", "begin task", "pick up task", "get started", "get started on", "let's do task", "do task", "tackle task", or any variation of starting work on a task.
+description: Prepare to work on a task. Use when user says "start task", "begin task", "pick up task", or similar.
 ---
 
 # Task Start Preflight
