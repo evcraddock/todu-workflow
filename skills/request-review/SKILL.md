@@ -125,7 +125,7 @@ Use the **tmux skill** to create a session for the review agent.
 1. If `$CODING_AGENT_CMD` is set, use it
 2. Otherwise, use your own CLI (you know what agent you're running in from your system prompt — e.g., `pi`, `claude`, etc.)
 
-#### Start the session
+#### Start the session and set up signaling
 
 ```bash
 SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.sock"
@@ -134,16 +134,22 @@ SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.so
 OUTPUT=$(./scripts/start-session.sh -s pr-review-<number> --visible)
 SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
 CHANNEL="review-done-$SESSION"
+
+# Set hook: when session closes, signal the channel
+tmux -S "$SOCKET" set-hook -t "$SESSION" session-closed \
+  "run-shell 'tmux -S $SOCKET wait-for -S $CHANNEL'"
 ```
 
-#### Send the review command with completion signal
+#### Send the review command
 
-The command MUST end with `; tmux wait-for -S` to signal completion:
+The command ends with `tmux kill-pane` to close the session. When the user closes pi (Ctrl+D or `/exit`), the pane closes and the hook signals completion:
 
 ```bash
 tmux -S "$SOCKET" send-keys -t "$SESSION" \
-  "cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG \"Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit.\"; tmux -S $SOCKET wait-for -S $CHANNEL" Enter
+  "cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG \"Review PR #<number> (Task #<task-id>) using the pr-review skill. Post review to PR and task, then exit.\"; tmux kill-pane" Enter
 ```
+
+**Note:** The user must close pi when the review is complete. The calling agent will block until then.
 
 ### 6. Wait for Review Completion
 
