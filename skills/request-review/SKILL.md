@@ -127,16 +127,14 @@ Use the **tmux skill** to create a session for the review agent.
 
 #### Start the session with the review command
 
-Generate the session name and channel first, then pass the signal command to the reviewing agent:
+Generate the channel name and start the session:
 
 ```bash
 SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.sock"
 
-# Generate session name and channel upfront
+# Use PR number for channel (simple, predictable)
 SESSION_BASE="pr-review-<number>"
-SUFFIX=$(printf '%04x' $RANDOM)
-SESSION="${SESSION_BASE}-${SUFFIX}"
-CHANNEL="review-done-$SESSION"
+CHANNEL="review-done-<number>"
 
 # Build prompt with signal command included
 SIGNAL_CMD="tmux -S $SOCKET wait-for -S $CHANNEL"
@@ -144,9 +142,11 @@ REVIEW_PROMPT="Review PR #<number> (Task #<task-id>) using the pr-review skill. 
 
 REVIEW_CMD="cd $PROJECT_PATH && $AGENT_CMD $MODEL_FLAG \"$REVIEW_PROMPT\""
 
-# Start session with command (visible or detached based on Configuration)
-# Note: We create the session name ourselves to know the channel before starting
+# Start session - script adds its own suffix to session name
 OUTPUT=$(./scripts/start-session.sh -s "$SESSION_BASE" -c "$REVIEW_CMD" --visible)
+
+# Parse actual session name from output for cleanup later
+SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
 ```
 
 The reviewing agent runs the signal command when it finishes, notifying the calling agent.
@@ -166,9 +166,11 @@ elif [ $EXIT_CODE -ne 0 ]; then
   echo "Review session ended unexpectedly"
 fi
 
-# Clean up the session
+# Clean up the session (SESSION was parsed from start-session.sh output)
 tmux -S "$SOCKET" kill-session -t "$SESSION" 2>/dev/null || true
 ```
+
+**Important:** The `$SESSION` variable must be the actual session name parsed from `start-session.sh` output, not a pre-computed name. The script always adds its own random suffix.
 
 Tell the user you're waiting:
 ```
