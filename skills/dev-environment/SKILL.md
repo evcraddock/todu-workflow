@@ -101,52 +101,82 @@ The generated Makefile includes:
 | Target | Description |
 |--------|-------------|
 | `help` | Show available commands (auto-generated from comments) |
-| `dev` | Start dev environment (idempotent - checks if already running) |
-| `dev-stop` | Stop dev environment |
+| `dev` | Start dev environment (daemonized, returns immediately) |
+| `dev-stop` | Stop dev environment (cleans up socket and stale tmux sessions) |
 | `dev-status` | Check if running (outputs "running" or "stopped") |
-| `dev-logs` | Connect to overmind logs |
+| `dev-logs` | Stream all logs (foreground, Ctrl+C to stop) |
+| `dev-tail` | Show last 100 lines of logs (non-blocking) |
 | `check` | Run linting and tests |
 | `pre-pr` | Run pre-PR checks |
 
-## Accessing Overmind Logs
+### Key Design Decisions
 
-When services are running via `make dev` (overmind), access logs using tmux commands.
+1. **Daemonized startup**: `overmind start -D` so `make dev` returns immediately
+2. **Reliable status**: Uses `overmind ps -s $(SOCKET)` instead of unreliable `pgrep`
+3. **Socket management**: Explicit `SOCKET` variable, cleaned up on stop
+4. **Stale session cleanup**: `dev-stop` kills orphaned tmux sessions
+5. **Non-blocking logs**: `dev-tail` uses tmux capture-pane for quick inspection
+6. **Streaming logs**: `dev-logs` uses `overmind echo` for continuous output
 
-### Find the overmind socket
+### Connect to Specific Service
+
+To connect to a specific service's terminal (for debugging, REPL access, etc.):
 
 ```bash
-OVERMIND_SOCKET=$(ls /tmp/overmind-*/overmind.sock 2>/dev/null | head -1)
+overmind connect -s ./.overmind.sock <service-name>
 ```
 
-### Capture logs from a service
+Where `<service-name>` matches the entry in Procfile.dev. Detach with `Ctrl+b d`.
 
-Pane names match Procfile.dev entries (`app`, `db`, `redis`, etc.):
+You can add convenience targets to the Makefile:
 
-```bash
-# Last 200 lines from app
-tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -200
+```makefile
+connect-app: ## Connect to app terminal
+	overmind connect -s $(SOCKET) app
 
-# Last 500 lines from db
-tmux -S "$OVERMIND_SOCKET" capture-pane -p -t db -S -500
+connect-db: ## Connect to db terminal
+	overmind connect -s $(SOCKET) db
 ```
 
-### Search logs
+## Accessing Overmind Logs Programmatically
+
+When services are running via `make dev` (overmind), access logs using tmux commands. The socket is at `./.overmind.sock` in the project directory.
+
+### Quick Access
 
 ```bash
-# Find errors
-tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -500 | grep -i error
-
-# Find a specific pattern (e.g., magic link)
-tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -500 | grep -i "magic\|token\|link"
-
-# Tail-like view (last 50 lines)
-tmux -S "$OVERMIND_SOCKET" capture-pane -p -t app -S -50
+# Use make targets
+make dev-tail    # Last 100 lines, non-blocking
+make dev-logs    # Stream all logs (Ctrl+C to stop)
 ```
 
-### List available panes
+### Direct tmux Access
 
 ```bash
-tmux -S "$OVERMIND_SOCKET" list-panes -a
+SOCKET="./.overmind.sock"
+
+# Capture logs from a specific service (pane names match Procfile.dev entries)
+tmux -S "$SOCKET" capture-pane -p -t app -S -200    # Last 200 lines from app
+tmux -S "$SOCKET" capture-pane -p -t db -S -500     # Last 500 lines from db
+
+# Search logs
+tmux -S "$SOCKET" capture-pane -p -t app -S -500 | grep -i error
+tmux -S "$SOCKET" capture-pane -p -t app -S -500 | grep -i "magic\|token\|link"
+
+# List available panes
+tmux -S "$SOCKET" list-panes -a
+```
+
+### For Agent Log Access
+
+When an agent needs to check logs programmatically:
+
+```bash
+# Check if dev environment is running
+if [ "$(make -s dev-status)" = "running" ]; then
+  # Capture recent logs
+  make dev-tail | grep -i error
+fi
 ```
 
 ## Notes
