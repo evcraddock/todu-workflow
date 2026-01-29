@@ -87,10 +87,16 @@ Go through each item:
 - [ ] Names are clear and descriptive
 - [ ] No obvious logic errors or potential bugs
 
-**Testing:**
-- [ ] Tests added for code with logic (REQUIRED - see Approval Criteria)
+**Testing (REQUIRED for code changes):**
+- [ ] Tests added for code with logic (functions, conditionals, loops)
 - [ ] Edge cases considered
 - [ ] Tests actually test the behavior (not just coverage)
+
+To verify tests were added, check the diff for test files:
+```bash
+gh pr diff <number> --name-only | grep -E '\.(test|spec)\.(ts|js|py|go)$'
+```
+If code was changed but no test files appear, request changes.
 
 **Security:**
 - [ ] No secrets or credentials in code

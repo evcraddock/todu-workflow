@@ -57,11 +57,36 @@ Checking acceptance criteria for Task #<id>:
 - Ask user: "This criterion is not complete. Should we complete it first, mark as blocked, or close anyway?"
 - Do not close with incomplete criteria unless explicitly approved
 
-### 3. Check Related Artifacts
+### 3. Check Tests
 
-**If code was changed:**
-- Were tests added or updated?
-- Do tests pass? (`npm test` or equivalent)
+**Skip this step if:**
+- Task is documentation-only (no code with logic)
+- Task is configuration-only (no testable behavior)
+
+**Check for new/modified test files:**
+```bash
+# Check for test files in staged or recent commits
+git diff --name-only HEAD~5 | grep -E '\.(test|spec)\.(ts|js|py|go)$' || echo "No test files changed"
+```
+
+**If code was changed but no tests added:**
+- Warn: "⚠️ Code changes detected but no test files added/modified"
+- Ask: "Add tests before closing? [yes / explain why not needed]"
+- **yes**: Stop and write tests
+- **explain**: User must provide reason (e.g., "refactor only, existing tests cover this")
+
+**If tests exist, verify they pass:**
+```bash
+npm test  # or equivalent for project
+```
+
+**Acceptable reasons to skip tests:**
+- Pure refactoring with existing test coverage
+- Configuration changes (env vars, build settings)
+- Documentation-only changes
+- Skill/template files (no runtime code)
+
+### 4. Check Other Artifacts
 
 **If behavior changed:**
 - Was documentation updated?
@@ -71,7 +96,7 @@ Checking acceptance criteria for Task #<id>:
 - Is there a merged PR for this work?
 - Or is this preparatory work before a PR?
 
-### 4. Check Application Logs
+### 5. Check Application Logs
 
 Check dev server logs for runtime errors that tests might miss.
 
@@ -112,7 +137,7 @@ make dev-tail 2>&1 | grep -iE "(error|warn|exception)" | head -20
 - Show: "✅ No errors in logs"
 - Proceed to next step
 
-### 5. Prepare Closing Comment
+### 6. Prepare Closing Comment
 
 Generate a summary comment that includes:
 
@@ -132,7 +157,7 @@ Generate a summary comment that includes:
 - <Any blockers or dependencies noted>
 ```
 
-### 6. Final Confirmation
+### 7. Final Confirmation
 
 Present summary to user:
 

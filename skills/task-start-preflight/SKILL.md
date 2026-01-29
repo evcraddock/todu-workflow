@@ -149,6 +149,9 @@ Acceptance Criteria:
 - [ ] Criterion 2
 - ...
 
+🧪 Testing: Each acceptance criterion should have a corresponding test.
+   (Skip for docs-only tasks)
+
 Plan:
 1. <Step 1>
 2. <Step 2>
@@ -156,6 +159,8 @@ Plan:
 
 Ready to proceed? [yes / modify plan]
 ```
+
+**Testing Reminder:** For non-documentation tasks, each acceptance criterion should be verified by an automated test, not just manual checking. Plan to write tests as you implement each criterion.
 
 ## After Approval
 
