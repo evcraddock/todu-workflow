@@ -38,6 +38,15 @@ Key Makefile targets:
 
 Read the Makefile to understand available commands before starting work.
 
+## Dependencies
+
+When installing packages:
+- Use latest **STABLE** versions only
+- Reject canary/beta/alpha/rc versions unless user explicitly approves
+- Verify stable version: `npm view <package> versions | grep -v '-'`
+
+Non-stable versions (canary, beta, alpha, rc) can have bugs or incomplete features. Always ask before using them.
+
 ## Task Lifecycle
 
 - **Starting**: ALWAYS run `task-start-preflight` skill first
