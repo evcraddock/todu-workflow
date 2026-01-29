@@ -114,7 +114,27 @@ fi
 **Skip for docs-only tasks:**
 - If task title/labels indicate documentation-only work, skip this check
 
-### 6. Understand Context
+### 6. Check Runtime Versions
+
+Check that runtime environments are using stable versions (not canary/beta/alpha/rc):
+
+```bash
+# Check common runtimes
+node --version 2>/dev/null | grep -qE '(-canary|-beta|-alpha|-rc)' && echo "⚠️ Node: non-stable version"
+bun --version 2>/dev/null | grep -qE '(-canary|-beta|-alpha|-rc)' && echo "⚠️ Bun: non-stable version"
+```
+
+**If non-stable version detected:**
+- Warn: "⚠️ Runtime uses non-stable version: <version>"
+- Note potential issues: "Canary/beta versions may have bugs or missing features"
+- Ask: "Continue with non-stable runtime? [yes / no]"
+
+**Why this matters:**
+- Canary builds can have breaking bugs (e.g., bun:sqlite failures)
+- Beta/RC versions may have incomplete features
+- Stable versions are tested and reliable
+
+### 7. Understand Context
 
 **Check for related files mentioned in task:**
 - If task references specific files, verify they exist
@@ -126,7 +146,7 @@ fi
 todu task show <task-id> | grep "Source URL"
 ```
 
-### 7. Establish the Plan
+### 8. Establish the Plan
 
 Summarize for the user:
 
