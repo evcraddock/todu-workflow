@@ -89,7 +89,45 @@ git status
 - Suggest creating a feature branch
 - Propose branch name: `feature/<task-id>-<short-description>`
 
-### 5. Check Dev Environment
+### 5. Check Open PRs
+
+Check for unmerged PRs before starting new work. First, detect the git host:
+
+```bash
+REMOTE_URL=$(git remote get-url origin 2>/dev/null)
+if echo "$REMOTE_URL" | grep -q "github.com"; then
+  HOST="github"
+else
+  HOST="forgejo"
+fi
+```
+
+**GitHub:**
+```bash
+gh pr list --state open --json number,title,reviewDecision,headRefName
+```
+
+**Forgejo:**
+```bash
+zsh -ic "fj pr list --state open"
+```
+
+**If approved PRs exist (not merged):**
+- Warn: "⚠️ PR #X (title) is approved but not merged"
+- Ask: "Merge it before starting new task? [yes / no / skip]"
+- If yes: merge the PR with `gh pr merge <num> --squash --delete-branch` (or `zsh -ic "fj pr merge <num>"` for Forgejo), then pull main
+- If no/skip: proceed but note the risk of confusion
+
+**If PRs awaiting review or with changes requested:**
+- Info only: "ℹ️ PR #X is awaiting review" or "ℹ️ PR #X has changes requested"
+- No blocking, just awareness
+
+**Why this matters:**
+- Approved PRs left unmerged cause confusion when features appear missing
+- Starting new work on top of unmerged changes can create conflicts
+- Keep the PR queue clean before starting fresh work
+
+### 6. Check Dev Environment
 
 If project has a Makefile with `dev-status` target:
 
@@ -114,7 +152,7 @@ fi
 **Skip for docs-only tasks:**
 - If task title/labels indicate documentation-only work, skip this check
 
-### 6. Check Runtime Versions
+### 7. Check Runtime Versions
 
 Check that runtime environments are using stable versions (not canary/beta/alpha/rc):
 
@@ -134,7 +172,7 @@ bun --version 2>/dev/null | grep -qE '(-canary|-beta|-alpha|-rc)' && echo "⚠�
 - Beta/RC versions may have incomplete features
 - Stable versions are tested and reliable
 
-### 7. Understand Context
+### 8. Understand Context
 
 **Check for related files mentioned in task:**
 - If task references specific files, verify they exist
@@ -146,7 +184,7 @@ bun --version 2>/dev/null | grep -qE '(-canary|-beta|-alpha|-rc)' && echo "⚠�
 todu task show <task-id> | grep "Source URL"
 ```
 
-### 8. Establish the Plan
+### 9. Establish the Plan
 
 Summarize for the user:
 
@@ -155,6 +193,7 @@ Summarize for the user:
 
 Task: <title>
 
+Open PRs: ✅ None | ⚠️ #X approved (not merged) | ℹ️ #X awaiting review
 Dependencies: ✅ None | ⚠️ Depends on #X (incomplete)
 Git Status: ✅ Clean | ⚠️ <n> uncommitted files
 Branch: <current-branch> | 💡 Suggest: feature/<id>-<name>
