@@ -29,6 +29,8 @@ Set up local development environment scaffolding and create a task for detailed 
 | `.env.example` | `templates/env.example` |
 | `Makefile` | `templates/Makefile` |
 
+**Re-running**: Both files are **overwritten** to keep projects in sync with current templates.
+
 ## Process
 
 ### 1. Generate .env.example
@@ -37,14 +39,18 @@ Copy from `templates/env.example`. This provides a minimal starting point.
 
 ### 2. Generate Makefile
 
-Copy from `templates/Makefile`, replacing `{check_command}` with stack-appropriate command:
+Copy `templates/Makefile` to `{localPath}/Makefile` **exactly as-is**, with only one change:
 
-| Stack | Check Command |
-|-------|---------------|
+Replace the literal string `{check_command}` with the stack-appropriate command:
+
+| Stack | Replacement |
+|-------|-------------|
 | typescript | `npm run lint && npm test` |
 | go | `golangci-lint run && go test ./...` |
 | python | `ruff check . && pytest` |
 | rust | `cargo clippy && cargo test` |
+
+**Do not** add, remove, or modify any other targets. The template provides standard dev environment scaffolding. Project-specific customization happens later when working the "Set up dev environment" task.
 
 ### 3. Check for overmind
 
@@ -60,7 +66,15 @@ If not installed, notify user:
 
 ### 4. Create Dev Environment Setup Task
 
-Create a task in the project for configuring the dev environment:
+First, check if a dev environment setup task already exists:
+
+```bash
+todu task search --project {name} --label dev-environment
+```
+
+**If task exists**: Skip task creation, but capture the task URL for output.
+
+**If no task exists**: Create a task in the project for configuring the dev environment:
 
 ```
 Title: Set up dev environment
@@ -93,6 +107,10 @@ Configure the local development environment for {name}.
 - `make check` - Run linting and tests
 - `make pre-pr` - Run pre-PR checks
 ```
+
+### Output
+
+Return `dev_task_url` - the URL to the dev environment setup task (whether created or existing). This is used by project-init to update the README.
 
 ## Makefile Targets
 

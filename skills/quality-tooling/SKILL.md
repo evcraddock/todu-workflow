@@ -96,37 +96,24 @@ Rust tests go in src/ with `#[cfg(test)]` - no separate file needed.
 ## Process
 
 1. Change to project directory: `cd {localPath}`
-2. **Check for existing configs** (see below)
-3. Read and write config files from templates
-4. Replace placeholders: `{name}`, `{owner}`, `{description}`
-5. Create scripts directory if needed: `mkdir -p scripts`
-6. Make pre-pr.sh executable: `chmod +x scripts/pre-pr.sh`
-7. For TypeScript: update package.json with scripts and devDependencies
+2. Read and write config files from templates (overwrite any existing files)
+3. Replace placeholders: `{name}`, `{owner}`, `{description}`
+4. Create scripts directory if needed: `mkdir -p scripts`
+5. Make pre-pr.sh executable: `chmod +x scripts/pre-pr.sh`
+6. For TypeScript: update package.json with scripts and devDependencies
 
-## Existing Config Detection
+## Re-running on Existing Projects
 
-Before writing any file, check if it already exists:
+All config files are **overwritten** when re-running. This ensures projects stay in sync with the current templates.
 
-```bash
-ls -la {localPath}/{config_file} 2>/dev/null
-```
+Before writing, remove any legacy config files that conflict with the new ones:
 
-**If config exists, ask the user:**
-- "Found existing {file}. Should I: (1) Overwrite, (2) Skip, (3) Show diff?"
-
-**Common existing configs to check:**
-
-| Stack | Check For |
-|-------|-----------|
-| TypeScript | `.eslintrc*`, `eslint.config.*`, `.prettierrc*`, `prettier.config.*`, `tsconfig.json`, `jest.config.*`, `vitest.config.*` |
-| Go | `.golangci.yml`, `.golangci.yaml` |
-| Python | `pyproject.toml`, `setup.py`, `setup.cfg`, `.flake8`, `ruff.toml`, `mypy.ini`, `pytest.ini` |
-| Rust | `rustfmt.toml`, `.rustfmt.toml`, `clippy.toml` |
-
-**Special case - pyproject.toml:**
-- Often contains project metadata, not just tool config
-- If exists, offer to merge tool sections rather than overwrite
-- Read existing file, add/update `[tool.pytest]`, `[tool.mypy]`, `[tool.ruff]` sections
+| Stack | Remove Legacy Files |
+|-------|---------------------|
+| TypeScript | `.eslintrc*` (replaced by `eslint.config.js`), `jest.config.*` (replaced by `vitest.config.ts`) |
+| Go | `.golangci.yaml` (standardize on `.golangci.yml`) |
+| Python | `setup.py`, `setup.cfg`, `.flake8`, `mypy.ini`, `pytest.ini` (all replaced by `pyproject.toml` and `ruff.toml`) |
+| Rust | `.rustfmt.toml` (standardize on `rustfmt.toml`) |
 
 ## Placeholders
 

@@ -19,6 +19,7 @@ After a repository has been created and cloned, use this skill to generate scaff
 - `framework` - (optional) hono, express, gin, echo, fastapi, flask, actix, etc.
 - `host` - github or forgejo (determines PR template location)
 - `localPath` - Where to write files
+- `dev_task_url` - URL to the "Set up dev environment" task (for README link)
 
 ## Files to Generate
 
@@ -38,8 +39,12 @@ After a repository has been created and cloned, use this skill to generate scaff
 2. For each file:
    - Read the appropriate template
    - Replace placeholders with actual values
-   - Write to destination using `write` tool
+   - Write to destination using `write` tool (overwrites existing files)
 3. Verify files were created
+
+## Re-running on Existing Projects
+
+All scaffold files are **overwritten** when re-running. This ensures projects stay in sync with the current templates.
 
 ## Placeholders
 
@@ -51,6 +56,7 @@ After a repository has been created and cloned, use this skill to generate scaff
 | `{framework}` | Framework name or "None" |
 | `{year}` | Current year |
 | `{author}` | From `git config user.name` |
+| `{dev_task_url}` | URL to "Set up dev environment" task |
 
 ## Verification
 

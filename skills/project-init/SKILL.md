@@ -24,18 +24,57 @@ command -v todu &>/dev/null && echo "OK: todu" || echo "MISSING: todu"
 
 ## Overview
 
-1. **Gather Info** - Use questionnaire to collect project details
-2. **Determine Location** - Check/set env vars for project directory
-3. **Create Repo** - Create remote repo, clone locally, register with todu
+0. **Detect Existing Project** - Check if re-running on existing project
+1. **Gather Info** - Use questionnaire to collect project details (skip if existing)
+2. **Determine Location** - Check/set env vars for project directory (skip if existing)
+3. **Create Repo** - Create remote repo, clone locally, register with todu (skip if existing)
 4. **Scaffold** - Generate README, LICENSE, .gitignore, AGENTS.md, docs/
 5. **Quality Tooling** - Set up linting, formatting, testing
-6. **Dev Environment** - Set up Procfile, Makefile, Docker services (optional)
+6. **Dev Environment** - Set up Procfile, Makefile, Docker services
 7. **Commit & Push** - Initial commit with all generated files
-8. **Create Task** - Create initial design task
+8. **Create Task** - Create initial design task (skip if existing)
 
 ---
 
-## Phase 1a: Gather Project Info
+## Phase 0: Detect Existing Project
+
+Apply the `project-check` skill to determine if we're re-running on an existing project.
+
+**If "Not Registered"**: This is a new project → proceed to Phase 1a.
+
+**If "Registered"**: This is an existing project. Set variables:
+
+- `name` - from project-check result
+- `host` - from project-check result (github or forgejo)
+- `localPath` - current working directory
+
+Detect stack from files:
+
+```bash
+if [ -f package.json ]; then detected_stack="typescript"
+elif [ -f go.mod ]; then detected_stack="go"
+elif [ -f pyproject.toml ]; then detected_stack="python"
+elif [ -f Cargo.toml ]; then detected_stack="rust"
+fi
+```
+
+Ask user to confirm or change:
+
+```
+Detected existing project: {name}
+Stack detected: {detected_stack}
+
+Use this stack or choose different?
+Options: {detected_stack} (detected), typescript, go, python, rust
+```
+
+→ Store as `stack`
+
+Then **skip to Phase 4** (Scaffold).
+
+---
+
+## Phase 1a: Gather Project Info (New Projects Only)
 
 Ask the user these questions sequentially. Use your agent's native prompting capability (e.g., ask a question and wait for response before proceeding to the next).
 
@@ -158,11 +197,11 @@ localPath = {baseDir}/{name}
 ### Validate
 
 ```bash
-# Check directory doesn't already exist
+# Check if directory already exists
 test -d {localPath} && echo "EXISTS" || echo "OK"
 ```
 
-If exists, ask user whether to abort or use existing directory.
+If exists, use the existing directory (this allows re-running project-init on existing projects).
 
 ---
 
@@ -180,8 +219,8 @@ Apply the `repo-create` skill with:
 |-------|--------|
 | CLI not installed | Show install instructions, abort |
 | Not authenticated | Show auth instructions, abort |
-| Repo already exists | Ask: clone existing, or abort? |
-| Directory exists | Ask: use existing, or abort? |
+| Repo already exists | Use existing repo (skip creation) |
+| Directory exists | Use existing directory (skip clone) |
 
 On success, proceed to Phase 4.
 
@@ -231,17 +270,9 @@ This generates:
 
 ---
 
-## Phase 6: Dev Environment (Optional)
+## Phase 6: Dev Environment
 
-**Skip if**: database = "none" AND services = "none" AND user confirms skipping.
-
-Ask user:
-```
-Set up dev environment (Procfile, Makefile, Docker services)?
-Options: Yes, No (skip)
-```
-
-If yes, apply the `dev-environment` skill with:
+Apply the `dev-environment` skill with:
 - `name` - from Phase 1a
 - `stack` - from Phase 1a
 - `framework` - from Phase 1a
@@ -250,10 +281,20 @@ If yes, apply the `dev-environment` skill with:
 - `localPath` - from Phase 2-3
 
 This generates:
-- Procfile.dev
-- Makefile
-- compose.yaml (if postgres or redis)
-- .env.example
+- `.env.example`
+- `Makefile`
+
+It also creates a follow-up task "Set up dev environment" for project-specific configuration (Procfile.dev, compose.yaml, etc.).
+
+Store the task URL as `dev_task_url` for use in the README and summary.
+
+### Update README with Task Link
+
+After the dev task is created, update the README to replace `{dev_task_url}` with the actual task URL:
+
+```bash
+sed -i "s|{dev_task_url}|$dev_task_url|g" README.md
+```
 
 ---
 
@@ -286,17 +327,25 @@ If push fails:
 
 ---
 
-## Phase 8: Create Design Task
+## Phase 8: Create or Update Design Task
 
-Use the `task-create` skill to create an initial task:
+First, check if a design task already exists for this project:
+
+```bash
+todu task search --project {name} --label design --format json
+```
+
+**If a design task exists**: Update its description with current context:
+
+```bash
+todu task update {task_id} --description "..."
+```
+
+**If no design task exists**: Use the `task-create` skill to create a new task.
+
+### Task Description
 
 ```
-Title: Design {name} architecture
-Project: {name}
-Priority: high
-Labels: design, architecture
-
-Description:
 Create the initial architecture design for {name}.
 
 ## Context
@@ -312,9 +361,18 @@ Create the initial architecture design for {name}.
 - [ ] Create initial implementation tasks
 ```
 
+### New Task Properties
+
+```
+Title: Design {name} architecture
+Project: {name}
+Priority: high
+Labels: design, architecture
+```
+
 ### Error Handling
 
-If task creation fails, show warning but continue (non-critical).
+If task creation/update fails, show warning but continue (non-critical).
 
 ---
 
@@ -323,29 +381,54 @@ If task creation fails, show warning but continue (non-critical).
 After all phases complete, show summary:
 
 ```
-✓ Project created successfully!
+✓ Project initialized successfully!
 
   Repository: {repoUrl}
   Local path: {localPath}
   Stack: {stack} + {framework}
 
-  Files created:
-  - README.md
-  - LICENSE
-  - .gitignore
-  - AGENTS.md
-  - docs/CONTRIBUTING.md
-  - docs/CODE_STANDARDS.md
-  - {.github or .forgejo}/pull_request_template.md
-  - {quality tooling files based on stack}
-  - {dev environment files if generated}
+  Tasks:
+  - Design task: {design_task_url}
+  - Dev environment setup: {dev_task_url}
+```
 
-  Task created: #{task_id} - Design {name} architecture
+### Next Steps
 
-  Next steps:
-  1. cd {localPath}
-  2. {install_command based on stack}
-  3. make dev
+```
+## How to Work on This Project
+
+### 1. Install Dependencies
+
+{install_command based on stack}
+
+### 2. Start the Dev Environment
+
+make dev
+
+This starts all services defined in Procfile.dev. The command returns immediately (daemonized).
+
+If make dev fails, configure the dev environment first. See: {dev_task_url}
+
+### 3. View Logs
+
+make dev-logs    # Stream all logs (Ctrl+C to stop)
+make dev-tail    # Quick peek at recent logs
+
+### 4. Run Tests and Linting
+
+make check
+
+### 5. Before Opening a PR
+
+make pre-pr
+
+### 6. Stop the Dev Environment
+
+make dev-stop
+
+### All Available Commands
+
+make help
 ```
 
 ### Install Commands by Stack
