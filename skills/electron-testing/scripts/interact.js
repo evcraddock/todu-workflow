@@ -57,8 +57,13 @@ function getFlag(name, defaultValue) {
 }
 
 function getPositional(index) {
-  // Skip: node, script, command, and any --flags before the positional
-  const args = process.argv.slice(3).filter((a) => !a.startsWith("--"));
+  // Skip: node, script, command, and any --flag value pairs
+  const raw = process.argv.slice(3);
+  const args = [];
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i].startsWith("--")) { i++; continue; } // skip flag + its value
+    args.push(raw[i]);
+  }
   return args[index];
 }
 

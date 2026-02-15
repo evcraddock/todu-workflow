@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Stop a running Electron test instance.
 #
-# Usage: ./stop.sh [--port <port>]
+# Usage: ./stop.sh [port]
+#   port    CDP port to clean up (default: 9222)
 
 PORT="${1:-9222}"
 

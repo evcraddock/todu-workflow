@@ -7,7 +7,7 @@
 #   --port <port>         CDP debugging port (default: 9222)
 #   --build-cmd <cmd>     Build command to run before launch (optional)
 #   --env KEY=VALUE       Set environment variable for Electron process (repeatable)
-#   --no-sandbox          Disable Chromium sandbox (default: enabled)
+#   --no-sandbox          Pass --no-sandbox to Chromium (disabled by default)
 #   --help                Show this help
 #
 # Environment variables are passed through to the Electron process. Use --env to set
@@ -25,7 +25,7 @@ APP_PATH=""
 ELECTRON_BIN=""
 PORT=9222
 BUILD_CMD=""
-NO_SANDBOX="--no-sandbox"
+NO_SANDBOX=""
 EXTRA_ENV=()
 
 while [[ $# -gt 0 ]]; do
