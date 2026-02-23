@@ -111,7 +111,7 @@ When CI is available and a check fails, run this failure loop:
 Expected status progression:
 
 - `local_checks=pass`
-- `ci=failed` (with failure details)
+- `ci=fail` (with failure details)
 - `local_checks=pass` (after fix)
 - `ci=pass`
 
