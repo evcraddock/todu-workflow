@@ -52,11 +52,21 @@ Non-stable versions (canary, beta, alpha, rc) can have bugs or incomplete featur
 - **Starting**: ALWAYS run `task-start-preflight` skill first
 - **Closing**: Run `task-close-preflight` skill
 
-## PR Workflow
+## PR Workflow (Mandatory Sequence)
 
-1. Create feature branch: `feat/<task-id>-<description>`
-2. Run `./scripts/pre-pr.sh` before opening PR
-3. After PR is created, use the `request-review` skill to spawn a separate agent to review the PR
+After implementation is complete, execute this exact order:
+
+1. Run `./scripts/pre-pr.sh`
+2. Push branch and open/update PR
+3. Resolve CI gate:
+   - If checks exist: wait for green
+   - If checks fail: fetch failures, fix, rerun `./scripts/pre-pr.sh`, push, re-check
+   - If checks cannot be verified automatically (e.g., Forgejo without CI integration): stop and ask the human whether to continue without a CI signal
+4. Run the `request-review` skill for independent review
+5. Report review result with explicit pipeline state
+6. Stop and wait for explicit human merge approval
+
+Do not ask "want me to...?" for required next steps.
 
 ## Conventions
 

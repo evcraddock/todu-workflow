@@ -35,11 +35,15 @@ tmux -S "$SOCKET" kill-session -t "$SESSION"
 To test the full review flow:
 
 1. Create a PR in any project
-2. Run: `request review for PR #<number>`
-3. Verify:
+2. Ensure CI gate is resolved first:
+   - If checks are available, wait for green
+   - If checks are unavailable, confirm the human continuation choice is required
+3. Run: `request review for PR #<number>`
+4. Verify:
    - Review session spawns in tmux
    - Calling agent blocks until review completes
    - Review comment is fetched and displayed
+   - Agent reports pipeline state and waits for explicit merge approval
 
 ## Automated Testing
 

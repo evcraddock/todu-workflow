@@ -7,16 +7,34 @@ description: Request a PR review from a separate agent session. Use immediately 
 
 Spawn a separate agent session in a new tmux window to review a PR. This ensures the reviewer has fresh context and no implementation bias.
 
-## When to Use
+## Position in Mandatory PR Pipeline
 
-After creating a PR and confirming CI passes, use this to request an independent review.
+This skill is **step 4** in the required post-PR sequence:
+
+1. Run `./scripts/pre-pr.sh`
+2. Push branch
+3. Resolve CI gate (green, or explicit human decision when CI cannot be verified)
+4. Run `request-review` (this skill)
+5. Report review result
+6. Stop and wait for explicit human merge approval
+
+Do not skip or reorder these steps.
+
+## Hard Rules
+
+- Do **not** run this skill before step 3 (CI gate) is resolved.
+- Do **not** phrase mandatory next steps as optional (no "want me to...?").
+- Do **not** merge a PR in this skill. Stop after reporting review status and wait for explicit human approval.
 
 ## Prerequisites
 
 - tmux installed (uses the tmux skill for session management)
-- PR must exist
-- CI should be passing (GitHub) or skipped (Forgejo — CI check optional)
-- Current directory should be the project root
+- PR exists
+- Current directory is the project root
+- CI gate must be resolved before spawning review:
+  - checks available: green required
+  - checks unavailable: explicit human decision required
+  - this skill enforces that gate in Step 3
 
 ## Host Detection
 
@@ -94,9 +112,55 @@ zsh -ic "fj pr view <number>"
 
 Verify:
 - PR exists
-- CI has passed or is passing (GitHub only — skip for Forgejo)
+- PR is open
 
-### 3. Extract Task ID
+### 3. Enforce CI Gate (Required Before Review)
+
+#### 3a) If check runs are available (GitHub)
+
+Wait for completion and require green:
+
+```bash
+gh pr checks <number> --watch
+```
+
+Expected result:
+- Success path: all checks report pass/success
+- Failure path: at least one check reports fail/error/cancelled
+
+If checks fail, run the required failure loop:
+
+```bash
+# 1) Show failing checks
+gh pr checks <number> --json name,state,link \
+  --jq '.[] | select(.state == "FAILURE" or .state == "ERROR" or .state == "CANCELLED") | "\(.name): \(.state) -> \(.link)"'
+
+# 2) Fix code locally, then rerun local gate
+./scripts/pre-pr.sh
+
+# 3) Push fix
+git push
+
+# 4) Re-wait CI
+gh pr checks <number> --watch
+```
+
+Expected status progression:
+- `ci=fail` with failing check names/links
+- `local_checks=pass` after fixes
+- `ci=pass` after re-push
+
+#### 3b) If CI cannot be verified automatically (example: Forgejo without CI integration)
+
+Do **not** assume pass/skip. Ask the human and wait for explicit choice:
+
+- Continue without CI signal
+- Wait for human CI verification
+- Stop
+
+Only proceed when the human explicitly selects one.
+
+### 4. Extract Task ID
 
 Parse the task ID from the PR body:
 
@@ -110,13 +174,13 @@ gh pr view <number> --json body --jq '.body' | grep -oP 'Task:?\s*#?\K\d+' | hea
 zsh -ic "fj pr view <number>" | grep -oP 'Task:?\s*#?\K\d+' | head -1
 ```
 
-### 4. Get Project Path
+### 5. Get Project Path
 
 ```bash
 PROJECT_PATH=$(pwd)
 ```
 
-### 5. Spawn Review Session
+### 6. Spawn Review Session
 
 Use the **tmux skill** to create a session for the review agent.
 
@@ -151,7 +215,7 @@ SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^
 
 The reviewing agent runs the signal command when it finishes, notifying the calling agent.
 
-### 6. Wait for Review Completion
+### 7. Wait for Review Completion
 
 Block until the review agent finishes:
 
@@ -177,7 +241,7 @@ Tell the user you're waiting:
 Waiting for review to complete...
 ```
 
-### 7. Check Review Results
+### 8. Check Review Results and Stop at Merge Gate
 
 After the wait completes, fetch the review comment:
 
@@ -191,9 +255,30 @@ gh pr view <number> --json comments --jq '.comments[-1].body'
 zsh -ic "fj pr view <number> comments" | tail -50
 ```
 
-Report the review findings to the user and ask how to proceed:
-- If approved: offer to merge
-- If changes requested: show what needs fixing
+Report the review findings and handle by outcome:
+- If approved: report approval and wait for explicit human merge approval
+- If warnings: list warnings clearly and **fix them by default**, then re-run the mandatory pipeline from local checks
+  - If the human explicitly says to ignore/waive warnings, skip fixes and proceed to merge approval gate
+- If changes requested: report blocking issues, fix them, then re-run the mandatory pipeline from local checks
+
+## Agent Output Contract (Required)
+
+Use this status block when reporting progress:
+
+```text
+PR Pipeline Status
+- local_checks: pass|fail
+- push: done|pending
+- ci: pass|fail|unavailable-needs-human-decision
+- review: pending|approved|warnings|changes-requested
+- merge_approval: waiting-human|approved
+```
+
+Rules:
+- Do not skip fields
+- Do not phrase required next steps as optional
+- If `review=warnings`, fix warnings by default; proceed without fixes only after explicit human waiver ("ignore warnings")
+- Never merge without explicit human approval
 
 ## Example Flow
 
@@ -204,6 +289,8 @@ Report the review findings to the user and ask how to proceed:
 Detecting host... GitHub
 Checking PR #17...
 ✓ PR exists: "docs: add README with project overview"
+
+CI gate: waiting for checks...
 ✓ CI passed
 ✓ Task ID: #1232
 
@@ -215,12 +302,22 @@ Waiting for review to complete...
 
 *[Review agent runs in visible tmux window. User can watch.]*
 
-**Agent (Forgejo):**
+**Agent (Forgejo without CI checks):**
 ```
 Detecting host... Forgejo
 Checking PR #17...
 ✓ PR exists: "docs: add README with project overview"
-- CI check skipped (Forgejo)
+
+CI status cannot be verified automatically on this host.
+Choose how to proceed:
+1) Continue without CI signal
+2) Wait for your manual CI verification
+3) Stop
+```
+
+After user chooses 1:
+```
+Proceeding without CI signal (explicit human decision).
 ✓ Task ID: #1232
 
 Spawning review session (using tmux skill)...
@@ -229,25 +326,41 @@ Opened visible session 'pr-review-17-a3f9'
 Waiting for review to complete...
 ```
 
-*[Review agent runs in visible tmux window. User can watch.]*
-
+After review (approved):
 ```
 Review complete.
 
-Fetching review comment...
-
 ## Code Review: Approved ✅
 
-### Checklist
-- [x] PR description clear
-- [x] Code follows standards
-- [x] No security concerns
+PR Pipeline Status
+- local_checks: pass
+- push: done
+- ci: unavailable-needs-human-decision (human chose continue)
+- review: approved
+- merge_approval: waiting-human
 
-LGTM 🚀
+Waiting for your explicit merge approval.
+```
 
----
+After review (warnings):
+```
+Review complete.
 
-Review passed. Merge the PR? [yes/no]
+## Code Review: Warnings ⚠️
+
+Warnings:
+1. docs/WORKFLOW.md:120 - Wording is ambiguous around CI gate fallback.
+2. skills/request-review/SKILL.md:260 - Add explicit retry limit guidance.
+
+PR Pipeline Status
+- local_checks: pass
+- push: done
+- ci: pass
+- review: warnings
+- merge_approval: waiting-human
+
+Default action is to fix warnings before merge. I will proceed with fixes now.
+If you want to waive warnings and merge anyway, explicitly say "ignore warnings".
 ```
 
 ## Notes
@@ -257,5 +370,4 @@ Review passed. Merge the PR? [yes/no]
 - Review is posted as both a PR comment and a task comment
 - Uses `tmux wait-for` signaling to know when review completes (no polling)
 - 10 minute timeout prevents hanging if session crashes
-- After review, check the comment and decide whether to merge
 - Set `CODING_AGENT_CMD` env var to override the agent CLI (e.g., `export CODING_AGENT_CMD=claude`)

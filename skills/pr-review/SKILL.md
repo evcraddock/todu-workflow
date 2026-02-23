@@ -108,32 +108,36 @@ If code was changed but no test files appear, request changes.
 - [ ] Comments explain "why" not "what"
 - [ ] API changes documented
 
-### 5. Approval Criteria
+### 5. Review Outcomes and Approval Criteria
 
 **CRITICAL: Do not approve unless you are CERTAIN all requirements are met.**
 
 Identifying a problem and approving anyway is contradictory. When in doubt, request changes.
 
-**Approve ONLY when:**
-- All acceptance criteria from the task are verified complete
-- All checklist items pass
-- No potential bugs identified
-- No policy violations
-- Tests exist for any code with logic
+Use exactly one outcome:
 
-**Request changes when ANY of these apply:**
+1. **Approved ✅**
+   - All acceptance criteria verified complete
+   - All checklist items pass
+   - No correctness or policy concerns
+
+2. **Warnings ⚠️ (actionable, default-fix before merge)**
+   - Not a correctness failure, but still worth fixing before merge by default
+   - Human may explicitly waive warnings and merge anyway
+   - Examples: maintainability concerns, confusing naming, weak docs clarity, missing non-critical refactors
+   - Warnings MUST be listed clearly and specifically (file/line when possible)
+
+3. **Changes Requested ❌**
+   - Must be fixed before merge
+
+**Use Changes Requested when ANY of these apply:**
 - Missing tests for code with logic (functions, conditionals, loops)
 - Potential bugs identified, even if "minor"
 - Acceptance criteria unclear or unverified
 - Policy violations (even if "could be fixed later")
 - Any correctness concerns
 
-**"Non-blocking" is ONLY for:**
-- Style preferences (naming, formatting beyond linter)
-- Optional refactoring suggestions
-- "Nice to have" improvements
-
-**"Non-blocking" is NEVER for:**
+**Warnings ⚠️ are NEVER for:**
 - Missing tests
 - Potential bugs
 - Logic errors
@@ -148,7 +152,7 @@ Write your review to a temp file for proper markdown formatting:
 
 ```bash
 cat > /tmp/review-<number>.md << 'EOF'
-## Code Review: [Approved ✅ | Changes Requested ❌]
+## Code Review: [Approved ✅ | Warnings ⚠️ | Changes Requested ❌]
 
 ### Summary
 Brief summary of what you reviewed.
@@ -157,15 +161,15 @@ Brief summary of what you reviewed.
 - [x] Item passed
 - [ ] Item failed - reason
 
-### Issues (if any)
+### Issues (blocking, if any)
 1. **file.ts:42** - Description
 2. **file.ts:87** - Description
 
-### Suggestions (optional)
-- Non-blocking improvement ideas
+### Warnings (default-fix unless human waives)
+1. **file.ts:120** - Description
 
 ### Verdict
-LGTM / Please address the issues above
+LGTM / Fix warnings before merge (or human may explicitly waive) / Please address blocking issues above
 EOF
 ```
 
@@ -228,20 +232,21 @@ LGTM 🚀
 Please address these and push updates.
 ```
 
-**If style suggestions only (NO correctness issues):**
+**If warnings exist (NO correctness issues):**
 ```markdown
-## Code Review: Approved ✅
+## Code Review: Warnings ⚠️
 
-### Style Suggestions (non-blocking)
-1. Consider doing X instead of Y (style preference)
-2. Could rename Z for clarity (optional)
+### Warnings (default-fix unless human waives)
+1. **[File:Line]** Description of concern
+   - Why this matters
+   - Suggested follow-up fix
+2. **[File:Line]** Description of concern
 
-These are optional style improvements only. No correctness issues found.
-
-LGTM 🚀
+Default action: fix these warnings before merge.
+Human may explicitly waive and merge anyway.
 ```
 
-**WARNING:** Do NOT use "Approved with suggestions" if you identified:
+**WARNING:** Do NOT classify as Warnings if you identified:
 - Missing tests for code with logic
 - Potential bugs (even "minor" ones)
 - Policy violations
