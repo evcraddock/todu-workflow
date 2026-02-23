@@ -55,28 +55,83 @@ Use individual skills to add specific capabilities:
 → Confirms ready to close
 ```
 
-### 4. Create Pull Request
+### 4. Mandatory Post-PR Pipeline (Required Sequence)
 
-```bash
-git push -u origin feat/1234-description
-gh pr create --title "feat: description" --body "Task: #1234"
+After implementation is complete, agents MUST execute these steps in order.
+Do not treat these as optional, and do not ask "want me to...?" when the next step is required.
+
+1. **Run local gate**
+
+   ```bash
+   ./scripts/pre-pr.sh
+   ```
+
+2. **Push branch and open/update PR**
+
+   ```bash
+   git push -u origin feat/1234-description
+   gh pr create --title "feat: description" --body "Task: #1234"
+   ```
+
+3. **Enforce CI gate before review request**
+   - If CI check runs are available: wait until checks complete and are green.
+   - If CI fails: follow the required failure path (below), then re-push and re-check.
+   - If CI status is not available on the host (for example, local Forgejo without CI integration): **stop and ask the human how to proceed**.
+
+4. **Request independent review**
+
+   ```
+   "Request review for this PR"
+   → Triggers request-review skill
+   → Spawns separate agent session to review
+   → Reviewer uses pr-review skill
+   ```
+
+5. **Report review result to human**
+   - Summarize whether review is approved, warnings, or changes requested.
+   - If warnings are present, list them explicitly and fix them by default, then return to step 1.
+   - Human may explicitly waive warnings ("ignore warnings") and proceed without fixing.
+   - If changes are requested, fix and return to step 1.
+
+6. **Stop and wait for explicit human merge approval**
+   - Never merge automatically.
+   - Merge only after explicit human approval ("merge", "approved", "LGTM", etc.).
+
+### 5. CI Failure Path (Required)
+
+When CI is available and a check fails, run this failure loop:
+
+1. Fetch failing checks/logs.
+2. Explain what failed.
+3. Fix the issue.
+4. Re-run `./scripts/pre-pr.sh`.
+5. Push fixes.
+6. Wait for CI to finish green.
+
+Expected status progression:
+
+- `local_checks=pass`
+- `ci=failed` (with failure details)
+- `local_checks=pass` (after fix)
+- `ci=pass`
+
+### 6. Agent Output Contract (Required)
+
+At each gate, report state explicitly in this format:
+
+```text
+PR Pipeline Status
+- local_checks: pass|fail
+- push: done|pending
+- ci: pass|fail|unavailable-needs-human-decision
+- review: pending|approved|warnings|changes-requested
+- merge_approval: waiting-human|approved
 ```
 
-### 5. Request Review
-
-```
-"Request review for this PR"
-→ Triggers request-review skill
-→ Spawns separate agent session to review
-→ Reviewer uses pr-review skill
-```
-
-### 6. Address Feedback & Merge
-
-- Address review comments
-- Push fixes
-- Get approval
-- Squash and merge
+Rules:
+- Do not skip fields.
+- Do not present required next steps as optional questions.
+- If `ci=unavailable-needs-human-decision`, stop and ask the human before review request.
 
 ### 7. Close Task
 
@@ -113,7 +168,10 @@ gh pr create --title "feat: description" --body "Task: #1234"
 │  └─────────────┘                                             │
 │         │                                                    │
 │         ▼                                                    │
-│  task-close-preflight ───► Create PR                         │
+│  task-close-preflight ───► Create/Update PR                  │
+│                                  │                           │
+│                                  ▼                           │
+│                           CI gate (required)                 │
 │                                  │                           │
 │                                  ▼                           │
 │                          request-review                      │
@@ -122,7 +180,7 @@ gh pr create --title "feat: description" --body "Task: #1234"
 │                          pr-review (other agent)             │
 │                                  │                           │
 │                                  ▼                           │
-│                          Merge & close task                  │
+│                  Wait for human merge approval (required)    │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```

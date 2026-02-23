@@ -11,6 +11,14 @@ Run these checks before starting work on any task to ensure proper context and s
 
 Before beginning work on a task, run this preflight. Ensures you understand the task, have a clean environment, and follow project conventions.
 
+## Execution Contract (Required)
+
+- You MUST run steps 1-9 in order for new task starts (unless an explicit skip condition applies).
+- Step 9 output is mandatory and MUST use the preflight summary template with all sections present.
+- If data is missing, show `N/A` instead of omitting a section.
+- Do not start implementation before showing Step 9 and receiving user confirmation.
+- Do not replace the template with a free-form summary.
+
 ## Preflight Steps
 
 ### 1. Load Task Details
@@ -184,32 +192,38 @@ bun --version 2>/dev/null | grep -qE '(-canary|-beta|-alpha|-rc)' && echo "⚠�
 todu task show <task-id> | grep "Source URL"
 ```
 
-### 9. Establish the Plan
+### 9. Establish the Plan (Mandatory Output)
 
-Summarize for the user:
+Before any implementation work, output the following template with **all sections present**.
 
-```
+Rules:
+- Keep section headings exactly as shown.
+- Fill every line (use `N/A` if unavailable).
+- Do not omit Open PRs, Project Requirements, Acceptance Criteria, Testing, or Plan.
+- End with `Ready to proceed? [yes / modify plan]` and wait for user response.
+
+```text
 === Task Start Preflight: Task #<id> ===
 
 Task: <title>
 
-Open PRs: ✅ None | ⚠️ #X approved (not merged) | ℹ️ #X awaiting review
-Dependencies: ✅ None | ⚠️ Depends on #X (incomplete)
-Git Status: ✅ Clean | ⚠️ <n> uncommitted files
-Branch: <current-branch> | 💡 Suggest: feature/<id>-<name>
+Open PRs: ✅ None | ⚠️ #X approved (not merged) | ℹ️ #X awaiting review | N/A
+Dependencies: ✅ None | ⚠️ Depends on #X (incomplete) | N/A
+Git Status: ✅ Clean | ⚠️ <n> uncommitted files | N/A
+Branch: <current-branch> | 💡 Suggest: feature/<id>-<name> | N/A
 Dev Environment: ✅ Running | ⚠️ Stopped | ⏭️ N/A
 
 Project Requirements:
-- <relevant guidelines from CONTRIBUTING.md>
-- <relevant standards from CODE_STANDARDS.md>
+- <relevant guideline 1> | N/A
+- <relevant guideline 2> | N/A
 
 Acceptance Criteria:
 - [ ] Criterion 1
 - [ ] Criterion 2
 - ...
 
-🧪 Testing: Each acceptance criterion should have a corresponding test.
-   (Skip for docs-only tasks)
+🧪 Testing: Each acceptance criterion should have a corresponding automated test.
+   (Use "N/A - docs-only task" when appropriate)
 
 Plan:
 1. <Step 1>
@@ -219,7 +233,7 @@ Plan:
 Ready to proceed? [yes / modify plan]
 ```
 
-**Testing Reminder:** For non-documentation tasks, each acceptance criterion should be verified by an automated test, not just manual checking. Plan to write tests as you implement each criterion.
+**Testing Reminder:** For non-documentation tasks, each acceptance criterion should be verified by an automated test, not just manual checking. Plan tests explicitly in the Plan section.
 
 ## After Approval
 
@@ -298,11 +312,13 @@ Ready to proceed? [yes / modify plan]
 
 ## When to Skip
 
-Some checks can be skipped:
+Some checks can be skipped, but Step 9 output is still required:
 
-- **Continuation of prior work**: If resuming work in same session, skip full preflight
-- **Trivial tasks**: For very small tasks, abbreviated preflight is okay
-- **No project docs**: If project has no CONTRIBUTING.md, just note it and proceed
+- **Continuation of prior work**: If resuming work in same session, abbreviated preflight is okay
+- **Trivial tasks**: Abbreviated preflight is okay
+- **No project docs**: If project has no CONTRIBUTING.md/CODE_STANDARDS.md, mark requirements as `N/A`
+
+Even for abbreviated preflights, you MUST output the Step 9 template and wait for confirmation.
 
 ## Notes
 

@@ -44,15 +44,44 @@ Before opening a PR:
 
 Do not open a PR if this fails.
 
-### 5. Open PR
+### 5. Push and Open PR
 
-Push and create PR with clear description linking to the task.
+Push branch and create a PR with a clear description linking to the task.
 
-### 6. Review and Merge
+### 6. Resolve CI Gate (Required)
 
-- CI must pass
-- Address review feedback
-- Squash and merge after approval
+- If CI checks are available, wait for completion and green status before requesting review.
+- If CI fails: fetch failing checks/logs, fix, rerun `./scripts/pre-pr.sh`, push, and wait again.
+- If CI status cannot be verified automatically (for example, Forgejo without CI integration): stop and ask the human whether to continue without a CI signal.
+
+### 7. Request Independent Review (Required)
+
+After the CI gate is resolved, run the `request-review` workflow so another agent performs review.
+
+### 8. Report Review Result and Handle Warnings (Required)
+
+Report pipeline state explicitly:
+
+```text
+PR Pipeline Status
+- local_checks: pass|fail
+- push: done|pending
+- ci: pass|fail|unavailable-needs-human-decision
+- review: pending|approved|warnings|changes-requested
+- merge_approval: waiting-human|approved
+```
+
+Warning policy:
+- If `review=warnings`, list warnings clearly and fix them by default before merge.
+- Human can explicitly waive warnings (e.g., "ignore warnings") and proceed.
+
+Do not phrase required next steps as optional (no "want me to...?").
+
+### 9. Merge and Close Task
+
+- Merge only after explicit human approval.
+- Never auto-merge.
+- Close the task after merge is complete.
 
 ## When Stuck
 

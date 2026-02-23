@@ -187,6 +187,44 @@ todu task close <id>
 todu task comment <id> -m "<closing comment>" --format json
 ```
 
+Then immediately suggest next work using `todu`.
+
+### Next Task Suggestions (Required)
+
+1. Get the task's project ID from `todu task show <id>`.
+2. Query remaining **active** tasks in this project by priority:
+
+```bash
+todu task list --project <project-id> --status active --priority high
+todu task list --project <project-id> --status active --priority medium
+todu task list --project <project-id> --status active --priority low
+```
+
+3. Build a combined shortlist in this strict order:
+   - High priority first
+   - Then medium
+   - Then low
+4. Show at most 5 tasks.
+5. If at least one task is listed, ask whether to pick up the first task now.
+
+**Output format:**
+
+```text
+Next up (top 5):
+1. #<id> <title> [high|medium|low]
+2. ...
+
+Pick up #<first-id> now? [yes / no]
+```
+
+If user says yes, run `task-start-preflight` for that task.
+
+If no active tasks remain in the project, send:
+
+```text
+🎉 Congratulations — no active tasks left in this project. You're a badass.
+```
+
 ## Example Flow
 
 **User:** "Close task 1223"
@@ -231,6 +269,28 @@ Created AI-first development process documentation.
 ---
 
 Proceed with close? [yes / no / edit]
+```
+
+**User:** "yes"
+
+**Agent:**
+```text
+Task #1223 closed.
+
+Next up (top 5):
+1. #1301 Add CI pipeline status gate to request-review [high]
+2. #1298 Add integration tests for task-start-preflight [high]
+3. #1277 Improve PR review severity docs [medium]
+4. #1264 Add examples for project-init questionnaire [medium]
+5. #1214 End-to-end workflow validation task [low]
+
+Pick up #1301 now? [yes / no]
+```
+
+If none remain:
+
+```text
+🎉 Congratulations — no active tasks left in this project. You're a badass.
 ```
 
 ### Example: Errors Found in Logs
