@@ -126,7 +126,7 @@ CHANNEL="review-done-<number>"
 Start session (respect effective visibility):
 ```bash
 # VISIBILITY_FLAG is --visible or --detached from config precedence
-OUTPUT=$(./scripts/start-session.sh -s "$SESSION_BASE" -c "$REVIEW_CMD" $VISIBILITY_FLAG)
+OUTPUT=$(skills/tmux/scripts/start-session.sh -s "$SESSION_BASE" -c "$REVIEW_CMD" $VISIBILITY_FLAG)
 SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
 ```
 
