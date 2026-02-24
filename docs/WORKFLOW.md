@@ -76,7 +76,9 @@ Do not treat these as optional, and do not ask "want me to...?" when the next st
 3. **Enforce CI gate before review request**
    - If CI check runs are available: wait until checks complete and are green.
    - If CI fails: follow the required failure path (below), then re-push and re-check.
-   - If CI status is not available on the host (for example, local Forgejo without CI integration): **stop and ask the human how to proceed**.
+   - If CI status is not available on the host (for example, local Forgejo without CI integration):
+     - apply a documented standing policy (continue / wait / stop), or
+     - ask the human how to proceed if no standing policy exists.
 
 4. **Request independent review**
 
@@ -131,7 +133,7 @@ PR Pipeline Status
 Rules:
 - Do not skip fields.
 - Do not present required next steps as optional questions.
-- If `ci=unavailable-needs-human-decision`, stop and ask the human before review request.
+- If `ci=unavailable-needs-human-decision`, either apply a documented standing policy or ask the human before review request.
 
 ### 7. Close Task
 
