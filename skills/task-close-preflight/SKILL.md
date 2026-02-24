@@ -11,6 +11,22 @@ Run these checks before closing any task to ensure work is complete.
 
 Before closing a task, run this preflight. Do not close until all checks pass or issues are acknowledged.
 
+## Autonomy Thresholds (Required)
+
+Default behavior for this preflight is **act without prompting** for deterministic, reversible checks.
+
+**Auto-continue (no prompt):**
+- Documentation-only/config-only skip paths
+- Missing optional local setup needed for log checks (for example, no `Makefile`/`dev-status`)
+- Dev server not running (skip log inspection and record it)
+
+**Prompt required (human decision gate):**
+- Closing with incomplete acceptance criteria
+- Overriding failing quality gates (for example, missing tests or unresolved runtime errors)
+- Irreversible/destructive actions
+
+Do not ask yes/no questions for routine status reporting.
+
 ## Preflight Steps
 
 ### 1. Check Git Status
@@ -25,10 +41,11 @@ git status
 - Staged but uncommitted changes
 
 **If issues found:**
-- List the files
-- Ask user: "These files are uncommitted. Should I commit them, or are they unrelated to this task?"
-- Commit related files before proceeding
-- Note unrelated changes in closing comment
+- List the files.
+- If relation to the task is obvious, proceed with the obvious path and report it.
+- If relation is unclear, ask: "These uncommitted changes may conflict with closing this task. Should I commit them now, or treat them as unrelated?"
+- Commit related files before proceeding.
+- Note unrelated changes in closing comment.
 
 ### 2. Verify Acceptance Criteria
 
@@ -71,9 +88,9 @@ git diff --name-only HEAD~5 | grep -E '\.(test|spec)\.(ts|js|py|go)$' || echo "N
 
 **If code was changed but no tests added:**
 - Warn: "⚠️ Code changes detected but no test files added/modified"
-- Ask: "Add tests before closing? [yes / explain why not needed]"
-- **yes**: Stop and write tests
-- **explain**: User must provide reason (e.g., "refactor only, existing tests cover this")
+- Default action: stop preflight and require one of the following before closing:
+  1. Add tests, or
+  2. Provide explicit human-approved rationale for why tests are not needed (for example, "refactor only, existing tests cover this").
 
 **If tests exist, verify they pass:**
 ```bash
@@ -115,10 +132,9 @@ fi
 ```
 
 **If dev server not running:**
-- Warn: "⚠️ Dev server not running - cannot check logs"
-- Ask: "Start dev server to check logs? [yes / skip]"
-- If yes: run `make dev`, wait for startup, then check logs
-- If skip: note in closing comment that logs were not checked
+- Warn: "⚠️ Dev server not running - skipping log check"
+- Default action: continue without starting dev server.
+- Note in closing comment that logs were not checked.
 
 **Check for errors in logs:**
 ```bash
@@ -127,11 +143,9 @@ make dev-tail 2>&1 | grep -iE "(error|warn|exception)" | head -20
 
 **If errors found:**
 - Warn: "⚠️ Found errors in application logs:"
-- Show the matching log lines (up to 20)
-- Ask: "Fix these before opening PR? [yes / ignore / show more]"
-  - **yes**: Stop and let user fix the issues
-  - **ignore**: Require explanation to include in PR description
-  - **show more**: Run `make dev-logs` or show additional context
+- Show the matching log lines (up to 20).
+- Default action: stop preflight and fix issues before close.
+- Prompt only for explicit override. If user wants to proceed anyway, require explanation to include in PR/task notes.
 
 **If no errors:**
 - Show: "✅ No errors in logs"
@@ -304,22 +318,24 @@ If none remain:
   [WARN]  2026-01-27 10:23:46 - Retrying connection (attempt 2/3)
   [ERROR] 2026-01-27 10:23:47 - Database connection timeout
 
-Fix these before opening PR? [yes / ignore / show more]
+Default action: stop preflight and fix these before close.
+If you want to override and proceed anyway, provide explicit rationale to include in PR/task notes.
 ```
 
-**User:** "ignore - these are from my local db being down, not related to code changes"
+**User:** "override - these are from my local db being down, not related to code changes"
 
 **Agent:**
 ```
-Noted. Will include in PR description:
+Recorded override rationale and including it in PR/task notes:
 > Logs showed database connection errors - confirmed unrelated to code changes (local db was down)
 
-Proceeding with PR creation...
+Continuing preflight with human-approved override.
 ```
 
 ## Notes
 
 - Always run preflight, even for small tasks
-- Err on the side of asking rather than assuming
+- Default to autonomous progress for reversible, deterministic checks
+- Ask only at ambiguity, irreversible actions, or explicit policy override gates
 - Blocked criteria are okay if noted in comment
 - The goal is quality, not bureaucracy
