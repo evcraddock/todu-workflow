@@ -19,6 +19,23 @@ Before beginning work on a task, run this preflight. Ensures you understand the 
 - Do not start implementation before showing Step 9 and receiving user confirmation.
 - Do not replace the template with a free-form summary.
 
+## Autonomy Thresholds (Required)
+
+Default behavior for this preflight is **act without prompting** for deterministic, reversible checks.
+
+**Auto-continue (no prompt):**
+- Missing optional local setup (for example, no `Makefile`/`dev-status` target)
+- Dev environment is stopped
+- Runtime is non-stable (warn and continue)
+- Informational PR states (awaiting review / changes requested)
+
+**Prompt required (human decision gate):**
+- Intent is ambiguous (for example, unclear whether uncommitted files belong to this task)
+- Irreversible/destructive actions would be taken
+- Policy gates require explicit approval (for example, merging an approved PR before starting new work)
+
+Do not ask yes/no questions for routine reporting steps.
+
 ## Preflight Steps
 
 ### 1. Load Task Details
@@ -90,8 +107,9 @@ git status
 - Untracked files
 
 **If issues found:**
-- List the files
-- Ask: "There are uncommitted changes. Should I stash them, commit them, or are they related to this task?"
+- List the files.
+- If relation to the task is obvious, proceed with the obvious path and report it.
+- If relation is unclear, ask: "These uncommitted changes may conflict with this task. Should I stash them, commit them, or continue as-is?"
 
 **If project requires PRs and on main:**
 - Suggest creating a feature branch
@@ -147,9 +165,9 @@ fi
 ```
 
 **If stopped:**
-- Ask: "Dev environment is stopped. Start it? [yes / no / skip]"
-- If yes, run `make dev`
-- If no or skip, note it and proceed
+- Do not prompt.
+- Default action: continue preflight without starting the dev environment.
+- Note in preflight summary: "Dev environment stopped (not required for preflight)."
 
 **If running:**
 - Note: "Dev environment is running ✓"
@@ -173,7 +191,8 @@ bun --version 2>/dev/null | grep -qE '(-canary|-beta|-alpha|-rc)' && echo "⚠�
 **If non-stable version detected:**
 - Warn: "⚠️ Runtime uses non-stable version: <version>"
 - Note potential issues: "Canary/beta versions may have bugs or missing features"
-- Ask: "Continue with non-stable runtime? [yes / no]"
+- Default action: continue and record risk in the preflight summary.
+- Prompt only if project policy explicitly requires stable runtime for this task.
 
 **Why this matters:**
 - Canary builds can have breaking bugs (e.g., bun:sqlite failures)
@@ -323,6 +342,7 @@ Even for abbreviated preflights, you MUST output the Step 9 template and wait fo
 ## Notes
 
 - Always run preflight when starting a new task
-- The goal is context and clarity, not bureaucracy
+- Default to autonomous progress for reversible, deterministic checks
+- Ask only at ambiguity, irreversible actions, or explicit policy gates
 - If dependencies are incomplete, get explicit approval to proceed
 - Feature branches keep main clean and enable proper PR review
