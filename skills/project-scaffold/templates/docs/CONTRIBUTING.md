@@ -52,7 +52,7 @@ Push branch and create a PR with a clear description linking to the task.
 
 - If CI checks are available, wait for completion and green status before requesting review.
 - If CI fails: fetch failing checks/logs, fix, rerun `./scripts/pre-pr.sh`, push, and wait again.
-- If CI status cannot be verified automatically (for example, Forgejo without CI integration): stop and ask the human whether to continue without a CI signal.
+- If CI status cannot be verified automatically (for example, Forgejo without CI integration): apply a documented standing policy (continue / wait / stop), or ask the human if no standing policy exists.
 
 ### 7. Request Independent Review (Required)
 

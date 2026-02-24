@@ -54,13 +54,14 @@ fi
 
 ## Configuration Precedence
 
-Use this precedence for both model and visibility:
+Use this precedence for model, visibility, and CI-unavailable behavior:
 
 `user request > project AGENTS.md preference > default`
 
 Defaults:
 - model: omit `--model` (agent default)
 - visibility: `--visible`
+- ci-unavailable behavior: ask human (unless a standing policy is documented in AGENTS.md)
 
 ## Required Procedure
 
@@ -87,9 +88,15 @@ gh pr checks <number> --watch
 - Require green before proceeding.
 - If failed: show failures, fix, rerun `./scripts/pre-pr.sh`, push, re-wait.
 
-If CI cannot be verified automatically:
-- Stop and ask human to choose: continue without CI signal / wait for manual verification / stop.
-- Proceed only after explicit human decision.
+If CI cannot be verified automatically, resolve using this order:
+1. Current user instruction for this PR (continue / wait / stop)
+2. Standing policy from AGENTS.md
+3. Ask human (only if neither 1 nor 2 exists)
+
+Accepted actions:
+- **continue**: proceed without CI signal and report `ci: unavailable-needs-human-decision` with note that standing/explicit human policy was applied.
+- **wait**: pause until human confirms manual CI verification.
+- **stop**: stop the workflow.
 
 ### 3) Gather Context
 
@@ -203,6 +210,7 @@ PR Pipeline Status
 Rules:
 - Do not skip fields.
 - Do not phrase required next steps as optional.
+- If `ci=unavailable-needs-human-decision`, either apply a documented standing policy or obtain explicit per-PR human decision before review starts.
 - Do not report completion while `review_wait` or `review_session_cleanup` is `pending|fail`.
 - Never merge without explicit human approval.
 
