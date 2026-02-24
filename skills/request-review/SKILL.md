@@ -25,6 +25,7 @@ Do not skip or reorder these steps.
 - Do **not** run this skill before step 3 (CI gate) is resolved.
 - Do **not** phrase mandatory next steps as optional (no "want me to...?").
 - Do **not** merge a PR in this skill. Stop after reporting review status and wait for explicit human approval.
+- Do **not** report review completion until reviewer tmux session cleanup is verified (`kill-session` executed and session absence confirmed).
 
 ## Prerequisites
 
@@ -222,19 +223,38 @@ Block until the review agent finishes:
 ```bash
 # Wait up to 10 minutes for review to complete
 timeout 600 tmux -S "$SOCKET" wait-for "$CHANNEL"
-EXIT_CODE=$?
+WAIT_EXIT=$?
 
-if [ $EXIT_CODE -eq 124 ]; then
+if [ $WAIT_EXIT -eq 124 ]; then
   echo "Review timed out after 10 minutes"
-elif [ $EXIT_CODE -ne 0 ]; then
+elif [ $WAIT_EXIT -ne 0 ]; then
   echo "Review session ended unexpectedly"
 fi
 
-# Clean up the session (SESSION was parsed from start-session.sh output)
-tmux -S "$SOCKET" kill-session -t "$SESSION" 2>/dev/null || true
+# Cleanup is mandatory. Do not report completion until verified.
+tmux -S "$SOCKET" kill-session -t "$SESSION"
+KILL_EXIT=$?
+
+LIST_OUTPUT=$(tmux -S "$SOCKET" list-sessions 2>&1)
+if [ $KILL_EXIT -ne 0 ] && ! echo "$LIST_OUTPUT" | grep -q "no server running"; then
+  echo "Failed to close review session: $SESSION"
+  exit 1
+fi
+
+if echo "$LIST_OUTPUT" | grep -Fq "$SESSION:"; then
+  echo "Cleanup verification failed: session still open ($SESSION)"
+  exit 1
+fi
+
+if [ $WAIT_EXIT -ne 0 ]; then
+  echo "Review did not complete successfully"
+  exit 1
+fi
 ```
 
 **Important:** The `$SESSION` variable must be the actual session name parsed from `start-session.sh` output, not a pre-computed name. The script always adds its own random suffix.
+
+**Completion gate:** Review is only complete after all three are true: PR comment posted, task comment posted (if task exists), and tmux review session cleanup verified.
 
 Tell the user you're waiting:
 ```
@@ -243,7 +263,7 @@ Waiting for review to complete...
 
 ### 8. Check Review Results and Stop at Merge Gate
 
-After the wait completes, fetch the review comment:
+After wait and cleanup verification complete, fetch the review comment:
 
 **GitHub:**
 ```bash
@@ -271,6 +291,7 @@ PR Pipeline Status
 - push: done|pending
 - ci: pass|fail|unavailable-needs-human-decision
 - review: pending|approved|warnings|changes-requested
+- review_session_cleanup: pending|pass|fail
 - merge_approval: waiting-human|approved
 ```
 
@@ -278,6 +299,7 @@ Rules:
 - Do not skip fields
 - Do not phrase required next steps as optional
 - If `review=warnings`, fix warnings by default; proceed without fixes only after explicit human waiver ("ignore warnings")
+- Do not report completion while `review_session_cleanup` is `pending` or `fail`
 - Never merge without explicit human approval
 
 ## Example Flow
@@ -337,6 +359,7 @@ PR Pipeline Status
 - push: done
 - ci: unavailable-needs-human-decision (human chose continue)
 - review: approved
+- review_session_cleanup: pass
 - merge_approval: waiting-human
 
 Waiting for your explicit merge approval.
@@ -357,6 +380,7 @@ PR Pipeline Status
 - push: done
 - ci: pass
 - review: warnings
+- review_session_cleanup: pass
 - merge_approval: waiting-human
 
 Default action is to fix warnings before merge. I will proceed with fixes now.
@@ -369,5 +393,6 @@ If you want to waive warnings and merge anyway, explicitly say "ignore warnings"
 - Reviewer uses `pr-review` skill which has its own checklist
 - Review is posted as both a PR comment and a task comment
 - Uses `tmux wait-for` signaling to know when review completes (no polling)
+- Requires tmux session cleanup verification (`kill-session` + absence check) before completion
 - 10 minute timeout prevents hanging if session crashes
 - Set `CODING_AGENT_CMD` env var to override the agent CLI (e.g., `export CODING_AGENT_CMD=claude`)
