@@ -33,17 +33,21 @@ Use individual skills to add specific capabilities:
 ```
 "Start task #1234"
 → Triggers task-start-preflight skill
-→ Shows task details, acceptance criteria
-→ Checks git status, suggests feature branch
-→ Marks task as in-progress
+→ Builds a plan from task + workflow context
+→ Shows acceptance criteria and proposed execution plan
+→ Waits for user approval or plan edits
 ```
 
 ### 2. Do the Work
 
-- Create feature branch: `feat/{task-id}-{description}`
-- Implement changes
-- Write tests
-- Commit incrementally
+```
+"Proceed with task #1234"
+→ Triggers todu-work skill
+→ Marks task as in-progress
+→ Creates/switches feature branch
+→ Runs dev environment/runtime checks
+→ Starts implementation from approved plan
+```
 
 ### 3. Verify Before Closing
 
@@ -166,7 +170,7 @@ Rules:
 │         │                                                    │
 │         ▼                                                    │
 │  ┌─────────────┐                                             │
-│  │  Do Work    │  ◄─── Implement, test, commit               │
+│  │  todu-work  │  ◄─── Implement, test, commit               │
 │  └─────────────┘                                             │
 │         │                                                    │
 │         ▼                                                    │
@@ -196,6 +200,7 @@ Rules:
 | `quality-tooling` | "add linting", "set up eslint", "configure testing" |
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
+| `todu-work` | "proceed", "do the work", "start implementation" |
 | `task-close-preflight` | "close task #X", "complete task", "finish task" |
 | `request-review` | "request review", "get this reviewed", "need review" |
 | `pr-review` | "review PR #X", "review pull request", "check PR" |
@@ -204,7 +209,8 @@ Rules:
 
 ### Always Use Preflights
 
-- **Starting**: `task-start-preflight` ensures you understand the task and have clean git state
+- **Starting**: `task-start-preflight` ensures you understand the task and have an approved execution plan
+- **Execution**: `todu-work` performs status/branch setup, environment checks, and implementation start
 - **Closing**: `task-close-preflight` verifies you've met acceptance criteria
 
 ### Keep PRs Focused

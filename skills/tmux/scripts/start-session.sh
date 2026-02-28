@@ -9,7 +9,7 @@ Create a tmux session on an isolated socket.
 
 Options:
   -s, --session      session name (required)
-  -S, --socket-path  tmux socket path (default: $CLAUDE_TMUX_SOCKET_DIR/claude.sock)
+  -S, --socket-path  tmux socket path (default: $TMUX_SKILL_SOCKET_DIR/tmux-skill.sock)
   -n, --window-name  initial window name (default: shell)
   -c, --command      command to run in the session
   -v, --visible      open a window in current tmux to show session
@@ -23,7 +23,7 @@ socket_path=""
 window_name="shell"
 command=""
 visible=false
-socket_dir="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}"
+socket_dir="${TMUX_SKILL_SOCKET_DIR:-${TMPDIR:-/tmp}/tmux-skill-sockets}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -57,7 +57,7 @@ session="${session}-${suffix}"
 # Set default socket path
 if [[ -z "$socket_path" ]]; then
   mkdir -p "$socket_dir"
-  socket_path="$socket_dir/claude.sock"
+  socket_path="$socket_dir/tmux-skill.sock"
 fi
 
 if ! command -v tmux >/dev/null 2>&1; then
