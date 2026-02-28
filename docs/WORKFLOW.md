@@ -88,9 +88,7 @@ Do not treat these as optional, and do not ask "want me to...?" when the next st
 
    ```
    "Request review for this PR"
-   → Triggers request-review skill
-   → Spawns separate agent session to review
-   → Reviewer uses pr-review skill
+   → Triggers pr-review skill
    ```
 
 5. **Report review result to human**
@@ -180,10 +178,7 @@ Rules:
 │                           CI gate (required)                 │
 │                                  │                           │
 │                                  ▼                           │
-│                          request-review                      │
-│                                  │                           │
-│                                  ▼                           │
-│                          pr-review (other agent)             │
+│                          pr-review                           │
 │                                  │                           │
 │                                  ▼                           │
 │                  Wait for human merge approval (required)    │
@@ -202,8 +197,7 @@ Rules:
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
 | `todu-work` | "proceed", "do the work", "start implementation" |
 | `task-close-preflight` | "close task #X", "complete task", "finish task" |
-| `request-review` | "request review", "get this reviewed", "need review" |
-| `pr-review` | "review PR #X", "review pull request", "check PR" |
+| `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 
 ## Best Practices
 

@@ -11,8 +11,7 @@ Development workflow skills for AI coding agents. Compatible with [pi](https://g
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up Procfile, Makefile, Docker services |
 | [repo-create](skills/repo-create/SKILL.md) | Create remote repo, clone locally, register with todu |
-| [pr-review](skills/pr-review/SKILL.md) | Review a pull request from another agent |
-| [request-review](skills/request-review/SKILL.md) | Spawn a separate agent to review a PR |
+| [pr-review](skills/pr-review/SKILL.md) | Review a pull request and stop at human merge approval |
 | [task-close-preflight](skills/task-close-preflight/SKILL.md) | Verify work is complete before closing a task |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Build and confirm a task execution plan |
 | [todu-work](skills/todu-work/SKILL.md) | Execute an approved task plan |
@@ -43,7 +42,7 @@ Restart your agent to load the skills.
 
 - [todu](https://github.com/evcraddock/todu) - Task management CLI
 - [gh](https://cli.github.com/) - GitHub CLI (for PR and repo operations)
-- [tmux](https://github.com/tmux/tmux) - Terminal multiplexer (for tmux skill and request-review)
+- [tmux](https://github.com/tmux/tmux) - Terminal multiplexer (for tmux skill and PR review flows)
 - [fj](https://codeberg.org/Cyborus/forgejo-cli) - Forgejo CLI (optional, for Forgejo support)
 
 ## License

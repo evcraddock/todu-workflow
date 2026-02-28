@@ -62,7 +62,7 @@ After implementation is complete, execute this exact order:
    - If checks exist: wait for green
    - If checks fail: fetch failures, fix, rerun `./scripts/pre-pr.sh`, push, re-check
    - If checks cannot be verified automatically (e.g., Forgejo without CI integration): stop and ask the human whether to continue without a CI signal
-4. Run the `request-review` skill for independent review
+4. Run the `pr-review` skill for independent review
 5. Report review result with explicit pipeline state
 6. Stop and wait for explicit human merge approval
 

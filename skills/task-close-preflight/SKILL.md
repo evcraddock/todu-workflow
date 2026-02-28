@@ -292,7 +292,7 @@ Proceed with close? [yes / no / edit]
 Task #1223 closed.
 
 Next up (top 5):
-1. #1301 Add CI pipeline status gate to request-review [high]
+1. #1301 Add CI pipeline status gate to pr-review [high]
 2. #1298 Add integration tests for task-start-preflight [high]
 3. #1277 Improve PR review severity docs [medium]
 4. #1264 Add examples for project-init questionnaire [medium]
