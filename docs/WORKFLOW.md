@@ -53,7 +53,7 @@ Use individual skills to add specific capabilities:
 
 ```
 "Close task #1234"
-→ Triggers task-close-preflight skill
+→ Triggers task-close-gate skill
 → Verifies acceptance criteria are met
 → Checks tests pass
 → Confirms ready to close
@@ -172,7 +172,7 @@ Rules:
 │  └─────────────┘                                             │
 │         │                                                    │
 │         ▼                                                    │
-│  task-close-preflight ───► Create/Update PR                  │
+│  task-close-gate ────────► Create/Update PR                  │
 │                                  │                           │
 │                                  ▼                           │
 │                           CI gate (required)                 │
@@ -196,7 +196,7 @@ Rules:
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
 | `todu-work` | "proceed", "do the work", "start implementation" |
-| `task-close-preflight` | "close task #X", "complete task", "finish task" |
+| `task-close-gate` | "close task #X", "complete task", "finish task" |
 | `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 
 ## Best Practices
@@ -205,7 +205,7 @@ Rules:
 
 - **Starting**: `task-start-preflight` ensures you understand the task and have an approved execution plan
 - **Execution**: `todu-work` performs status/branch setup, environment checks, and implementation start
-- **Closing**: `task-close-preflight` verifies you've met acceptance criteria
+- **Closing**: `task-close-gate` verifies you've met acceptance criteria
 
 ### Keep PRs Focused
 

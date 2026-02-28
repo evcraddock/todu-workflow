@@ -50,7 +50,7 @@ Non-stable versions (canary, beta, alpha, rc) can have bugs or incomplete featur
 ## Task Lifecycle
 
 - **Starting**: ALWAYS run `task-start-preflight` skill first
-- **Closing**: Run `task-close-preflight` skill
+- **Closing**: Run `task-close-gate` skill
 
 ## PR Workflow (Mandatory Sequence)
 

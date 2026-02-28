@@ -46,12 +46,12 @@ Primary flow:
 1. readiness gate (`task-start-preflight`)
 2. load project contributing instructions (`docs/CONTRIBUTING.md`, fallback to default)
 3. execute task instructions
-4. close readiness/verification (`task-close-preflight`)
+4. close readiness/verification (`task-close-gate`)
 
 Primary skills:
 - [task-pipeline](skills/task-pipeline/SKILL.md)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
-- [task-close-preflight](skills/task-close-preflight/SKILL.md)
+- [task-close-gate](skills/task-close-gate/SKILL.md)
 - [pr-review](skills/pr-review/SKILL.md)
 
 ## How the pipelines depend on each other
@@ -87,7 +87,7 @@ That means each project is expected to customize:
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Gated task execution flow |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
-| [task-close-preflight](skills/task-close-preflight/SKILL.md) | Close-readiness verification |
+| [task-close-gate](skills/task-close-gate/SKILL.md) | Close-readiness verification |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |

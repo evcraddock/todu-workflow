@@ -17,7 +17,7 @@ Preflight: READY (task-start-preflight passed)
 Contributing Source: DEFAULT_CONTRIBUTING.md
 Project-specific option: create docs/CONTRIBUTING.md by copying/customizing this file
 Task Instructions Source: task description
-Closure Gate: task-close-preflight
+Closure Gate: task-close-gate
 
 Task Objective:
 - <one-sentence summary from task description>
@@ -30,7 +30,7 @@ Next Steps:
 1. Follow default contributing instructions
 2. Execute task description instructions
 3. Run required verification
-4. Run task-close-preflight
+4. Run task-close-gate
 ```
 
 - Include all acceptance criteria from the task description when present (no omissions).

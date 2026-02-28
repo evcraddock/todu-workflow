@@ -23,8 +23,9 @@ Single gated flow for picking up and finishing one coding task.
    - If instructions are ambiguous/conflicting, return `BLOCKED`.
 
 4. Ensure the task is closed correctly.
-   - Run `task-close-preflight` for the task.
-   - Complete closure only if close preflight passes.
+   - Run `task-close-gate` for the task in a hidden tmux sub-agent session (detached) via the `tmux` skill.
+   - Use the sub-agent result as the close gate.
+   - Complete closure only if close gate passes.
 
 ## Rules
 

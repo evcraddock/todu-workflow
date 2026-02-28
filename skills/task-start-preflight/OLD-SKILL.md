@@ -179,13 +179,13 @@ No CONTRIBUTING.md found.
 - [ ] Symlink created: ~/Private/code/.pi/skills/task-start-preflight
 - [ ] Covers all preflight steps
 - [ ] Checks for CONTRIBUTING.md
-- [ ] Follows same pattern as task-close-preflight
+- [ ] Follows same pattern as task-close-gate
 - [ ] Includes example flow
 - [ ] Documents when to skip checks
 
 === Plan ===
 1. Create feature branch in todu-work: feature/1230-task-start-preflight
-2. Create skill file following task-close-preflight pattern
+2. Create skill file following task-close-gate pattern
 3. Create symlinks for .claude and .pi
 4. Commit and prepare for merge
 
