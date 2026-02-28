@@ -33,20 +33,18 @@ Use individual skills to add specific capabilities:
 ```
 "Start task #1234"
 → Triggers task-start-preflight skill
-→ Builds a plan from task + workflow context
-→ Shows acceptance criteria and proposed execution plan
-→ Waits for user approval or plan edits
+→ Runs readiness gates for task status, requirements, and dependencies
+→ Returns READY or BLOCKED
 ```
 
 ### 2. Do the Work
 
 ```
-"Proceed with task #1234"
-→ Triggers todu-work skill
-→ Marks task as in-progress
-→ Creates/switches feature branch
-→ Runs dev environment/runtime checks
-→ Starts implementation from approved plan
+"Pickup task #1234"
+→ Triggers task-pipeline skill
+→ Uses project contributing instructions
+→ Executes task instructions in gated steps
+→ Stops only on BLOCKED or when complete
 ```
 
 ### 3. Verify Before Closing
@@ -54,9 +52,8 @@ Use individual skills to add specific capabilities:
 ```
 "Close task #1234"
 → Triggers task-close-gate skill
-→ Verifies acceptance criteria are met
-→ Checks tests pass
-→ Confirms ready to close
+→ Verifies acceptance criteria with explicit evidence
+→ Closes when READY, blocks when criteria are incomplete
 ```
 
 ### 4. Mandatory Post-PR Pipeline (Required Sequence)
@@ -167,9 +164,9 @@ Rules:
 │  task-start-preflight                                        │
 │         │                                                    │
 │         ▼                                                    │
-│  ┌─────────────┐                                             │
-│  │  todu-work  │  ◄─── Implement, test, commit               │
-│  └─────────────┘                                             │
+│  ┌───────────────┐                                           │
+│  │ task-pipeline │  ◄─── Implement, test, commit             │
+│  └───────────────┘                                           │
 │         │                                                    │
 │         ▼                                                    │
 │  task-close-gate ────────► Create/Update PR                  │
@@ -195,7 +192,7 @@ Rules:
 | `quality-tooling` | "add linting", "set up eslint", "configure testing" |
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
-| `todu-work` | "proceed", "do the work", "start implementation" |
+| `task-pipeline` | "pickup task <id>", "get started on task <id>", "work on task <id>" |
 | `task-close-gate` | "close task #X", "complete task", "finish task" |
 | `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 
@@ -204,7 +201,7 @@ Rules:
 ### Always Use Preflights
 
 - **Starting**: `task-start-preflight` ensures you understand the task and have an approved execution plan
-- **Execution**: `todu-work` performs status/branch setup, environment checks, and implementation start
+- **Execution**: `task-pipeline` runs the gated task execution flow using project-owned instructions
 - **Closing**: `task-close-gate` verifies you've met acceptance criteria
 
 ### Keep PRs Focused
