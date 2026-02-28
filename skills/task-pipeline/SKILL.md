@@ -19,7 +19,6 @@ Single gated flow for picking up and finishing one coding task.
    - If neither can be loaded, return `BLOCKED`.
 
 3. Follow the instructions in the task description.
-   - Set task status to `inprogress` via `task-update` (if not already `inprogress`).
    - Implement exactly what the task asks for.
    - If instructions are ambiguous/conflicting, return `BLOCKED`.
 

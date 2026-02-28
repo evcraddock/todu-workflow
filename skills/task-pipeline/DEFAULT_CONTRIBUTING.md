@@ -43,7 +43,8 @@ Next Steps:
 1. Work only within task scope.
 2. Read relevant files before editing.
 3. Make the smallest change that satisfies the task.
-4. If blocked or requirements are ambiguous, stop and report `BLOCKED` with reason.
-5. Add task comments only via the `task-comment-create` skill.
-6. Do not add manual line breaks in markdown paragraphs.
-7. Summarize changed files and verification results.
+4. Set task status to `inprogress` via `task-update` when implementation starts.
+5. If blocked or requirements are ambiguous, stop and report `BLOCKED` with reason.
+6. Add task comments only via the `task-comment-create` skill.
+7. Do not add manual line breaks in markdown paragraphs.
+8. Summarize changed files and verification results.
