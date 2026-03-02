@@ -46,7 +46,9 @@ Primary flow:
 1. readiness gate (`task-start-preflight`)
 2. load project contributing instructions (`docs/CONTRIBUTING.md`, fallback to default)
 3. execute task instructions
-4. close readiness/verification (`task-close-gate`)
+4. run PR/review/merge flow with explicit human merge approval
+5. normalize post-merge repo state (switch to `main`, update, clean up feature branch)
+6. close readiness/verification (`task-close-gate`)
 
 Primary skills:
 - [task-pipeline](skills/task-pipeline/SKILL.md)
