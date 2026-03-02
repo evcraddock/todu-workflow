@@ -31,10 +31,24 @@ Single gated flow for picking up and finishing one coding task.
    - Implement exactly what the task asks for.
    - If task instructions are ambiguous/conflicting, return `BLOCKED`.
 
-5. Ensure the task is closed correctly.
-   - Run `task-close-gate` for the task in a hidden tmux sub-agent session (detached) via the `tmux` skill.
+5. Complete merge flow before closure.
+   - Open or update the PR for the task branch.
+   - Run required review flow and wait for explicit human merge approval.
+   - Do not merge without explicit approval.
+   - If merge is not completed, return `BLOCKED` and do not continue to closure.
+   - After merge, switch to `main` and fast-forward/update local `main`.
+   - Perform feature branch cleanup by default:
+     - delete local feature branch
+     - delete remote feature branch
+   - If branch cleanup policy is uncertain for the current host/workflow, ask the user before deleting.
+
+6. Ensure the task is closed correctly.
+   - This closure step is mandatory for every `task-pipeline` run and is not defined by contributing instructions.
+   - Ask the user for explicit approval before running the close gate.
+   - If approval is not given, return `BLOCKED` and do not run close gate.
+   - Run `task-close-gate` for the task in a hidden tmux sub-agent session (detached) via the `tmux` skill only after merge and after approval.
    - Use the sub-agent result as the close gate.
-   - Complete closure only if close gate passes.
+   - Move task status to `done` only when explicit approval was given and close gate passes.
 
 ## Rules
 

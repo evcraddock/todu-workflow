@@ -47,12 +47,13 @@ Use individual skills to add specific capabilities:
 → Stops only on BLOCKED or when complete
 ```
 
-### 3. Verify Before Closing
+### 3. Verify Before Closing (Post-Merge)
 
 ```
 "Close task #1234"
 → Triggers task-close-gate skill
 → Verifies acceptance criteria with explicit evidence
+→ Runs only after merge is complete
 → Closes when READY, blocks when criteria are incomplete
 ```
 
@@ -98,6 +99,14 @@ Do not treat these as optional, and do not ask "want me to...?" when the next st
    - Never merge automatically.
    - Merge only after explicit human approval ("merge", "approved", "LGTM", etc.).
 
+7. **Execute merge and post-merge normalization**
+   - Merge the approved PR.
+   - Switch to `main` and fast-forward/update local `main`.
+   - Clean up the feature branch by default:
+     - delete local feature branch
+     - delete remote feature branch
+   - If cleanup policy is unclear for the host/workflow, ask the human before deleting branches.
+
 ### 5. CI Failure Path (Required)
 
 When CI is available and a check fails, run this failure loop:
@@ -134,10 +143,11 @@ Rules:
 - Do not present required next steps as optional questions.
 - If `ci=unavailable-needs-human-decision`, either apply a documented standing policy or ask the human before review request.
 
-### 7. Close Task
+### 7. Close Task (After Merge + Cleanup)
 
 ```
 "Close task #1234"
+→ Run after merge is complete and repo state is normalized
 → Adds completion comment
 → Marks task as done
 ```
@@ -169,16 +179,19 @@ Rules:
 │  └───────────────┘                                           │
 │         │                                                    │
 │         ▼                                                    │
-│  task-close-gate ────────► Create/Update PR                  │
-│                                  │                           │
-│                                  ▼                           │
-│                           CI gate (required)                 │
+│  Create/Update PR ───────────────► CI gate (required)        │
 │                                  │                           │
 │                                  ▼                           │
 │                          pr-review                           │
 │                                  │                           │
 │                                  ▼                           │
 │                  Wait for human merge approval (required)    │
+│                                  │                           │
+│                                  ▼                           │
+│          Merge + switch to main + branch cleanup             │
+│                                  │                           │
+│                                  ▼                           │
+│                          task-close-gate                     │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -202,7 +215,7 @@ Rules:
 
 - **Starting**: `task-start-preflight` ensures you understand the task and have an approved execution plan
 - **Execution**: `task-pipeline` runs the gated task execution flow using project-owned instructions
-- **Closing**: `task-close-gate` verifies you've met acceptance criteria
+- **Closing**: `task-close-gate` verifies acceptance criteria after merge and repo cleanup
 
 ### Keep PRs Focused
 
