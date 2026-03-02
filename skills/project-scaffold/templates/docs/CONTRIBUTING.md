@@ -1,14 +1,20 @@
 # Contributing
 
-This project uses an AI-first development process. Agents do the work, automation enforces quality, humans approve.
+This document defines how to work in this project.
 
-## Workflow
+## Required workflow
 
-### 1. Pick Up a Task
+1. Work only within task scope.
+2. Read relevant files before editing.
+3. Make the smallest change that satisfies the task.
+4. Follow [CODE_STANDARDS.md](CODE_STANDARDS.md).
+5. Do not add manual line breaks in markdown paragraphs.
+6. If blocked or requirements are ambiguous, stop and report `BLOCKED` with reason.
+7. Summarize changed files and verification results.
 
-Get assigned a task or pick from available tasks. Understand requirements before starting.
+## Branch and commits
 
-### 2. Create a Branch
+Start from the latest main branch and create a task branch:
 
 ```bash
 git checkout main && git pull
@@ -16,77 +22,41 @@ git checkout -b feat/{task-id}-short-description
 ```
 
 Branch prefixes:
-- `feat/` - New features
-- `fix/` - Bug fixes
-- `docs/` - Documentation only
-- `chore/` - Maintenance
-
-### 3. Implement
-
-- Follow [CODE_STANDARDS.md](CODE_STANDARDS.md)
-- Write tests as you go
-- Commit frequently with clear messages
+- `feat/` - new features
+- `fix/` - bug fixes
+- `docs/` - documentation only
+- `chore/` - maintenance
 
 Commit format:
-```
+
+```text
 <type>: <short description>
 
 Task: #<task-id>
 ```
 
-### 4. Verify Quality
+## Verification setup (required)
 
-Before opening a PR:
+This project should define local verification before regular contribution work begins.
 
-```bash
-./scripts/pre-pr.sh
-```
+Set up and document at minimum:
+- formatting
+- linting
+- testing
 
-Do not open a PR if this fails.
+Add clear commands for these checks in this document or the README once they exist.
 
-### 5. Push and Open PR
+## Review and integration
 
-Push branch and create a PR with a clear description linking to the task.
-
-### 6. Resolve CI Gate (Required)
-
-- If CI checks are available, wait for completion and green status before requesting review.
-- If CI fails: fetch failing checks/logs, fix, rerun `./scripts/pre-pr.sh`, push, and wait again.
-- If CI status cannot be verified automatically (for example, Forgejo without CI integration): apply a documented standing policy (continue / wait / stop), or ask the human if no standing policy exists.
-
-### 7. Request Independent Review (Required)
-
-After the CI gate is resolved, run the `request-review` workflow so another agent performs review.
-
-### 8. Report Review Result and Handle Warnings (Required)
-
-Report pipeline state explicitly:
-
-```text
-PR Pipeline Status
-- local_checks: pass|fail
-- push: done|pending
-- ci: pass|fail|unavailable-needs-human-decision
-- review: pending|approved|warnings|changes-requested
-- merge_approval: waiting-human|approved
-```
-
-Warning policy:
-- If `review=warnings`, list warnings clearly and fix them by default before merge.
-- Human can explicitly waive warnings (e.g., "ignore warnings") and proceed.
-
-Do not phrase required next steps as optional (no "want me to...?").
-
-### 9. Merge and Close Task
-
-- Merge only after explicit human approval.
+- Push your branch to `{host}`.
+- Use pull requests for review and integration whenever possible.
+- Wait for explicit human merge approval.
 - Never auto-merge.
-- Close the task after merge is complete.
 
-## When Stuck
+## When stuck
 
 After 3 failed attempts at the same problem:
 
-1. Stop - Don't keep trying the same approach
-2. Document - What was tried and why it failed
-3. Ask - Request guidance or suggest alternatives
+1. Stop.
+2. Document what was tried and why it failed.
+3. Ask for guidance or propose alternatives.

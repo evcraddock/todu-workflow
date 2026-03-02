@@ -54,6 +54,7 @@ All scaffold files are **overwritten** when re-running. This ensures projects st
 | `{description}` | Project description |
 | `{stack}` | Language (typescript, go, python, rust) |
 | `{framework}` | Framework name or "None" |
+| `{host}` | Source control host (`github` or `forgejo`) |
 | `{year}` | Current year |
 | `{author}` | From `git config user.name` |
 | `{dev_task_url}` | URL to "Set up dev environment" task |

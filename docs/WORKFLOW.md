@@ -33,26 +33,27 @@ Use individual skills to add specific capabilities:
 ```
 "Start task #1234"
 → Triggers task-start-preflight skill
-→ Shows task details, acceptance criteria
-→ Checks git status, suggests feature branch
-→ Marks task as in-progress
+→ Runs readiness gates for task status, requirements, and dependencies
+→ Returns READY or BLOCKED
 ```
 
 ### 2. Do the Work
 
-- Create feature branch: `feat/{task-id}-{description}`
-- Implement changes
-- Write tests
-- Commit incrementally
+```
+"Pickup task #1234"
+→ Triggers task-pipeline skill
+→ Uses project contributing instructions
+→ Executes task instructions in gated steps
+→ Stops only on BLOCKED or when complete
+```
 
 ### 3. Verify Before Closing
 
 ```
 "Close task #1234"
-→ Triggers task-close-preflight skill
-→ Verifies acceptance criteria are met
-→ Checks tests pass
-→ Confirms ready to close
+→ Triggers task-close-gate skill
+→ Verifies acceptance criteria with explicit evidence
+→ Closes when READY, blocks when criteria are incomplete
 ```
 
 ### 4. Mandatory Post-PR Pipeline (Required Sequence)
@@ -84,9 +85,7 @@ Do not treat these as optional, and do not ask "want me to...?" when the next st
 
    ```
    "Request review for this PR"
-   → Triggers request-review skill
-   → Spawns separate agent session to review
-   → Reviewer uses pr-review skill
+   → Triggers pr-review skill
    ```
 
 5. **Report review result to human**
@@ -165,21 +164,18 @@ Rules:
 │  task-start-preflight                                        │
 │         │                                                    │
 │         ▼                                                    │
-│  ┌─────────────┐                                             │
-│  │  Do Work    │  ◄─── Implement, test, commit               │
-│  └─────────────┘                                             │
+│  ┌───────────────┐                                           │
+│  │ task-pipeline │  ◄─── Implement, test, commit             │
+│  └───────────────┘                                           │
 │         │                                                    │
 │         ▼                                                    │
-│  task-close-preflight ───► Create/Update PR                  │
+│  task-close-gate ────────► Create/Update PR                  │
 │                                  │                           │
 │                                  ▼                           │
 │                           CI gate (required)                 │
 │                                  │                           │
 │                                  ▼                           │
-│                          request-review                      │
-│                                  │                           │
-│                                  ▼                           │
-│                          pr-review (other agent)             │
+│                          pr-review                           │
 │                                  │                           │
 │                                  ▼                           │
 │                  Wait for human merge approval (required)    │
@@ -196,16 +192,17 @@ Rules:
 | `quality-tooling` | "add linting", "set up eslint", "configure testing" |
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
-| `task-close-preflight` | "close task #X", "complete task", "finish task" |
-| `request-review` | "request review", "get this reviewed", "need review" |
-| `pr-review` | "review PR #X", "review pull request", "check PR" |
+| `task-pipeline` | "pickup task <id>", "get started on task <id>", "work on task <id>" |
+| `task-close-gate` | "close task #X", "complete task", "finish task" |
+| `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 
 ## Best Practices
 
 ### Always Use Preflights
 
-- **Starting**: `task-start-preflight` ensures you understand the task and have clean git state
-- **Closing**: `task-close-preflight` verifies you've met acceptance criteria
+- **Starting**: `task-start-preflight` ensures you understand the task and have an approved execution plan
+- **Execution**: `task-pipeline` runs the gated task execution flow using project-owned instructions
+- **Closing**: `task-close-gate` verifies you've met acceptance criteria
 
 ### Keep PRs Focused
 
