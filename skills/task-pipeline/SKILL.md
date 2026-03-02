@@ -13,16 +13,25 @@ Single gated flow for picking up and finishing one coding task.
    - `READY` → continue
    - `BLOCKED` → stop
 
-2. Load contributing instructions and follow them.
+2. Load instructions and task description.
    - Use `docs/CONTRIBUTING.md` if it exists.
    - Otherwise use `DEFAULT_CONTRIBUTING.md` in this skill directory.
    - If neither can be loaded, return `BLOCKED`.
+   - Load the task description for the selected task.
+   - If the task description cannot be loaded, return `BLOCKED`.
+   - Determine the concrete steps to take from the contributing instructions and task description.
+   - Ask the user to approve the planned steps before proceeding.
+   - If the user does not approve, return `BLOCKED`.
 
-3. Follow the instructions in the task description.
-   - Implement exactly what the task asks for.
+3. Follow contributing instructions.
+   - Treat loaded contributing instructions as active constraints.
    - If instructions are ambiguous/conflicting, return `BLOCKED`.
 
-4. Ensure the task is closed correctly.
+4. Follow the instructions in the task description.
+   - Implement exactly what the task asks for.
+   - If task instructions are ambiguous/conflicting, return `BLOCKED`.
+
+5. Ensure the task is closed correctly.
    - Run `task-close-gate` for the task in a hidden tmux sub-agent session (detached) via the `tmux` skill.
    - Use the sub-agent result as the close gate.
    - Complete closure only if close gate passes.
