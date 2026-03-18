@@ -188,7 +188,7 @@ success "Cloned to $LOCAL_PATH"
 # Step 5: Register with todu
 echo "Registering with todu..."
 
-if ! todu project add --name "$NAME" --description "$DESCRIPTION" 2>&1; then
+if ! todu project create --name "$NAME" --description "$DESCRIPTION" 2>&1; then
     warn "Failed to register with todu (non-fatal)"
 else
     success "Registered with todu"

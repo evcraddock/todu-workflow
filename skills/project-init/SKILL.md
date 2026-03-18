@@ -332,7 +332,7 @@ If push fails:
 First, check if a design task already exists for this project:
 
 ```bash
-todu task search --project {name} --label design --format json
+todu task list --project {name} --label design --format json
 ```
 
 **If a design task exists**: Update its description with current context:

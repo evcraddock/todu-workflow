@@ -89,6 +89,8 @@ That means each project is expected to customize:
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Gated task execution flow |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
+| [task-perform](skills/task-perform/SKILL.md) | Perform a single task directly from its description |
+| [habit-perform](skills/habit-perform/SKILL.md) | Perform a habit and optionally check in |
 | [task-close-gate](skills/task-close-gate/SKILL.md) | Close-readiness verification |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |

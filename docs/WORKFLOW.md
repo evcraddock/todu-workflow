@@ -206,6 +206,8 @@ Rules:
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
 | `task-pipeline` | "pickup task <id>", "get started on task <id>", "work on task <id>" |
+| `task-perform` | "do task #X", "perform task #X", "execute task #X", "handle task #X" |
+| `habit-perform` | "do habit #X", "perform habit #X", "handle habit #X", "work on habit #X" |
 | `task-close-gate` | "close task #X", "complete task", "finish task" |
 | `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 

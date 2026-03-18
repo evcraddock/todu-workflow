@@ -69,7 +69,7 @@ If not installed, notify user:
 First, check if a dev environment setup task already exists:
 
 ```bash
-todu task search --project {name} --label dev-environment
+todu task list --project {name} --label dev-environment --format json
 ```
 
 **If task exists**: Skip task creation, but capture the task URL for output.

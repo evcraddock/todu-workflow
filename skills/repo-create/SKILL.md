@@ -68,7 +68,7 @@ repo-create --name myapp --host forgejo --description "My application" --path ~/
 2. **Checks CLI** - Verifies gh/fj is installed and authenticated
 3. **Creates remote repo** - Uses `gh repo create` or `fj repo create`
 4. **Clones locally** - Clones to the specified path
-5. **Registers with todu** - Adds project to todu (non-fatal if fails)
+5. **Registers with todu** - Creates a project in todu with the current CLI (non-fatal if fails)
 
 ## Error Handling
 
