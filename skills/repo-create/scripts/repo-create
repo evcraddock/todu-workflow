@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# repo-create - Create a remote repository, clone locally, register with todu
+# repo-create - Create a remote repository and clone it locally
 #
 # Usage:
 #   repo-create --name NAME --host HOST --description DESC --path PATH
@@ -21,12 +21,10 @@ set -euo pipefail
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
 error() { echo -e "${RED}Error:${NC} $1" >&2; exit 1; }
 success() { echo -e "${GREEN}✓${NC} $1"; }
-warn() { echo -e "${YELLOW}⚠${NC} $1"; }
 info() { echo -e "  $1"; }
 
 # Parse arguments
@@ -184,15 +182,6 @@ Repository was created at: $REPO_URL
 You may need to clone manually."
 fi
 success "Cloned to $LOCAL_PATH"
-
-# Step 5: Register with todu
-echo "Registering with todu..."
-
-if ! todu project create --name "$NAME" --description "$DESCRIPTION" 2>&1; then
-    warn "Failed to register with todu (non-fatal)"
-else
-    success "Registered with todu"
-fi
 
 # Summary
 echo ""

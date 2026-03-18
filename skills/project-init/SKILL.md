@@ -27,12 +27,13 @@ command -v todu &>/dev/null && echo "OK: todu" || echo "MISSING: todu"
 0. **Detect Existing Project** - Check if re-running on existing project
 1. **Gather Info** - Use questionnaire to collect project details (skip if existing)
 2. **Determine Location** - Check/set env vars for project directory (skip if existing)
-3. **Create Repo** - Create remote repo, clone locally, register with todu (skip if existing)
-4. **Scaffold** - Generate README, LICENSE, .gitignore, AGENTS.md, docs/
-5. **Quality Tooling** - Set up linting, formatting, testing
-6. **Dev Environment** - Set up Procfile, Makefile, Docker services
-7. **Commit & Push** - Initial commit with all generated files
-8. **Create Task** - Create initial design task (skip if existing)
+3. **Create Repo** - Create remote repo and clone locally (skip if existing)
+4. **Register Project** - Register the repo in todu via `project-register` (skip if existing)
+5. **Scaffold** - Generate README, LICENSE, .gitignore, AGENTS.md, docs/
+6. **Quality Tooling** - Set up linting, formatting, testing
+7. **Dev Environment** - Set up Procfile, Makefile, Docker services
+8. **Commit & Push** - Initial commit with all generated files
+9. **Create Task** - Create initial design task (skip if existing)
 
 ---
 
@@ -70,7 +71,7 @@ Options: {detected_stack} (detected), typescript, go, python, rust
 
 → Store as `stack`
 
-Then **skip to Phase 4** (Scaffold).
+Then **skip to Phase 5** (Scaffold).
 
 ---
 
@@ -224,9 +225,23 @@ Apply the `repo-create` skill with:
 
 On success, proceed to Phase 4.
 
+## Phase 4: Register Project
+
+Apply the `project-register` skill to register the repository in todu.
+
+For a hosted repository, register it as an external repo using the created remote:
+- provider: `{host}`
+- target repository: `{owner}/{name}`
+- suggested project name: `{name}`
+- description: `{description}`
+
+If the project name already exists in todu, follow `project-register` conflict resolution.
+
+On success, proceed to Phase 5.
+
 ---
 
-## Phase 4: Project Scaffold
+## Phase 5: Project Scaffold
 
 Change to project directory:
 
@@ -253,7 +268,7 @@ This generates:
 
 ---
 
-## Phase 5: Quality Tooling
+## Phase 6: Quality Tooling
 
 Apply the `quality-tooling` skill with:
 - `name` - from Phase 1a
@@ -270,7 +285,7 @@ This generates:
 
 ---
 
-## Phase 6: Dev Environment
+## Phase 7: Dev Environment
 
 Apply the `dev-environment` skill with:
 - `name` - from Phase 1a
@@ -298,7 +313,7 @@ sed -i "s|{dev_task_url}|$dev_task_url|g" README.md
 
 ---
 
-## Phase 7: Commit & Push
+## Phase 8: Commit & Push
 
 ```bash
 cd {localPath}
@@ -327,7 +342,7 @@ If push fails:
 
 ---
 
-## Phase 8: Create or Update Design Task
+## Phase 9: Create or Update Design Task
 
 First, check if a design task already exists for this project:
 

@@ -1,11 +1,11 @@
 ---
 name: repo-create
-description: Create a remote repository, clone locally, and register with todu. Use when asked to "create a repo", "new repository", "init repo", or as part of project-init.
+description: Create a remote repository and clone it locally. Use when asked to "create a repo", "new repository", "init repo", or as part of project-init.
 ---
 
 # Repo Create
 
-Create a new repository on GitHub or Forgejo, clone it locally, and register it with todu.
+Create a new repository on GitHub or Forgejo and clone it locally.
 
 ## Prerequisites
 
@@ -68,7 +68,8 @@ repo-create --name myapp --host forgejo --description "My application" --path ~/
 2. **Checks CLI** - Verifies gh/fj is installed and authenticated
 3. **Creates remote repo** - Uses `gh repo create` or `fj repo create`
 4. **Clones locally** - Clones to the specified path
-5. **Registers with todu** - Creates a project in todu with the current CLI (non-fatal if fails)
+
+Project registration in todu is intentionally handled separately via the `project-register` skill.
 
 ## Error Handling
 
@@ -99,7 +100,7 @@ LOCAL_PATH="$GITHUB_PROJECTS_DIR/$NAME"
   --path "$LOCAL_PATH"
 ```
 
-On success, proceed to project scaffolding. On failure, show the error and stop.
+On success, apply the `project-register` skill to register the project in todu, then proceed to project scaffolding. On failure, show the error and stop.
 
 ## Manual Usage
 
@@ -117,5 +118,5 @@ repo-create -n myapp -h github -d "My app" -p ~/code/github/myapp
 
 - GitHub repos are created as public by default
 - Forgejo commands use `zsh -ic` wrapper for keyring access
-- The todu registration step is non-fatal (continues on failure)
+- Registration in todu is intentionally handled outside this skill via `project-register`
 - Parent directories are created automatically if needed
