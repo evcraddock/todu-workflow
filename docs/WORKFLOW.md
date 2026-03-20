@@ -28,23 +28,18 @@ Use individual skills to add specific capabilities:
 
 ## Task Authoring
 
-### Create a Task with Authoring Help
+### Create Better Task Content
 
 ```
 "Create a task for adding webhook retries"
 → Triggers task-authoring skill
 → Gathers only the missing context
-→ Produces a structured markdown description
+→ Produces a better title and structured markdown description
 → Uses implementation or bug structure as appropriate
-→ Asks for approval
-→ Delegates final creation to raw task_create
+→ Returns authored task content
 ```
 
-Use `task-authoring` for task-creation entry points, especially when the request needs shaping, requirements gathering, acceptance criteria drafting, bug-report structure, or title improvement. This should also be the preferred path for higher-level task-creation flows when they can benefit from authoring help.
-
-Low-level create tools are the persistence step. They should receive the authored result rather than define task meaning themselves. If a caller skips `task-authoring`, it should be because equivalent authoring policy has already been applied and only the final write remains.
-
-That keeps authoring policy separate from low-level persistence without hard-depending on a specific backend implementation.
+Use `task-authoring` for task-creation entry points when the request needs shaping, requirements gathering, acceptance criteria drafting, bug-report structure, or title improvement.
 
 ## Task Workflow
 
