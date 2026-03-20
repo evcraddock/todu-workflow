@@ -1,6 +1,6 @@
 ---
 name: task-authoring
-description: Draft and refine a task title and structured markdown description before creating a task. Prefer this workflow for task-creation entry points that can benefit from authoring policy, including direct user requests and higher-level task creation flows. Keep the final record creation backend-agnostic: delegate to any available low-level create path instead of hard-depending on a specific extension or tool.
+description: Draft and refine task titles and structured markdown descriptions before creating tasks. Use for task-creation flows that benefit from authoring help.
 ---
 
 # Task Authoring
