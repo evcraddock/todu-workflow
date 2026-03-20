@@ -21,7 +21,7 @@ It does not post the task comment.
 Use `task-comment-authoring` when:
 
 - a user wants help writing a task update or note
-- a workflow needs clean markdown before calling `task-comment-create`
+- a workflow needs clean markdown before handing it to task comment or note tooling
 - a draft task comment is vague, unstructured, or too long
 
 ## Rules

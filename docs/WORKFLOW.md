@@ -53,7 +53,7 @@ Use `task-authoring` for task-creation entry points when the request needs shapi
 → Returns authored comment content without posting it
 ```
 
-Use `task-comment-authoring` when the request needs a clearer progress update, blocker note, completion summary, or review summary before handing the markdown to `task-comment-create`.
+Use `task-comment-authoring` when the request needs a clearer progress update, blocker note, completion summary, or review summary before handing the markdown to comment or note tooling.
 
 ## Task Workflow
 
