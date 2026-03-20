@@ -1,6 +1,6 @@
 ---
 name: task-authoring
-description: Draft a structured markdown task description before creating a task. Use when the user wants to create a task, issue, or bug report and the request needs authoring help, missing-context gathering, or description shaping. Do not use when title, projectId, and final markdown description are already fully specified and the low-level create tool can be called directly.
+description: Draft a structured markdown task description before creating a task. Use for direct user requests to create a task, issue, or bug report, even when most fields are already known, so the request goes through the authoring policy before delegating final creation to the low-level tool. Use raw `task_create` directly only as the backend handoff or for deterministic workflow-owned task creation.
 ---
 
 # Task Authoring
@@ -9,7 +9,7 @@ Create high-quality task descriptions as a workflow layer above low-level task c
 
 ## Purpose
 
-Use this workflow when a human asks to create a task but the request still needs authoring work.
+Use this workflow when a human asks to create a task.
 
 This workflow is responsible for:
 - gathering or confirming the minimum context needed to write a solid task
@@ -23,10 +23,11 @@ This workflow is **not** responsible for backend record creation policy. It shou
 ## When to use this workflow
 
 Use `task-authoring` when:
-- the user asks to create a task, issue, or bug report
+- the user directly asks to create a task, issue, or bug report
 - the task description is incomplete, vague, or only partially structured
 - the agent needs to ask follow-up questions before a task can be created
-- the user wants help drafting a better task description
+- the user already supplied most fields, but the request should still go through the authoring policy before creation
+- the user wants help drafting or normalizing a better task description
 
 Examples:
 - "Create a task for adding webhook retries"
@@ -35,16 +36,14 @@ Examples:
 
 ## When to use raw `task_create` instead
 
-Use raw `task_create` directly when:
-- `projectId` is already explicit
-- title is already explicit
-- the final markdown description is already complete or can be deterministically generated without further authoring
-- the caller is another workflow producing structured task inputs as an implementation detail
+Use raw `task_create` directly only when authoring is already complete outside this workflow and only persistence remains.
 
-Examples:
-- project scaffolding or automation creating a known follow-up task
-- migrations/importers creating tasks from already-structured inputs
-- any workflow that already has the final markdown description and only needs persistence
+Typical cases:
+- `task-authoring` has already produced the final payload and is handing off to the backend create step
+- another workflow is creating a deterministic follow-up task as an implementation detail
+- automation, migrations, or importers are writing tasks from already-structured inputs
+
+Do **not** bypass `task-authoring` for a direct human task-creation request just because `projectId`, title, or a draft description are already present.
 
 ## Required inputs before create
 
