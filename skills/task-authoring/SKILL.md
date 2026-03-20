@@ -1,6 +1,6 @@
 ---
 name: task-authoring
-description: Draft a structured markdown task description before creating a task. Use for direct user requests to create a task, issue, or bug report, even when most fields are already known, so the request goes through the authoring policy before delegating final creation to the low-level tool. Use raw `task_create` directly only as the backend handoff or for deterministic workflow-owned task creation.
+description: Draft and refine a task title and structured markdown description before creating a task. Prefer this workflow for task-creation entry points that can benefit from authoring policy, including direct user requests and higher-level task creation flows. Keep the final record creation backend-agnostic: delegate to any available low-level create path instead of hard-depending on a specific extension or tool.
 ---
 
 # Task Authoring
@@ -9,13 +9,14 @@ Create high-quality task descriptions as a workflow layer above low-level task c
 
 ## Purpose
 
-Use this workflow when a human asks to create a task.
+Use this workflow whenever a task-creation flow should apply authoring policy before persistence.
 
 This workflow is responsible for:
 - gathering or confirming the minimum context needed to write a solid task
+- improving or normalizing the title when needed
 - shaping the description into proper markdown
 - applying task-type-specific structure
-- getting user approval on the authored result
+- getting user approval on the authored result when appropriate for the calling flow
 - delegating the final create operation to a low-level tool
 
 This workflow is **not** responsible for backend record creation policy. It should delegate creation instead of duplicating backend write logic.
@@ -24,26 +25,34 @@ This workflow is **not** responsible for backend record creation policy. It shou
 
 Use `task-authoring` when:
 - the user directly asks to create a task, issue, or bug report
+- a higher-level workflow entry point wants better title/description shaping
 - the task description is incomplete, vague, or only partially structured
 - the agent needs to ask follow-up questions before a task can be created
 - the user already supplied most fields, but the request should still go through the authoring policy before creation
 - the user wants help drafting or normalizing a better task description
+- a workflow-generated task would benefit from improved title or markdown structure before being written
 
 Examples:
 - "Create a task for adding webhook retries"
 - "Help me write a bug report for the login crash"
 - "Add an issue for improving sync conflict handling"
 
-## When to use raw `task_create` instead
+## Low-level create delegation
 
-Use raw `task_create` directly only when authoring is already complete outside this workflow and only persistence remains.
+Low-level create tools are persistence backends. They add the record; they should not be the place where task meaning is authored.
 
-Typical cases:
+Preferred model:
+- use `task-authoring` to determine or refine what the task actually is
+- then delegate the final record write to any available low-level create path
+
+A caller may skip this skill only when equivalent authoring policy has already been applied elsewhere and only persistence remains.
+
+Examples:
 - `task-authoring` has already produced the final payload and is handing off to the backend create step
-- another workflow is creating a deterministic follow-up task as an implementation detail
-- automation, migrations, or importers are writing tasks from already-structured inputs
+- a migration or importer must preserve an already-authored external task verbatim
+- another workflow has already applied equivalent title/description shaping and is now only writing the record
 
-Do **not** bypass `task-authoring` for a direct human task-creation request just because `projectId`, title, or a draft description are already present.
+Do **not** bypass `task-authoring` for a task-creation entry point just because `projectId`, title, or a draft description are already present.
 
 ## Required inputs before create
 
@@ -185,22 +194,25 @@ Requirements:
 ## Create handoff
 
 Preferred handoff:
-- use the native `task_create` tool when available and appropriate
+- delegate to whichever low-level create capability is available in the environment
+- if native `task_create` exists, it is a good handoff target
+- if another backend-specific create tool or skill exists, that is also acceptable
 
-Native `task_create` V1 call shape:
+Example low-level payload shape:
 
 ```text
-task_create({
+create_task_like_backend_call({
   title: <title>,
   projectId: <explicit project id>,
   description: <final markdown description>
 })
 ```
 
-If the environment exposes a richer low-level create tool, pass only fields that tool explicitly supports.
+Pass only fields the selected low-level create path explicitly supports.
 
-Fallback policy:
-- if native `task_create` is unavailable, delegate to an existing backend-specific task creation tool or skill
+Compatibility rule:
+- do not hard-depend on `todu-pi-extensions` or any other specific backend provider from this skill
+- keep the authoring policy reusable across environments with different create backends
 - do not duplicate storage write logic in this authoring workflow unless the environment explicitly requires a low-level fallback
 
 ## Approval step
@@ -237,12 +249,12 @@ Reason:
 - requirements are underspecified
 - acceptance criteria still need shaping
 
-### Example B: use raw `task_create`
+### Example B: backend handoff only
 
 Caller already has:
 - `projectId: todu-workflow`
 - title: `Design initial sync API`
-- complete markdown description
+- complete markdown description produced by `task-authoring` or equivalent policy
 
 Reason:
 - authoring is already done

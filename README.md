@@ -40,9 +40,9 @@ Primary skills:
 
 ## Task Authoring
 
-Before a task enters the execution pipeline, direct human task-creation requests should go through a higher-level authoring workflow.
+Before a task enters the execution pipeline, task-creation entry points should prefer a higher-level authoring workflow.
 
-Use [task-authoring](skills/task-authoring/SKILL.md) for user requests to create tasks so the agent can apply authoring policy, normalize the markdown description, and use a bug-specific template when needed before delegating final creation to `task_create`. Use raw `task_create` directly only for backend handoff or deterministic workflow-owned task creation.
+Use [task-authoring](skills/task-authoring/SKILL.md) to determine and improve what the task actually is: refine the title, normalize the markdown description, and apply a bug-specific template when needed before delegating final creation to a low-level create backend. This should be the preferred path for direct user requests and higher-level task-creation flows that can benefit from authoring help. Keep the final write step backend-agnostic rather than hard-depending on a specific extension.
 
 ## 2) Task Workflow pipeline
 

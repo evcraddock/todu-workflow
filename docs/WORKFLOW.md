@@ -40,13 +40,11 @@ Use individual skills to add specific capabilities:
 → Delegates final creation to raw task_create
 ```
 
-Use `task-authoring` for direct user requests to create tasks, especially when the request needs shaping, requirements gathering, acceptance criteria drafting, or a bug-report structure.
+Use `task-authoring` for task-creation entry points, especially when the request needs shaping, requirements gathering, acceptance criteria drafting, bug-report structure, or title improvement. This should also be the preferred path for higher-level task-creation flows when they can benefit from authoring help.
 
-Use raw `task_create` directly only when authoring is already complete and the call is just the low-level persistence step, for example:
-- as the final handoff from `task-authoring`
-- from another deterministic workflow that is creating a known task payload
+Low-level create tools are the persistence step. They should receive the authored result rather than define task meaning themselves. If a caller skips `task-authoring`, it should be because equivalent authoring policy has already been applied and only the final write remains.
 
-That keeps authoring policy separate from low-level persistence.
+That keeps authoring policy separate from low-level persistence without hard-depending on a specific backend implementation.
 
 ## Task Workflow
 
