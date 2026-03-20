@@ -41,6 +41,20 @@ Use individual skills to add specific capabilities:
 
 Use `task-authoring` for task-creation entry points when the request needs shaping, requirements gathering, acceptance criteria drafting, bug-report structure, or title improvement.
 
+## Task Comment Authoring
+
+### Draft Better Task Comments
+
+```
+"Write a progress update for task #1234"
+→ Triggers task-comment-authoring skill
+→ Gathers only the missing context
+→ Produces structured markdown comment content
+→ Returns authored comment content without posting it
+```
+
+Use `task-comment-authoring` when the request needs a clearer progress update, blocker note, completion summary, or review summary before handing the markdown to `task-comment-create`.
+
 ## Task Workflow
 
 ### 1. Start a Task
@@ -187,6 +201,7 @@ Rules:
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  task-authoring (create well-structured tasks)               │
+│  task-comment-authoring (draft task updates)                 │
 │         │                                                    │
 │         ▼                                                    │
 │  task-start-preflight                                        │
@@ -223,6 +238,7 @@ Rules:
 | `quality-tooling` | "add linting", "set up eslint", "configure testing" |
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-authoring` | "create a task", "new issue", "create bug", "draft a task", "help me write a task" |
+| `task-comment-authoring` | "draft a task comment", "write a task update", "help me write a note for task #X", "summarize progress for task #X" |
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
 | `task-pipeline` | "pickup task <id>", "get started on task <id>", "work on task <id>" |
 | `task-perform` | "do task #X", "perform task #X", "execute task #X", "handle task #X" |
