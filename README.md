@@ -38,6 +38,12 @@ Primary skills:
 - [quality-tooling](skills/quality-tooling/SKILL.md)
 - [dev-environment](skills/dev-environment/SKILL.md)
 
+## Task Authoring
+
+Before a task enters the execution pipeline, use a higher-level authoring workflow when the request still needs shaping.
+
+Use [task-authoring](skills/task-authoring/SKILL.md) when you need to gather missing context, produce a structured markdown description, or apply a bug-specific template before creating the task. Use raw `task_create` directly when title, project ID, and final markdown are already fully specified.
+
 ## 2) Task Workflow pipeline
 
 Purpose: pick up a task, execute it using project-owned rules, and close it correctly.
@@ -51,6 +57,7 @@ Primary flow:
 6. close readiness/verification (`task-close-gate`)
 
 Primary skills:
+- [task-authoring](skills/task-authoring/SKILL.md)
 - [task-pipeline](skills/task-pipeline/SKILL.md)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
 - [task-close-gate](skills/task-close-gate/SKILL.md)
@@ -87,6 +94,7 @@ That means each project is expected to customize:
 | [project-scaffold](skills/project-scaffold/SKILL.md) | Generate baseline project files and docs |
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
+| [task-authoring](skills/task-authoring/SKILL.md) | Draft structured markdown task descriptions before creation |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Gated task execution flow |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
 | [task-perform](skills/task-perform/SKILL.md) | Perform a single task directly from its description |

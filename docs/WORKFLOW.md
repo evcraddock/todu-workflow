@@ -26,6 +26,29 @@ Use individual skills to add specific capabilities:
 | Linting, formatting, testing | `quality-tooling` |
 | Makefile, Procfile, Docker | `dev-environment` |
 
+## Task Authoring
+
+### Create a Task with Authoring Help
+
+```
+"Create a task for adding webhook retries"
+→ Triggers task-authoring skill
+→ Gathers only the missing context
+→ Produces a structured markdown description
+→ Uses implementation or bug structure as appropriate
+→ Asks for approval
+→ Delegates final creation to raw task_create
+```
+
+Use `task-authoring` when the request needs shaping, requirements gathering, acceptance criteria drafting, or a bug-report structure.
+
+Use raw `task_create` directly when the caller already has:
+- explicit `projectId`
+- explicit title
+- final markdown description
+
+That keeps authoring policy separate from low-level persistence.
+
 ## Task Workflow
 
 ### 1. Start a Task
@@ -171,6 +194,9 @@ Rules:
 │                      TASK WORKFLOW                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
+│  task-authoring (create well-structured tasks)               │
+│         │                                                    │
+│         ▼                                                    │
 │  task-start-preflight                                        │
 │         │                                                    │
 │         ▼                                                    │
@@ -204,6 +230,7 @@ Rules:
 | `project-scaffold` | "scaffold project", "add README", "create project files" |
 | `quality-tooling` | "add linting", "set up eslint", "configure testing" |
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
+| `task-authoring` | "create a task", "new issue", "create bug", "draft a task", "help me write a task" |
 | `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
 | `task-pipeline` | "pickup task <id>", "get started on task <id>", "work on task <id>" |
 | `task-perform` | "do task #X", "perform task #X", "execute task #X", "handle task #X" |

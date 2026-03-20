@@ -356,7 +356,7 @@ todu task list --project {name} --label design --format json
 todu task update {task_id} --description "..."
 ```
 
-**If no design task exists**: Use the `task-create` skill to create a new task.
+**If no design task exists**: Use the native `task_create` tool when available because this task is deterministic and does not need interactive authoring. Use `task-authoring` only when a human-driven request needs context gathering or description shaping before creation.
 
 ### Task Description
 
@@ -376,14 +376,17 @@ Create the initial architecture design for {name}.
 - [ ] Create initial implementation tasks
 ```
 
-### New Task Properties
+### New Task Payload
 
+Use the native `task_create` fields when available:
+
+```text
+title: Design {name} architecture
+projectId: {name}
+description: <Task Description above>
 ```
-Title: Design {name} architecture
-Project: {name}
-Priority: high
-Labels: design, architecture
-```
+
+If the environment exposes a richer backend-specific create tool, it may also attach metadata such as priority or labels, but that is outside the authoring workflow contract.
 
 ### Error Handling
 
