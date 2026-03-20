@@ -356,7 +356,7 @@ todu task list --project {name} --label design --format json
 todu task update {task_id} --description "..."
 ```
 
-**If no design task exists**: Use the `task-create` skill to create a new task.
+**If no design task exists**: Prefer passing the draft through `task-authoring` when available if title or description quality should be improved. Keep this open to the environment's available write path rather than depending on one specific create backend.
 
 ### Task Description
 
@@ -376,14 +376,16 @@ Create the initial architecture design for {name}.
 - [ ] Create initial implementation tasks
 ```
 
-### New Task Properties
+### New Task Draft
 
+Draft task content to write:
+
+```text
+title: Design {name} architecture
+description: <Task Description above>
 ```
-Title: Design {name} architecture
-Project: {name}
-Priority: high
-Labels: design, architecture
-```
+
+Use the environment's available task-writing path to create the record.
 
 ### Error Handling
 
