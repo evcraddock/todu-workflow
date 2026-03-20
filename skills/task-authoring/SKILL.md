@@ -25,6 +25,7 @@ Use `task-authoring` when:
 
 - gather only the missing context
 - do not invent facts
+- keep the title to 60 characters or fewer
 - output proper markdown
 - prefer clear headings and lists
 - avoid placeholder text like `TODO` or `TBD`
@@ -78,5 +79,5 @@ Use `task-authoring` when:
 1. Infer `implementation` or `bug`.
 2. Ask only for missing task-defining details.
 3. Draft the title and markdown description.
-4. Check that the required sections exist.
+4. Check that the title is 60 characters or fewer and the required sections exist.
 5. Return the authored content.
