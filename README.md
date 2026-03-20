@@ -44,6 +44,10 @@ Before a task enters the execution pipeline, task-creation entry points should p
 
 Use [task-authoring](skills/task-authoring/SKILL.md) to improve what the task says: refine the title, normalize the markdown description, and apply a bug-specific structure when needed. It should be the preferred path for direct user requests and other task-creation flows that benefit from authoring help.
 
+## Task Comment Authoring
+
+Use [task-comment-authoring](skills/task-comment-authoring/SKILL.md) to shape progress updates, blockers, completion notes, and review summaries before posting them to a task. It should be the preferred path when a workflow needs well-structured markdown comment content without creating the task note record itself.
+
 ## 2) Task Workflow pipeline
 
 Purpose: pick up a task, execute it using project-owned rules, and close it correctly.
@@ -58,6 +62,7 @@ Primary flow:
 
 Primary skills:
 - [task-authoring](skills/task-authoring/SKILL.md)
+- [task-comment-authoring](skills/task-comment-authoring/SKILL.md)
 - [task-pipeline](skills/task-pipeline/SKILL.md)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
 - [task-close-gate](skills/task-close-gate/SKILL.md)
@@ -95,6 +100,7 @@ That means each project is expected to customize:
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
 | [task-authoring](skills/task-authoring/SKILL.md) | Draft structured markdown task descriptions before creation |
+| [task-comment-authoring](skills/task-comment-authoring/SKILL.md) | Draft structured markdown task notes and comments before posting |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Gated task execution flow |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
 | [task-perform](skills/task-perform/SKILL.md) | Perform a single task directly from its description |
