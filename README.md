@@ -109,6 +109,12 @@ That means each project is expected to customize:
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
+| [brave-search](skills/brave-search/SKILL.md) | Vendored Brave Search skill for headless web search |
+| [browser-tools](skills/browser-tools/SKILL.md) | Vendored browser automation skill using Chrome DevTools Protocol |
+
+## Vendored external skills
+
+This repo also includes local copies of `brave-search` and `browser-tools` under `skills/` so they can be used without depending on separately installed or symlinked third-party skill folders. `vscode` is intentionally omitted for now. See [skills/VENDORED.md](skills/VENDORED.md) for source and maintenance notes.
 
 ## Quick start
 
