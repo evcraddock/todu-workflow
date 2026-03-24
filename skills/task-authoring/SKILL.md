@@ -25,6 +25,7 @@ Use `task-authoring` when:
 
 - gather only the missing context
 - do not invent facts
+- do not invent dependency IDs
 - keep the title to 60 characters or fewer
 - output proper markdown
 - prefer clear headings and lists
@@ -44,9 +45,13 @@ Use `task-authoring` when:
 ## Acceptance criteria
 
 - [ ] <observable outcome>
+
+## Dependencies
+
+- <task-id or None>
 ```
 
-`Requirements` and `Acceptance criteria` are required.
+`Requirements`, `Acceptance criteria`, and `Dependencies` are required. Use real task IDs when known.
 
 ## Bug task shape
 
@@ -77,7 +82,7 @@ Use `task-authoring` when:
 ## Process
 
 1. Infer `implementation` or `bug`.
-2. Ask only for missing task-defining details.
+2. Ask only for missing task-defining details, including dependencies when they affect execution order or readiness.
 3. Draft the title and markdown description.
 4. Check that the title is 60 characters or fewer and the required sections exist.
 5. Return the authored content.
