@@ -33,7 +33,7 @@ command -v todu &>/dev/null && echo "OK: todu" || echo "MISSING: todu"
 6. **Quality Tooling** - Set up linting, formatting, testing
 7. **Dev Environment** - Set up Procfile, Makefile, Docker services
 8. **Commit & Push** - Initial commit with all generated files
-9. **Create Task** - Create initial design task (skip if existing)
+9. **Create Task** - Create initial design/backlog task (skip if existing)
 
 ---
 
@@ -361,7 +361,7 @@ todu task update {task_id} --description "..."
 ### Task Description
 
 ```
-Create the initial architecture design for {name}.
+Create the initial architecture/design for {name} and turn it into an actionable implementation backlog.
 
 ## Context
 - Stack: {stack}
@@ -369,11 +369,37 @@ Create the initial architecture design for {name}.
 - Database: {database}
 - Description: {description}
 
-## Deliverables
-- [ ] Define core data models
-- [ ] Design API endpoints / CLI commands
-- [ ] Document key architectural decisions
-- [ ] Create initial implementation tasks
+## Goal
+
+Produce an architecture/design deliverable for {name} and create the initial implementation backlog in the task backend so future agents can execute the work without guessing.
+
+## Requirements
+
+- Document the proposed architecture/design for the current project context.
+- Distinguish clearly between:
+  - architecture/design content produced by this task
+  - execution instructions for completing this design task
+  - implementation work that must become follow-on tasks instead of being done here
+- Create follow-on implementation tasks in the task backend. Do not leave the backlog only in repo docs, markdown notes, or loose checklists.
+- Each follow-on task must include:
+  - title
+  - `## Goal`
+  - `## Requirements`
+  - `## Acceptance criteria`
+  - `## Dependencies`
+- Use real task IDs in each follow-on task's `## Dependencies` section to express sequencing.
+- If a follow-on task has no blockers, state that explicitly in `## Dependencies`.
+- Do not use task status changes such as moving untouched tasks to `waiting` just to communicate order. Represent order through dependencies instead.
+- Keep this task focused on architecture/design output plus backlog creation. Do not fold follow-on implementation work into this task.
+- Use `task-authoring` when helpful, but ensure the final created task records satisfy the required structure and dependency rules above.
+
+## Acceptance criteria
+
+- [ ] Architecture/design output exists and is specific enough to guide implementation.
+- [ ] The initial implementation backlog exists as real backend task records.
+- [ ] Every follow-on task includes title, `## Goal`, `## Requirements`, `## Acceptance criteria`, and `## Dependencies`.
+- [ ] Sequencing and blockers are represented with real task IDs rather than status-only conventions.
+- [ ] This task is considered done only after both the architecture/design deliverable and the initial implementation backlog are complete.
 ```
 
 ### New Task Draft
@@ -381,7 +407,7 @@ Create the initial architecture design for {name}.
 Draft task content to write:
 
 ```text
-title: Design {name} architecture
+title: Design {name} architecture and backlog
 description: <Task Description above>
 ```
 

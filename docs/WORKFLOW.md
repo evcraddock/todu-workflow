@@ -13,7 +13,7 @@ Use `project-init` to create a project from scratch:
 → Triggers project-init skill
 → Questionnaire gathers: name, host, stack, framework, database, services
 → Creates repo, scaffolds files, sets up tooling
-→ Creates initial design task
+→ Creates initial design/backlog task
 ```
 
 ### Add to Existing Project
@@ -39,7 +39,7 @@ Use individual skills to add specific capabilities:
 → Returns authored task content
 ```
 
-Use `task-authoring` for task-creation entry points when the request needs shaping, requirements gathering, acceptance criteria drafting, bug-report structure, or title improvement.
+Use `task-authoring` for task-creation entry points when the request needs shaping, requirements gathering, acceptance criteria drafting, dependency capture, bug-report structure, or title improvement. Implementation tasks should include `## Goal`, `## Requirements`, `## Acceptance criteria`, and `## Dependencies`, using real task IDs when known.
 
 ## Task Comment Authoring
 
@@ -191,7 +191,7 @@ Rules:
 │  project-init ─────┬──► project-scaffold                    │
 │                    ├──► quality-tooling                     │
 │                    ├──► dev-environment                     │
-│                    └──► Creates design task                 │
+│                    └──► Creates design/backlog task         │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
                               │
