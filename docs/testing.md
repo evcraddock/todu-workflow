@@ -4,6 +4,14 @@ This document describes how to test the skills in this repository.
 
 ## Manual Testing
 
+### Skill Routing Evals
+
+Use [skill-evals.md](skill-evals.md) after changing skill descriptions, trigger wording, or routing-sensitive skill bodies.
+
+Run the prompt matrix manually in a fresh agent context when practical. Record whether the expected skill or fallback was selected, whether the expected outcome happened, and whether any nearby skill over-triggered. Repeat high-risk prompts a few times because routing can vary between runs.
+
+When an eval fails, fix the relevant skill description first. Change the skill body only when the description is already clear and the loaded instructions are the problem.
+
 ### tmux wait-for Signaling
 
 Test the wait-for pattern used for inter-agent communication:
