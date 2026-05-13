@@ -1,6 +1,6 @@
 ---
 name: task-close-gate
-description: Verify a task is ready to close. Use when user says "close task", "complete task", "finish task", or "verify and close".
+description: Verify a Todu task is ready to close against acceptance criteria. Use for "close task", "complete task", or "verify and close". Do not use to start work.
 ---
 
 # Task Close Gate

@@ -1,6 +1,6 @@
 ---
 name: dev-environment
-description: Set up local development environment with process management (overmind). Use when asked to "set up dev environment", "create Makefile", or as part of project-init.
+description: Set up local dev-environment scaffolding with overmind templates. Use for dev setup, Makefile support, or project-init. Do not use for lint/test config.
 ---
 
 # Dev Environment

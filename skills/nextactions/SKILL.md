@@ -1,7 +1,6 @@
 ---
 name: nextactions
-description: Show next actions to work on. Use when user says "next actions", "what's next", "what should I work on", or similar. (plugin:todu)
-allowed-tools: todu
+description: Show prioritized Todu next actions. Use when user asks "next actions", "what's next", or "what should I work on". Do not use for general task search. (plugin:todu)
 ---
 
 # Next Actions
@@ -9,16 +8,14 @@ allowed-tools: todu
 Shows tasks that need attention by querying:
 1. Tasks with status `inprogress`
 2. Tasks with status `active` and priority `high`
-3. Active or in-progress tasks in the `Inbox` project
-4. Active tasks due or scheduled today
-5. Active overdue tasks
+3. Active tasks due or scheduled today
+4. Active overdue tasks
 
 ## CLI Commands
 
 ```bash
 todu task list --status inprogress
 todu task list --status active --priority high
-todu task list --project Inbox --status active,inprogress
 todu task list --status active --today
 todu task list --status active --overdue
 ```

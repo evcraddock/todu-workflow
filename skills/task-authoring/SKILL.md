@@ -1,6 +1,6 @@
 ---
 name: task-authoring
-description: Draft and refine task titles and structured markdown task content.
+description: Draft and refine task titles and structured markdown descriptions. Use before creating or updating task content. Does not create backend task records.
 ---
 
 # Task Authoring

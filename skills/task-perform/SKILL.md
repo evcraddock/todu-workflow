@@ -1,6 +1,6 @@
 ---
 name: task-perform
-description: Start working on a task and follow its instructions. Use when user says "do task #*", "perform task #*", "execute task #*", "handle task #*", or similar. Do not use for habit requests or the broader pickup-task pipeline flow. (plugin:todu)
+description: Start and perform a Todu task. Use for "do/perform/execute/handle task". Do not use for habits or the full pickup-task pipeline. (plugin:todu)
 allowed-tools: todu, Bash, Read, Write, Edit, AskUserQuestion
 ---
 

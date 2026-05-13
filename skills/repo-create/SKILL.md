@@ -1,6 +1,6 @@
 ---
 name: repo-create
-description: Create a remote repository and clone it locally. Use when asked to "create a repo", "new repository", "init repo", or as part of project-init.
+description: Create a remote repository and clone it locally. Use for explicit new repo requests or project-init. Do not use for local-only scaffolding.
 ---
 
 # Repo Create
