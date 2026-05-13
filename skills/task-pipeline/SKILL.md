@@ -1,6 +1,6 @@
 ---
 name: task-pipeline
-description: Use when user says "pickup task <task-id|task-name>", "get started on task <task-id|task-name>", or "work on task <task-id|task-name>".
+description: Run the full gated coding-task pickup flow. Use for "pickup task", "get started on task", or "work on task". Do not use for simple show/start/done task actions.
 ---
 
 # task-pipeline

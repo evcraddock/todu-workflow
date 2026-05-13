@@ -1,6 +1,6 @@
 ---
 name: tmux
-description: Orchestrate isolated tmux sessions for interactive agent work and command execution. Use when user asks to run something in tmux or says "use a sub-agent".
+description: Orchestrate isolated tmux sessions for commands or sub-agents. Use when user asks for tmux, visible sessions, detached sessions, or sub-agents. Do not use for ordinary shell commands.
 ---
 
 # tmux Skill

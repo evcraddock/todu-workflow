@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: Run pull request review, verify artifacts, report outcome, and stop at the human merge gate. Use when user says "request review", "review PR", "get this reviewed", or similar.
+description: Run PR review, verify artifacts, report outcome, and stop at the human merge gate. Use for "request review", "review PR", or "get this reviewed". Do not merge.
 ---
 
 # PR Review

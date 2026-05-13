@@ -1,6 +1,6 @@
 ---
 name: habit-perform
-description: Perform a habit by reading its details and optionally checking in for today. Use when user says "do habit #*", "perform habit #*", "handle habit #*", "work on habit #*", or similar. Do not use for task requests. (plugin:todu)
+description: Perform a Todu habit and optionally check it in. Use for "do/perform/handle/work on habit". Do not use for task requests. (plugin:todu)
 allowed-tools: habit_show, habit_note_add, habit_check, Read, Write, Edit, AskUserQuestion
 ---
 

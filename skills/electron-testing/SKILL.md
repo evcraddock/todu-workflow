@@ -1,6 +1,6 @@
 ---
 name: electron-testing
-description: Test and interact with Electron desktop applications using Playwright via CDP (Chrome DevTools Protocol). Use when testing Electron apps, debugging UI issues, taking screenshots, verifying interactions, walking through manual test plans, or exercising Electron-based desktop applications. Trigger when user mentions "test electron app", "debug electron", "electron screenshot", "walk through the app", or references testing a desktop app built with Electron.
+description: Test and interact with Electron desktop apps using Playwright via CDP. Use for Electron UI testing, screenshots, debugging, or manual test walks. Do not use for ordinary web apps.
 ---
 
 # Electron Testing

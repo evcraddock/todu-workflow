@@ -1,6 +1,6 @@
 ---
 name: task-start-preflight
-description: Verify a task is ready to be worked on. Use when user says "start preflight", "run preflight", "task preflight", or similar.
+description: Verify a Todu task is ready to be worked on. Use for "start preflight", "run preflight", or pipeline readiness checks. Do not implement the task.
 ---
 
 # Task Start Preflight

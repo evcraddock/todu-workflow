@@ -1,6 +1,6 @@
 ---
 name: quality-tooling
-description: Set up linting, formatting, testing, and pre-commit hooks for a project. Use when asked to "add linting", "set up quality tools", "configure eslint", "add pre-commit hooks", or similar.
+description: Set up linting, formatting, testing, and pre-commit hooks. Use for quality tooling requests such as ESLint, Ruff, Vitest, or pre-commit. Do not use for dev-server setup.
 ---
 
 # Quality Tooling

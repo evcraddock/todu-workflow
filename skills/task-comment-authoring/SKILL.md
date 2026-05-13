@@ -1,6 +1,6 @@
 ---
 name: task-comment-authoring
-description: Draft and refine structured markdown task notes and comments.
+description: Draft and refine structured markdown task notes/comments. Use before posting task updates, blockers, completions, or review notes. Does not post comments.
 ---
 
 # Task Comment Authoring
