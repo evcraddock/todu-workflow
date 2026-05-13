@@ -5,488 +5,78 @@ description: Initialize a project end-to-end: repo, registration, scaffold, qual
 
 # Project Init
 
-Initialize a new project from scratch. This skill orchestrates the full setup flow.
+Initialize a project from scratch, or rerun the project baseline on an already registered project. This skill is the orchestrator; load the focused references only when their flow is needed.
 
-## Prerequisites
+## References
 
-Verify required CLI tools are available:
+- `references/new-project-flow.md` - questionnaire, repository creation, project registration, scaffold/tooling/dev environment, and initial summary.
+- `references/existing-project-rerun.md` - rerun behavior for an already registered project.
+- `references/project-location.md` - project directory environment variables and shell config persistence.
+- `references/commit-and-tasks.md` - initial commit/push, README task link update, and design/backlog task creation or update.
+
+## Preconditions
+
+Verify required CLIs before the phase that needs them:
 
 ```bash
-# Check for GitHub CLI (if using GitHub)
-command -v gh &>/dev/null && echo "OK: gh" || echo "MISSING: gh (install from https://cli.github.com/)"
-
-# Check for Forgejo CLI (if using Forgejo)
-command -v fj &>/dev/null && echo "OK: fj" || echo "MISSING: fj (cargo install forgejo-cli)"
-
-# Check for todu
+command -v gh &>/dev/null && echo "OK: gh" || echo "MISSING: gh"
+command -v fj &>/dev/null && echo "OK: fj" || echo "MISSING: fj"
 command -v todu &>/dev/null && echo "OK: todu" || echo "MISSING: todu"
 ```
 
-## Overview
+Use the host-specific CLI only when that host is selected. For Forgejo authentication checks, use `zsh -ic "fj whoami"` so keyring access works.
 
-0. **Detect Existing Project** - Check if re-running on existing project
-1. **Gather Info** - Use questionnaire to collect project details (skip if existing)
-2. **Determine Location** - Check/set env vars for project directory (skip if existing)
-3. **Create Repo** - Create remote repo and clone locally (skip if existing)
-4. **Register Project** - Register the repo in todu via `project-register` (skip if existing)
-5. **Scaffold** - Generate README, LICENSE, .gitignore, AGENTS.md, docs/
-6. **Quality Tooling** - Set up linting, formatting, testing
-7. **Dev Environment** - Set up Procfile, Makefile, Docker services
-8. **Commit & Push** - Initial commit with all generated files
-9. **Create Task** - Create initial design/backlog task (skip if existing)
+## Approval Gates
 
----
+Ask before actions with external or hard-to-reverse side effects:
 
-## Phase 0: Detect Existing Project
+- writing shell config for project directory preferences
+- creating a remote repository
+- registering or updating a project in Todu when the user did not explicitly ask for it
+- committing generated files
+- pushing to a remote
+- creating or updating the design/backlog task
 
-Apply the `project-check` skill to determine if we're re-running on an existing project.
+Local generated scaffold/tooling files are part of this requested setup flow. Follow the downstream skills' own overwrite behavior and stop if local project state makes the requested setup ambiguous.
 
-**If "Not Registered"**: This is a new project → proceed to Phase 1a.
+## Orchestration
 
-**If "Registered"**: This is an existing project. Set variables:
+1. Detect whether the current directory is already registered:
+   - Apply the `project-check` skill.
+   - If registered, follow `references/existing-project-rerun.md`.
+   - If not registered, follow `references/new-project-flow.md`.
+2. For new projects, gather project inputs and determine `localPath` using `references/project-location.md`.
+3. Apply helper skills in order:
+   - `repo-create`
+   - `project-register`
+   - `project-scaffold`
+   - `quality-tooling`
+   - `dev-environment`
+4. Use `references/commit-and-tasks.md` for README task-link replacement, initial commit/push, and design task creation/update.
+5. Stop and report the first blocking failure. The user can rerun this skill after fixing the issue.
 
-- `name` - from project-check result
-- `host` - from project-check result (github or forgejo)
-- `localPath` - current working directory
+## Shared Inputs
 
-Detect stack from files:
+Track these variables across the flow:
 
-```bash
-if [ -f package.json ]; then detected_stack="typescript"
-elif [ -f go.mod ]; then detected_stack="go"
-elif [ -f pyproject.toml ]; then detected_stack="python"
-elif [ -f Cargo.toml ]; then detected_stack="rust"
-fi
-```
-
-Ask user to confirm or change:
-
-```
-Detected existing project: {name}
-Stack detected: {detected_stack}
-
-Use this stack or choose different?
-Options: {detected_stack} (detected), typescript, go, python, rust
-```
-
-→ Store as `stack`
-
-Then **skip to Phase 5** (Scaffold).
-
----
-
-## Phase 1a: Gather Project Info (New Projects Only)
-
-Ask the user these questions sequentially. Use your agent's native prompting capability (e.g., ask a question and wait for response before proceeding to the next).
-
-### Question 1: Project Name
-```
-What is the project name?
-```
-→ Store as `name`
-
-### Question 2: Host
-```
-Where will this project be hosted?
-Options: forgejo, github
-```
-→ Store as `host`
-
-### Question 3: Tech Stack
-```
-What tech stack will you use?
-Options: typescript, go, python, rust
-```
-→ Store as `stack`
-
-### Question 4: Framework
-```
-What framework? (optional)
-
-For TypeScript: none, hono, express
-For Go: none, gin, echo
-For Python: none, fastapi, flask
-For Rust: none, axum
-
-(Use "none" for CLI tools or libraries)
-```
-→ Store as `framework`
-
-### Question 5: Description
-```
-Brief project description:
-```
-→ Store as `description`
-
-### Question 6: Database
-```
-Database needed?
-Options: none, postgres, sqlite
-```
-→ Store as `database`
-
-### Question 7: Additional Services
-```
-Additional services?
-Options: none, redis, s3
-```
-→ Store as `services`
-
-### Collected Variables
-
-After gathering, you should have:
 - `name` - project name
-- `host` - forgejo or github
-- `stack` - typescript, go, python, or rust
-- `framework` - none, hono, express, gin, echo, fastapi, flask, or axum
-- `description` - brief description
-- `database` - none, postgres, or sqlite
-- `services` - none, redis, or s3
-
----
-
-## Phase 1b: Determine Project Location
-
-### Check Environment Variables
-
-```bash
-# Check for existing project directory config
-echo $FORGEJO_PROJECTS_DIR
-echo $GITHUB_PROJECTS_DIR
-echo $PROJECT_INIT_SHELL_CONFIG
-```
-
-### If env var NOT set for selected host:
-
-1. **Ask for shell config preference**
-
-   If `$PROJECT_INIT_SHELL_CONFIG` is not set, ask the user:
-   
-   ```
-   Which shell config should I update to save your project directory preference?
-   Options: ~/.zshrc, ~/.bashrc, ~/.profile, or specify another
-   ```
-   
-2. **Ask for projects directory**
-
-   ```
-   Where do you keep your {host} projects?
-   Common options: ~/Private/code/{host}, ~/Projects/{host}, ~/code/{host}
-   ```
-
-3. **Save to shell config**
-
-   Append to the shell config file:
-   ```bash
-   # Project Init settings
-   export PROJECT_INIT_SHELL_CONFIG="{shell_config_path}"
-   export FORGEJO_PROJECTS_DIR="{projects_dir}"  # or GITHUB_PROJECTS_DIR
-   ```
-   
-   Notify user: "Added {VAR_NAME} to {shell_config}"
-
-### If env var IS set:
-
-Use it as the default `baseDir`.
-
-### Compute localPath
-
-```
-localPath = {baseDir}/{name}
-```
-
-### Validate
-
-```bash
-# Check if directory already exists
-test -d {localPath} && echo "EXISTS" || echo "OK"
-```
-
-If exists, use the existing directory (this allows re-running project-init on existing projects).
-
----
-
-## Phase 2-3: Create Repository
-
-Apply the `repo-create` skill with:
-- `name` - from Phase 1a
-- `host` - from Phase 1a
-- `description` - from Phase 1a
-- `localPath` - from Phase 1b
-
-### Error Handling
-
-| Error | Action |
-|-------|--------|
-| CLI not installed | Show install instructions, abort |
-| Not authenticated | Show auth instructions, abort |
-| Repo already exists | Use existing repo (skip creation) |
-| Directory exists | Use existing directory (skip clone) |
-
-On success, proceed to Phase 4.
-
-## Phase 4: Register Project
-
-Apply the `project-register` skill to register the repository in todu.
-
-For a hosted repository, register it as an external repo using the created remote:
-- provider: `{host}`
-- target repository: `{owner}/{name}`
-- suggested project name: `{name}`
-- description: `{description}`
-
-If the project name already exists in todu, follow `project-register` conflict resolution.
-
-On success, proceed to Phase 5.
-
----
-
-## Phase 5: Project Scaffold
-
-Change to project directory:
-
-```bash
-cd {localPath}
-```
-
-Apply the `project-scaffold` skill with:
-- `name` - from Phase 1a
-- `description` - from Phase 1a
-- `stack` - from Phase 1a
-- `framework` - from Phase 1a
-- `host` - from Phase 1a (for PR template location)
-- `localPath` - from Phase 2-3
-
-This generates:
-- LICENSE
-- .gitignore
-- README.md
-- AGENTS.md
-- docs/CONTRIBUTING.md
-- docs/CODE_STANDARDS.md
-- .github/ or .forgejo/ PR template
-
----
-
-## Phase 6: Quality Tooling
-
-Apply the `quality-tooling` skill with:
-- `name` - from Phase 1a
-- `stack` - from Phase 1a
-- `localPath` - from Phase 2-3
-
-This generates:
-- Linter config (eslint, golangci-lint, ruff, clippy)
-- Formatter config (prettier, rustfmt)
-- Test config (vitest, pytest)
-- tsconfig.json (TypeScript only)
-- scripts/pre-pr.sh
-- Example test file
-
----
-
-## Phase 7: Dev Environment
-
-Apply the `dev-environment` skill with:
-- `name` - from Phase 1a
-- `stack` - from Phase 1a
-- `framework` - from Phase 1a
-- `database` - from Phase 1a
-- `services` - from Phase 1a
-- `localPath` - from Phase 2-3
-
-This generates:
-- `.env.example`
-- `Makefile`
-
-It also creates a follow-up task "Set up dev environment" for project-specific configuration (Procfile.dev, compose.yaml, etc.).
-
-Store the task URL as `dev_task_url` for use in the README and summary.
-
-### Update README with Task Link
-
-After the dev task is created, update the README to replace `{dev_task_url}` with the actual task URL:
-
-```bash
-sed -i "s|{dev_task_url}|$dev_task_url|g" README.md
-```
-
----
-
-## Phase 8: Commit & Push
-
-```bash
-cd {localPath}
-
-# Stage all files
-git add -A
-
-# Commit
-git commit -m "Initial project setup
-
-- Project scaffolding (README, LICENSE, AGENTS.md, docs/)
-- Quality tooling (linting, formatting, testing)
-- Dev environment (Procfile, Makefile, Docker)
-
-Generated with project-init skill"
-
-# Push
-git push -u origin main
-```
-
-### Error Handling
-
-If push fails:
-- Show the error
-- Ask: Retry, or skip (commit is local)?
-
----
-
-## Phase 9: Create or Update Design Task
-
-First, check if a design task already exists for this project:
-
-```bash
-todu task list --project {name} --label design --format json
-```
-
-**If a design task exists**: Update its description with current context:
-
-```bash
-todu task update {task_id} --description "..."
-```
-
-**If no design task exists**: Prefer passing the draft through `task-authoring` when available if title or description quality should be improved. Keep this open to the environment's available write path rather than depending on one specific create backend.
-
-### Task Description
-
-```
-Create the initial architecture/design for {name} and turn it into an actionable implementation backlog.
-
-## Context
-- Stack: {stack}
-- Framework: {framework}
-- Database: {database}
-- Description: {description}
-
-## Goal
-
-Produce an architecture/design deliverable for {name} and create the initial implementation backlog in the task backend so future agents can execute the work without guessing.
-
-## Requirements
-
-- Document the proposed architecture/design for the current project context.
-- Distinguish clearly between:
-  - architecture/design content produced by this task
-  - execution instructions for completing this design task
-  - implementation work that must become follow-on tasks instead of being done here
-- Create follow-on implementation tasks in the task backend. Do not leave the backlog only in repo docs, markdown notes, or loose checklists.
-- Each follow-on task must include:
-  - title
-  - `## Goal`
-  - `## Requirements`
-  - `## Acceptance criteria`
-  - `## Dependencies`
-- Use real task IDs in each follow-on task's `## Dependencies` section to express sequencing.
-- If a follow-on task has no blockers, state that explicitly in `## Dependencies`.
-- Do not use task status changes such as moving untouched tasks to `waiting` just to communicate order. Represent order through dependencies instead.
-- Keep this task focused on architecture/design output plus backlog creation. Do not fold follow-on implementation work into this task.
-- Use `task-authoring` when helpful, but ensure the final created task records satisfy the required structure and dependency rules above.
-
-## Acceptance criteria
-
-- [ ] Architecture/design output exists and is specific enough to guide implementation.
-- [ ] The initial implementation backlog exists as real backend task records.
-- [ ] Every follow-on task includes title, `## Goal`, `## Requirements`, `## Acceptance criteria`, and `## Dependencies`.
-- [ ] Sequencing and blockers are represented with real task IDs rather than status-only conventions.
-- [ ] This task is considered done only after both the architecture/design deliverable and the initial implementation backlog are complete.
-```
-
-### New Task Draft
-
-Draft task content to write:
-
-```text
-title: Design {name} architecture and backlog
-description: <Task Description above>
-```
-
-Use the environment's available task-writing path to create the record.
-
-### Error Handling
-
-If task creation/update fails, show warning but continue (non-critical).
-
----
-
-## Summary
-
-After all phases complete, show summary:
-
-```
-✓ Project initialized successfully!
-
-  Repository: {repoUrl}
-  Local path: {localPath}
-  Stack: {stack} + {framework}
-
-  Tasks:
-  - Design task: {design_task_url}
-  - Dev environment setup: {dev_task_url}
-```
-
-### Next Steps
-
-```
-## How to Work on This Project
-
-### 1. Install Dependencies
-
-{install_command based on stack}
-
-### 2. Start the Dev Environment
-
-make dev
-
-This starts all services defined in Procfile.dev. The command returns immediately (daemonized).
-
-If make dev fails, configure the dev environment first. See: {dev_task_url}
-
-### 3. View Logs
-
-make dev-logs    # Stream all logs (Ctrl+C to stop)
-make dev-tail    # Quick peek at recent logs
-
-### 4. Run Tests and Linting
-
-make check
-
-### 5. Before Opening a PR
-
-make pre-pr
-
-### 6. Stop the Dev Environment
-
-make dev-stop
-
-### All Available Commands
-
-make help
-```
-
-### Install Commands by Stack
-
-| Stack | Command |
-|-------|---------|
-| typescript | `bun install` or `npm install` |
-| go | `go mod download` |
-| python | `pip install -r requirements.txt` |
-| rust | `cargo build` |
-
----
-
-## Notes
-
-- If any phase fails, stop and report the error
-- User can re-run the skill after fixing issues
-- All phases use skills and shell scripts - works with any coding agent
+- `host` - `github` or `forgejo`
+- `stack` - `typescript`, `go`, `python`, or `rust`
+- `framework` - stack-appropriate framework or `none`
+- `description` - project description
+- `database` - `none`, `postgres`, or `sqlite`
+- `services` - `none`, `redis`, or `s3`
+- `localPath` - target local repository path
+- `dev_task_url` - URL for the dev environment setup task
+- `design_task_url` - URL for the design/backlog task
+
+## Behavior to Preserve
+
+- New projects: create/clone repo, register project, scaffold files, add quality tooling, add dev environment scaffolding, commit/push, and create the design/backlog task.
+- Existing projects: reuse current project metadata, detect or confirm stack, and rerun scaffold/tooling/dev environment phases without repo creation or project registration.
+- Dev environment setup creates or reuses the follow-up "Set up dev environment" task.
+- Design/backlog task creation/update is non-critical; warn and continue if it fails.
+
+## Scripts
+
+This refactor does not add project-init-specific scripts. Deterministic file generation remains owned by downstream skills such as `project-scaffold`, `quality-tooling`, and `dev-environment`.
