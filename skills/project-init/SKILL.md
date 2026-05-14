@@ -1,6 +1,6 @@
 ---
 name: project-init
-description: Initialize a project end-to-end: repo, registration, scaffold, quality tooling, and dev environment. Use for new project/app setup. Do not use for one-off setup changes.
+description: "Initialize a project end-to-end: repo, registration, scaffold, quality tooling, and dev environment. Use for new project/app setup. Do not use for one-off setup changes."
 ---
 
 # Project Init

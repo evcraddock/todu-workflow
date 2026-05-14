@@ -1,6 +1,6 @@
 ---
 name: project-scaffold
-description: Generate foundational files: README, LICENSE, .gitignore, AGENTS.md, docs, and PR template. Use for project scaffolding. Do not use for lint/test or dev-env setup.
+description: "Generate foundational files: README, LICENSE, .gitignore, AGENTS.md, docs, and PR template. Use for project scaffolding. Do not use for lint/test or dev-env setup."
 ---
 
 # Project Scaffold
