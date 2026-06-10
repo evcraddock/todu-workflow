@@ -1,5 +1,6 @@
-# Headless Chrome profile (copy of user's Chrome profile)
+# Browser profile data
 .headless-profile/
+chromium-profile/
 
 # Node modules
 node_modules/
