@@ -5,7 +5,7 @@ description: Browser automation via Chrome DevTools Protocol. Use to inspect, cl
 
 # Browser Tools
 
-Chrome DevTools Protocol tools for agent-assisted web automation. These tools connect to Chrome running on `:9222` with remote debugging enabled.
+Chrome DevTools Protocol tools for agent-assisted web automation. These tools connect to Chromium running on `:9222` with remote debugging enabled.
 
 ## Setup
 
@@ -16,14 +16,26 @@ cd {baseDir}
 npm install
 ```
 
-## Start Chrome
+## Start Chromium
 
 ```bash
-{baseDir}/browser-start.js              # Fresh profile
-{baseDir}/browser-start.js --profile    # Copy user's profile (cookies, logins)
+{baseDir}/browser-start.js              # Isolated Chromium profile under ~/.cache/browser-tools
+{baseDir}/browser-start.js --profile    # Persistent Chromium profile under ~/.config/browser-tools
 ```
 
-Launch Chrome with remote debugging on `:9222`. Use `--profile` to preserve user's authentication state.
+Launch Chromium with remote debugging on `:9222`. Existing tools connect to `http://localhost:9222` and work with the started Chromium instance.
+
+`browser-start.js` looks for Chromium in this order:
+
+1. `BROWSER_TOOLS_CHROMIUM_PATH`
+2. `CHROMIUM_PATH`
+3. `PUPPETEER_EXECUTABLE_PATH`
+4. Common platform paths such as `/Applications/Chromium.app/Contents/MacOS/Chromium`, `/usr/bin/chromium`, `/usr/bin/chromium-browser`, `/snap/bin/chromium`, and Windows Chromium install locations
+5. `chromium` or `chromium-browser` on `PATH`
+
+If Chromium is not found, `browser-start.js` installs Puppeteer-managed Chromium with `puppeteer browsers install chromium@latest`. Set `BROWSER_TOOLS_SKIP_CHROMIUM_INSTALL=1` to disable automatic installation and receive install instructions instead. Set `BROWSER_TOOLS_USER_DATA_DIR=/path/to/profile` to override the profile directory.
+
+The tool no longer copies the Google Chrome profile. Use the Chromium profile started by this tool, or pass `BROWSER_TOOLS_USER_DATA_DIR` to reuse an existing Chromium-compatible user data directory.
 
 ## Navigate
 
