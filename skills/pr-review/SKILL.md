@@ -12,6 +12,18 @@ Review a PR and stop before merge.
 - PR number
 - task ID (required)
 
+## Bounded Execution Contract
+
+Complete the review with this short checklist only:
+
+1. Validate required inputs.
+2. Detect the PR host.
+3. Run the matching host worker.
+4. Validate required worker result fields and artifacts.
+5. Report the outcome and stop at the merge gate.
+
+Do not broaden the review after the worker returns a verdict. Do not reread unrelated project context, rerun checks, or continue exploratory reasoning after required artifacts are posted.
+
 ## Steps
 
 1. Validate task ID is provided.
@@ -35,6 +47,12 @@ Review a PR and stop before merge.
 - Never merge in this skill.
 - Never claim completion while required artifacts are missing.
 - Do not phrase required next steps as optional.
+- Avoid sub-skill calls except the explicitly required task/comment tooling used to post artifacts and `task-comment-authoring` when drafting structured review/task comments.
+- After the verdict is determined and required artifacts are posted, do not run additional checks or broad rereads.
+
+## Tmux Completion Rule
+
+When this skill runs inside the tmux sub-agent wrapper, emit the final `PR Review Status` output between the wrapper's result markers and signal completion immediately after posting required artifacts. No additional commentary, verification, or exploration may follow the marker-delimited result.
 
 ## Output Contract
 

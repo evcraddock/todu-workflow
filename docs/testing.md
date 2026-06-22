@@ -49,6 +49,8 @@ To test the full review flow:
    - Review comment is posted to the task via `task-comment-create`
    - Agent reports review outcome and waits for explicit merge approval
 
+When testing through the tmux sub-agent wrapper, use a small PR and the wrapper's 120-second timeout. Verify that the review follows the bounded checklist, uses `task-comment-authoring` only for concise artifact drafting, posts both required comments, emits the marker-delimited `PR Review Status`, signals completion immediately, and does not continue with extra exploration after the verdict.
+
 ## Automated Testing
 
 TODO: Add automated tests for skills.
