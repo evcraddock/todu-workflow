@@ -8,6 +8,17 @@ Shared review logic for all hosts.
 - PR title/body
 - PR diff
 
+## Bounded Checklist
+
+1. Load task details once with `task-show` using the provided task ID.
+2. Extract task objective and acceptance criteria from the task description.
+3. Compare the PR diff against each acceptance criterion.
+4. Check only review-relevant quality concerns.
+5. Decide exactly one outcome.
+6. Prepare required artifact content.
+
+Stop once the outcome and artifact content are ready. Do not reread broad context, revisit settled criteria, or continue exploratory checks after choosing the verdict.
+
 ## Procedure
 
 1. Load task details via `task-show` using the provided task ID.
@@ -35,7 +46,7 @@ Shared review logic for all hosts.
 
 ## Required Review Content
 
-Review comment content must include:
+Use `task-comment-authoring` when drafting the task-facing review summary. Review comment content must include:
 - summary
 - acceptance criteria checklist with per-criterion status
 - blocking issues (if any)
