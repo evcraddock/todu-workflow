@@ -51,6 +51,19 @@ To test the full review flow:
 
 When testing through the tmux sub-agent wrapper, use a small PR and the wrapper's 120-second timeout. Verify that the review follows the bounded checklist, uses `task-comment-authoring` only for concise artifact drafting, posts both required comments, emits the marker-delimited `PR Review Status`, signals completion immediately, and does not continue with extra exploration after the verdict.
 
+### task-close-gate Skill
+
+To test close-gate behavior:
+
+1. Use a task with clear acceptance criteria and existing completion evidence in task comments or a referenced merged PR.
+2. Run: `verify and close task #<task-id>`.
+3. Verify:
+   - Each acceptance criterion is marked `met`, `partial`, or `missing` with explicit evidence
+   - The task is marked done only when all criteria are met
+   - A closing task comment is posted via `task-comment-create`
+
+When testing through the tmux sub-agent wrapper, use the wrapper's 120-second timeout. Verify that the close gate follows the bounded checklist, uses only bounded evidence sources, emits the marker-delimited close-gate result, signals completion immediately after the closing update or `BLOCKED` decision, and does not invoke unrelated skills or continue exploratory checks.
+
 ## Automated Testing
 
 TODO: Add automated tests for skills.
