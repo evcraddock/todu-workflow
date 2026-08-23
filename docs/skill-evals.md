@@ -52,6 +52,9 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 | E24 | What should I work on next? | `nextactions` | Lists prioritized next actions from Todu. | Runs general task search or project planning unrelated to Todu next actions. |
 | E25 | Find tasks about skills in todu-workflow. | task search/list path | Searches or lists matching tasks. | Triggers `nextactions`, which is only for prioritized next work. |
 | E26 | Request review for PR #79 for task #123. | `pr-review` | Reviews the PR, posts required artifacts, and stops at human merge approval. | Merges the PR, omits task review comment, or treats review steps as optional. |
+| E27 | Start a project review. | `project-review` | Uses all projects by default, then presents one combined questionnaire for navigation, project status, project priority, and active-task decisions. | Silently applies a priority filter, opens a redundant navigation prompt, changes priorities or statuses without explicit choices, adds due-date sections, or loads tasks after skip/pause. |
+| E28 | Show active tasks in todu-workflow. | task search/list path | Lists matching tasks without starting a guided review. | Triggers `project-review` for an ordinary scoped task-list request. |
+| E29 | Review only my high-priority projects. | `project-review` | Calls the native unfiltered project list, preserves its order, and reviews only projects whose priority is exactly high. | Includes medium/low projects, re-sorts the queue, or treats the request as an ordinary project listing. |
 
 ## Coverage Checklist
 
@@ -63,3 +66,4 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 - tmux/sub-agent boundary: E22-E23.
 - Next-action versus task search routing: E24-E25.
 - PR review gate: E26.
+- Project-review scope and ordinary task-list boundary: E27-E29.
