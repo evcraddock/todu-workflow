@@ -50,7 +50,7 @@ Use [task-comment-authoring](skills/task-comment-authoring/SKILL.md) to shape pr
 
 ## Project Review
 
-Use [project-review](skills/project-review/SKILL.md) to walk through every Todu project in order, optionally update project status, and explicitly keep, reprioritize, or cancel each active task.
+Use [project-review](skills/project-review/SKILL.md) to walk through every Todu project in order, optionally update project status and priority, and explicitly keep, reprioritize, or cancel each active task.
 
 ## 2) Task Workflow pipeline
 
