@@ -34,29 +34,27 @@ Do not parse Todu CLI output. Do not use due, scheduled, today, or overdue queri
 2. Preserve the displayed tool order as the review queue.
 3. Show the complete queue with each project's name, ID, status, and priority.
 4. If there are no projects, report that the review is complete and stop.
-5. Announce the first project, then use the navigation prompt described below before loading its review.
+5. Announce the first project, then open the combined project questionnaire described below.
 
 ## 2. Review one project
 
 Keep the current project name and ID visible in every task-review prompt and response.
 
 1. Clearly announce the project name and show its ID, current status, and current priority.
-2. Ask for a project-status choice with exactly these outcomes:
-   - `Keep current — <current status>`
-   - `Active`
-   - `Done`
-   - `Cancelled`
-3. In the same submitted review step, ask for a project-priority choice with exactly these outcomes:
-   - `Keep current — <current priority>`
-   - `High`
-   - `Medium`
-   - `Low`
-4. In that same submitted review step, ask `Evaluate this project's active tasks?` with `Yes` and `No` choices.
-5. Call `project_update` only when the user explicitly chose a status or priority different from the current value. Send only the fields whose values changed.
-6. Allow task evaluation regardless of the project's existing or newly selected status and priority.
-7. If task evaluation is declined, do not load or modify tasks; proceed to the project summary after applying any explicit project status or priority change.
+2. Open one multi-question project questionnaire containing all of these tabs:
+   - `Project action`: `Continue`, `Skip`, or `Pause`
+   - `Project status`: `Keep current — <current status>`, `Active`, `Done`, or `Cancelled`
+   - `Project priority`: `Keep current — <current priority>`, `High`, `Medium`, or `Low`
+   - `Active tasks`: `Yes` or `No`
+3. Evaluate `Project action` before every other submitted answer:
+   - `Continue` — process the submitted status, priority, and active-task choices.
+   - `Skip` — ignore the other answers, make no changes, summarize the project as skipped, and advance.
+   - `Pause` — ignore the other answers and stop immediately without changes.
+4. For `Continue`, call `project_update` only when the user explicitly chose a status or priority different from the current value. Send only the fields whose values changed.
+5. Allow task evaluation regardless of the project's existing or newly selected status and priority.
+6. If task evaluation is declined, do not load or modify tasks; proceed to the project summary after applying any explicit project status or priority change.
 
-If the project review prompt is dismissed, make no project or task changes and pause the review.
+If the combined project questionnaire is dismissed, make no project or task changes and pause the review.
 
 ## 3. Present active tasks
 
@@ -125,12 +123,8 @@ For a project skipped at navigation, report that it was skipped with no changes.
 
 ## 6. Navigate the queue
 
-Before loading each queued project, including the first, announce its name and ID and require one choice:
+Do not show a separate navigation prompt. Navigation is the `Project action` tab in the combined project questionnaire.
 
-- `Continue` — load and review this project.
-- `Skip` — make no changes, summarize it as skipped, and advance to the next project.
-- `Pause` — stop immediately without loading the project or making additional changes.
-
-If `Skip` is selected, announce the next queued project and ask the same navigation question. After a reviewed project's summary, announce the next project and ask the navigation question before loading it. If the navigation prompt is dismissed, treat it as `Pause`.
+After a reviewed or skipped project's summary, announce the next project's name and ID and open its combined questionnaire. If `Pause` is selected or the questionnaire is dismissed, stop without loading tasks or making changes for that project.
 
 Changes completed before a pause remain in place. When the queue is exhausted, report that the review is complete and summarize reviewed and skipped projects.

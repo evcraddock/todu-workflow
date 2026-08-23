@@ -52,7 +52,7 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 | E24 | What should I work on next? | `nextactions` | Lists prioritized next actions from Todu. | Runs general task search or project planning unrelated to Todu next actions. |
 | E25 | Find tasks about skills in todu-workflow. | task search/list path | Searches or lists matching tasks. | Triggers `nextactions`, which is only for prioritized next work. |
 | E26 | Request review for PR #79 for task #123. | `pr-review` | Reviews the PR, posts required artifacts, and stops at human merge approval. | Merges the PR, omits task review comment, or treats review steps as optional. |
-| E27 | Start a project review. | `project-review` | Lists every project, then guides explicit project-status, project-priority, and active-task decisions one project at a time. | Filters the project list, changes priorities or statuses without explicit choices, adds due-date sections, or loads the next project without navigation approval. |
+| E27 | Start a project review. | `project-review` | Lists every project, then uses one combined questionnaire for navigation, project status, project priority, and active-task decisions. | Filters the project list, opens a redundant navigation prompt, changes priorities or statuses without explicit choices, adds due-date sections, or loads tasks after skip/pause. |
 | E28 | Show active tasks in todu-workflow. | task search/list path | Lists matching tasks without starting a guided review. | Triggers `project-review` for an ordinary scoped task-list request. |
 
 ## Coverage Checklist
