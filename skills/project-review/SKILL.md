@@ -1,10 +1,10 @@
 ---
-name: weekly-review
-description: Guide a Todu review across every project and optionally evaluate active tasks. Use for "weekly review", "review my projects", or "review all active tasks". Do not use for PR review or ordinary task listing. (plugin:todu)
+name: project-review
+description: Guide a Todu review across every project and optionally evaluate active tasks. Use for "project review", "review my projects", or "review all active tasks". Do not use for PR review or ordinary task listing. (plugin:todu)
 allowed-tools: project_list, project_update, task_list, task_show, task_update, task_comment_create, AskUserQuestion
 ---
 
-# Weekly Review
+# Project Review
 
 Guide the user through every Todu project in order. Project and task changes must always come from explicit choices.
 

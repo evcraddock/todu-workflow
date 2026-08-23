@@ -48,9 +48,9 @@ Use [task-authoring](skills/task-authoring/SKILL.md) to improve what the task sa
 
 Use [task-comment-authoring](skills/task-comment-authoring/SKILL.md) to shape progress updates, blockers, completion notes, and review summaries before posting them to a task. It should be the preferred path when a workflow needs well-structured markdown comment content without creating the task note record itself.
 
-## Weekly Review
+## Project Review
 
-Use [weekly-review](skills/weekly-review/SKILL.md) to walk through every Todu project in order, optionally update project status, and explicitly keep, reprioritize, or cancel each active task.
+Use [project-review](skills/project-review/SKILL.md) to walk through every Todu project in order, optionally update project status, and explicitly keep, reprioritize, or cancel each active task.
 
 ## 2) Task Workflow pipeline
 
@@ -105,7 +105,7 @@ That means each project is expected to customize:
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
 | [task-authoring](skills/task-authoring/SKILL.md) | Draft structured markdown task descriptions before creation |
 | [task-comment-authoring](skills/task-comment-authoring/SKILL.md) | Draft structured markdown task notes and comments before posting |
-| [weekly-review](skills/weekly-review/SKILL.md) | Guide a review across every project and its active tasks |
+| [project-review](skills/project-review/SKILL.md) | Guide a review across every project and its active tasks |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Gated task execution flow |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
 | [task-perform](skills/task-perform/SKILL.md) | Perform a single task directly from its description |
