@@ -1,12 +1,12 @@
 ---
 name: project-review
-description: Guide a Todu review across all projects or only high-priority projects, with optional active-task evaluation. Use for "project review", "review my projects", or "review high-priority projects". Do not use for PR review or ordinary task listing. (plugin:todu)
+description: Guide a Todu review across all active projects or only high-priority active projects, with optional active-task evaluation. Use for "project review", "review my projects", or "review high-priority projects". Do not use for PR review or ordinary task listing. (plugin:todu)
 allowed-tools: project_list, project_update, task_list, task_show, task_update, task_comment_create, AskUserQuestion
 ---
 
 # Project Review
 
-Guide the user through Todu projects in order, using all projects by default or only high-priority projects when explicitly requested. Project and task changes must always come from explicit choices.
+Guide the user through active Todu projects in order, using all active projects by default or only high-priority active projects when explicitly requested. Never include projects already marked `done` or `cancelled`; a terminal status reflects a completed decision and places the project outside this review workflow. Project and task changes must always come from explicit choices.
 
 ## Native tools
 
@@ -31,16 +31,17 @@ Do not parse Todu CLI output. Do not use due, scheduled, today, or overdue queri
 ## 1. Build the review queue
 
 1. Determine scope from the user's explicit request:
-   - no priority scope stated — review all projects
-   - `high-priority projects only` or equivalent — review only projects whose priority is exactly `high`
+   - no priority scope stated — review all active projects
+   - `high-priority projects only` or equivalent — review only active projects whose priority is exactly `high`
 2. Call `project_list` once without filters so the native result includes projects of every status and priority.
-3. Build the review queue:
-   - all-project scope — use the complete result
-   - high-priority-only scope — filter the result in memory to priority exactly `high`
-4. Preserve the displayed `project_list` order; do not re-sort the queue.
-5. Announce the selected scope and show the resulting queue with each project's name, ID, status, and priority.
-6. If the resulting queue is empty, report that no projects match the selected scope and stop.
-7. Announce the first project, then open the combined project questionnaire described below.
+3. Exclude every project whose status is not exactly `active`. Never add a `done` or `cancelled` project to the review queue, even if it is high priority.
+4. Build the review queue from the remaining active projects:
+   - all-active-project scope — use every remaining project
+   - high-priority-active-only scope — filter the remaining projects in memory to priority exactly `high`
+5. Preserve the displayed `project_list` order; do not re-sort the queue.
+6. Announce the selected scope and show the resulting queue with each project's name, ID, status, and priority.
+7. If the resulting queue is empty, report that no active projects match the selected scope and stop.
+8. Announce the first project, then open the combined project questionnaire described below.
 
 ## 2. Review one project
 
