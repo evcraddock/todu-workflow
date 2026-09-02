@@ -14,6 +14,7 @@ from icalendar import Calendar, Event
 from .calendar_io import (
     build_calendar,
     component_to_json,
+    ensure_supported_recurrence,
     has_recurrence_exceptions,
     master_event,
     parse_local_datetime,
@@ -242,6 +243,7 @@ class CalendarService:
             )
         existing_calendar: Calendar = resource.icalendar_instance
         existing_component = master_event(existing_calendar)
+        ensure_supported_recurrence(existing_component)
         current = self._event_input(existing_component)
         patch = request.event.model_dump(exclude_unset=True)
         merged = current.model_copy(update=patch)

@@ -16,7 +16,7 @@ Use the `radicale-calendar` command with JSON on standard input. Never put crede
 4. Address updates and deletes only by exact calendar ID plus UID. Never select a mutation target by title alone.
 5. List the relevant date range to obtain the current UID and ETag before updating or deleting. If title or other details match multiple events, ask the user which UID is intended.
 6. Treat `ETAG_CONFLICT` as a hard stop. Re-list, explain that the event changed, and ask the user to review the current event before retrying.
-7. Support recurring mutations only with `recurrence_scope` set to `series`. Never translate a request for one occurrence or this-and-future occurrences into a whole-series mutation; report that the operation is unsupported.
+7. Support recurring mutations only with `recurrence_scope` set to `series`. Never translate a request for one occurrence, this-and-future occurrences, or an existing recurrence outside the documented basic subset into a whole-series mutation; report that the operation is unsupported.
 8. Before deletion, show the selected calendar, title, start/end, UID, and recurrence status in normal chat and ask for explicit confirmation. Only after confirmation may the delete JSON include `"confirm":true`.
 
 ## Operations

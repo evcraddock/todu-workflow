@@ -83,7 +83,7 @@ Add this object as `event.recurrence`:
 }
 ```
 
-Allowed frequencies are `daily`, `weekly`, `monthly`, and `yearly`. `count` and `until` are mutually exclusive. `by_weekday` is allowed only for weekly recurrence. Allowed weekday values are `MO`, `TU`, `WE`, `TH`, `FR`, `SA`, and `SU`.
+Allowed frequencies are `daily`, `weekly`, `monthly`, and `yearly`. `count` and `until` are mutually exclusive. `by_weekday` is allowed only for weekly recurrence. Allowed weekday values are `MO`, `TU`, `WE`, `TH`, `FR`, `SA`, and `SU`. Existing series with other RRULE keys, recurrence dates, exclusion dates, or recurrence exceptions cannot be updated through this CLI and fail without modification.
 
 ## Update
 

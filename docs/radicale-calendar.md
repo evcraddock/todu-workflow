@@ -117,7 +117,7 @@ Basic daily, weekly, monthly, and yearly recurrence is supported. `interval` def
 {"frequency":"weekly","interval":1,"count":8,"by_weekday":["MO","WE"]}
 ```
 
-Create includes recurrence under `event.recurrence`. Update can replace the recurrence or set it to `null` to remove recurrence. Mutations apply only to the complete series and must use `"recurrence_scope":"series"`. `occurrence`, `future`, recurrence IDs, and calendars containing exception VEVENT components are rejected with `UNSUPPORTED_RECURRENCE_MUTATION` before a mutation is sent.
+Create includes recurrence under `event.recurrence`. Update can replace the recurrence or set it to `null` to remove recurrence. Mutations apply only to the complete series and must use `"recurrence_scope":"series"`. `occurrence`, `future`, recurrence IDs, calendars containing exception VEVENT components, and existing recurrence rules outside the documented basic subset are rejected with `UNSUPPORTED_RECURRENCE_MUTATION` before a mutation is sent.
 
 ## Schema summary
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from radicale_calendar.calendar_io import primary_event
 from radicale_calendar.errors import CalendarError, ConflictError
 from radicale_calendar.models import CreateInput, DeleteInput, RangeInput, UpdateInput
 from radicale_calendar.service import CalendarService
@@ -178,3 +179,44 @@ def test_all_day_and_recurring_whole_series_management(
             recurrence_scope="series",
         )
     )
+
+
+def test_unsupported_existing_recurrence_is_not_modified(
+    calendar_service: tuple[CalendarService, str],
+) -> None:
+    service, calendar_id = calendar_service
+    calendar, _ = service._resolve_calendar(calendar_id)
+    resource = calendar.save_event(
+        ical="""BEGIN:VCALENDAR\r
+VERSION:2.0\r
+PRODID:-//integration test//EN\r
+BEGIN:VEVENT\r
+UID:complex-series@example\r
+DTSTAMP:20260101T000000Z\r
+DTSTART:20260701T140000Z\r
+DTEND:20260701T150000Z\r
+SUMMARY:Complex series\r
+RRULE:FREQ=YEARLY;BYMONTH=7\r
+END:VEVENT\r
+END:VCALENDAR\r
+"""
+    )
+    current = service._resource_json(resource, calendar_id)
+
+    with pytest.raises(CalendarError) as unsupported:
+        service.update_event(
+            UpdateInput.model_validate(
+                {
+                    "calendar": calendar_id,
+                    "uid": "complex-series@example",
+                    "etag": current["etag"],
+                    "event": {"title": "Must not apply"},
+                }
+            )
+        )
+    assert unsupported.value.code == "UNSUPPORTED_RECURRENCE_MUTATION"
+
+    unchanged = calendar.event_by_uid("complex-series@example").load()
+    component = primary_event(unchanged.icalendar_instance)
+    assert str(component["SUMMARY"]) == "Complex series"
+    assert component["RRULE"]["BYMONTH"] == [7]

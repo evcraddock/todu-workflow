@@ -11,6 +11,9 @@ from .errors import CalendarError
 from .models import EventInput, Recurrence
 
 PRODID = "-//radicale-calendar-cli//EN"
+SUPPORTED_RRULE_PROPERTIES = {"FREQ", "INTERVAL", "COUNT", "UNTIL", "BYDAY"}
+SUPPORTED_FREQUENCIES = {"DAILY", "WEEKLY", "MONTHLY", "YEARLY"}
+SUPPORTED_WEEKDAYS = {"MO", "TU", "WE", "TH", "FR", "SA", "SU"}
 
 
 def timezone(name: str) -> ZoneInfo:
@@ -144,6 +147,39 @@ def master_event(calendar: Calendar) -> Event:
             "only basic whole-series updates are supported",
         )
     return event
+
+
+def ensure_supported_recurrence(component: Event) -> None:
+    unsupported_components = [name for name in ("RDATE", "EXDATE", "EXRULE") if name in component]
+    rule = component.get("RRULE")
+    unsupported_rule = (
+        sorted({str(name).upper() for name in rule} - SUPPORTED_RRULE_PROPERTIES)
+        if rule is not None
+        else []
+    )
+    if unsupported_components or unsupported_rule:
+        raise CalendarError(
+            "UNSUPPORTED_RECURRENCE_MUTATION",
+            "existing recurrence uses properties that cannot be updated safely",
+            details={
+                "component_properties": unsupported_components,
+                "rrule_properties": unsupported_rule,
+            },
+        )
+    if rule is None:
+        return
+    frequencies = [str(value).upper() for value in rule.get("FREQ", [])]
+    weekdays = [str(value).upper() for value in rule.get("BYDAY", [])]
+    if (
+        len(frequencies) != 1
+        or frequencies[0] not in SUPPORTED_FREQUENCIES
+        or any(day not in SUPPORTED_WEEKDAYS for day in weekdays)
+        or (weekdays and frequencies[0] != "WEEKLY")
+    ):
+        raise CalendarError(
+            "UNSUPPORTED_RECURRENCE_MUTATION",
+            "existing recurrence is outside the supported basic recurrence subset",
+        )
 
 
 def decoded_text(component: Event, name: str) -> str | None:
