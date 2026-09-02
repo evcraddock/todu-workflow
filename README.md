@@ -114,6 +114,7 @@ That means each project is expected to customize:
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
+| [radicale-calendar](skills/radicale-calendar/SKILL.md) | Safely manage Radicale CalDAV events through a structured JSON CLI |
 | [brave-search](skills/brave-search/SKILL.md) | Vendored Brave Search skill for headless web search |
 | [browser-tools](skills/browser-tools/SKILL.md) | Vendored browser automation skill using Chrome DevTools Protocol |
 
@@ -141,6 +142,10 @@ ln -s ~/.local/share/todu-workflow/skills ~/.codex/skills/todu-workflow
 ```
 
 Restart your agent after installing.
+
+## Radicale calendar CLI
+
+This repository also ships the installable `radicale-calendar` Python CLI and its globally discoverable pi skill. See [Radicale Calendar CLI](docs/radicale-calendar.md) for secure configuration, JSON schemas, supported recurrence behavior, and test instructions.
 
 ## Requirements
 
