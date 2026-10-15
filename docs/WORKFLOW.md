@@ -235,7 +235,7 @@ Any unresolved readiness, verification, write, or approval issue
 
 ### Always Use Preflights
 
-- **Readiness**: `task-start-preflight` checks readiness without implementation or status mutations; plan approval is separate.
+- **Readiness**: `task-start-preflight` is the shared read-only check for starting active tasks, resuming inprogress tasks, and standalone readiness requests. Return a concise explanation of status, intent, and actual blockers; implementation-ready specifications and a full report template are not required. Resolve explicit dependencies directly with native `task_show`, including cross-project references; missing or failed lookups never imply completion. Project planning/approval and execution remain separate.
 - **Execution**: `task-perform` confirms inprogress before work, records meaningful comments, and loads applicable development guidance.
 - **Completion**: `task-close-gate` assesses evidence for the lifecycle owner, which posts completion and marks done only after applicable gates pass. Standalone close requests do not start execution.
 

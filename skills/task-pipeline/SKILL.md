@@ -17,7 +17,7 @@ The fuller reference cleanup is tracked separately in task-d9b978d2; the retaine
 
 ## Steps
 
-1. Check task readiness with `task-start-preflight`.
+1. Use the shared read-only [task-start-preflight](../task-start-preflight/SKILL.md) readiness check; do not duplicate its rules here.
    - `READY` → continue
    - `BLOCKED` → stop
 

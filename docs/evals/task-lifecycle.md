@@ -56,4 +56,4 @@ All 16 fixture traces met the checked lifecycle properties in each of the three 
 - Chat-only work did not acquire PR/storage requirements. README/code changes respected independent review and human merge gates; unavailable review was not replaced with self-review.
 - No trace required tmux delegation for execution or completion verification.
 
-The preserved preflight still emits its existing verbose summary and same-project dependency queries. Those limitations are intentionally left to task-ab21a4af. Full pipeline/reference cleanup and standalone close-gate redesign remain in task-d9b978d2 and task-25854af5 respectively.
+At the time of these lifecycle runs, preflight still emitted its verbose summary and same-project dependency queries. Those historical results do not evaluate the later simplification in task-ab21a4af; see [Task Start Preflight Evaluation](task-start-preflight.md) for the revised concise, direct-lookup contract and its evaluation evidence. Full pipeline/reference cleanup and standalone close-gate redesign remain in task-d9b978d2 and task-25854af5 respectively.
