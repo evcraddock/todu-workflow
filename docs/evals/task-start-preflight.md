@@ -2,7 +2,7 @@
 
 ## Method and limits
 
-Evaluate the shared readiness contract with controlled no-write fixtures, not live task mutations. Supply the complete task-start-preflight and task-perform skills and the task-pipeline lifecycle integration section. Each fixture is an independent conversation with the mock task/tool outcomes below. Return proposed native-tool calls and the actual concise readiness response; do not execute anything or grade yourself. Repeat in three fresh contexts without expected answers or recorded results.
+Evaluate the shared readiness contract with controlled no-write fixtures, not live task mutations. Supply the complete task-start-preflight, task-perform, and task-pipeline skills. The recorded original runs supplied only the pipeline's then-current lifecycle integration section; the repeat command now supplies the complete rewritten reference. Each fixture is an independent conversation with the mock task/tool outcomes below. Return proposed native-tool calls and the actual concise readiness response; do not execute anything or grade yourself. Repeat in three fresh contexts without expected answers or recorded results.
 
 Unless overridden, the requested task is `task-eval` in `proj-eval`, status `active`, title `Document running skill evals`, description `Document how to run skill evals in this repository.` It has no dependencies. Native `task_show` is available and returns a confirmed successful task object. For dependency cases, the request is `Check whether task-eval is ready; do not start it`, and descriptions explicitly say `Depends on <ID>` unless stated otherwise. Dependency tool outcomes are supplied per fixture; do not infer results from task-list absence.
 
@@ -57,8 +57,7 @@ print('Controlled no-write simulation. Each fixture is independent. Mock '
       'object compact. Stop execution-handoff at the first chat action.')
 for skill in ['task-start-preflight', 'task-perform']:
     print(Path(f'skills/{skill}/SKILL.md').read_text())
-pipeline = Path('skills/task-pipeline/SKILL.md').read_text()
-print(pipeline.split('## Steps', 1)[0])
+print(Path('skills/task-pipeline/SKILL.md').read_text())
 report = Path('docs/evals/task-start-preflight.md').read_text()
 print(report.split('## Repeating', 1)[0])
 PY
@@ -99,5 +98,7 @@ Inspected the final actual responses and ordered proposed calls:
 Representative response: `task-eval is active but blocked by task-cross, Publish shared fixture format (proj-other), which is active.` The cancelled-dependency case asked whether the prerequisite still applies instead of treating cancellation as completed work. Standalone responses stayed concise, with no empty report sections or implementation actions.
 
 A mechanical check of the final JSON outputs confirmed all 26 unique fixture IDs per run, expected ready/non-ready outcomes, direct dependency IDs, no task_list calls, and only read calls in standalone traces. The execution case's call order was task_show, task_update with only taskId/status, then task_comment_create, all owned by task-perform.
+
+The recorded runs predate task-d9b978d2's pipeline rewrite; they do not establish behavior of that later reference. See [Task Pipeline Evaluation](task-pipeline.md) for the full-reference evaluation.
 
 Limitations: all tools, extensions, MCP, automatic skill discovery, and context-file discovery were disabled. These are proposed calls with mocked outcomes, not live native-tool executions, schema-validation tests, or a full discovery benchmark. Supplied neighboring skill text and batched contexts can prime responses; one model's runs do not guarantee future compliance. The separate calendar CLI's 11 tests and Ruff checks passed via ./scripts/pre-pr.sh; those checks do not validate skill behavior. git diff --check also passed.
