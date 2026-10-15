@@ -74,6 +74,8 @@ PY
 
 ## Results
 
+These recorded runs predate task-25854af5's unified completion verifier and closure-only caller integration. They support the pipeline version evaluated here, not the later closure redesign; see [Task Close Gate Evaluation](task-close-gate.md) for that contract.
+
 Ran three fresh Pi print-mode processes using `openai-codex/gpt-6.1-sol`, low thinking, with the flags above. Each received all four complete skills and all 22 independent fixtures in one batch: 66 proposed traces across three contexts, not 66 isolated sessions. Expected answers, inspection criteria, and results were withheld. All processes exited successfully.
 
 An initial three-run batch omitted native input schemas; its proposed comment calls used `body` rather than the actual `content` parameter. Those were not valid native comment calls. Corrected the fixture setup to supply the lifecycle tool input schemas and repeated the full batch without changing the skill source. Only the final schema-supplied runs support the results below; the initial traces are not evidence of native-call correctness.

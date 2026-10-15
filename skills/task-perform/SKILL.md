@@ -1,11 +1,19 @@
 ---
 name: task-perform
-description: Execute a Todu task through readiness, confirmed start, meaningful updates, verification, and completion. Use for "do/perform/execute/handle task", "work on task", "start task", "get started on task", or "pickup task". Do not use for habit requests, task lookup, or readiness-only checks. (plugin:todu)
+description: Own the Todu task lifecycle for do/work-on/start/pickup requests, or close/complete/verify-and-close requests in closure-only mode without starting work. Do not use for habits, task lookup, readiness-only, or verification-only requests. (plugin:todu)
 ---
 
 # Perform Task
 
 Own the task lifecycle. Wording such as "do", "work on", or "pickup" must not select different approval rules. Use native `task_show`, `task_update`, and `task_comment_create` tools, not CLI commands or task/comment wrapper skills. If required tools are unavailable, report the limitation; do not pretend a status change or comment succeeded.
+
+## Closure-only requests
+
+For an explicit close/complete/verify-and-close request, load the task and applicable project instructions, then enter section 4 directly. Do not run start preflight, set inprogress, post a starting/resuming comment, or implement missing work. Reuse a fresh successful task load from the caller when available; do not restart an existing invocation.
+
+For already-done tasks, report that state without duplicate closure writes. Do not silently reopen cancelled tasks; report the status decision needed. Active, inprogress, or waiting tasks may proceed to completion assessment, but any unresolved blocker and applicable project gate still prevent closure. If verification is not ready, explain/record the actual gap and leave the status unchanged rather than starting work to fill it.
+
+Verification-only requests belong to [task-close-gate](../task-close-gate/SKILL.md) and end with its assessment, without lifecycle writes. This closure-only path shares the section 4 completion ordering and failure handling; it is not a second lifecycle implementation or permission to bypass approval gates.
 
 ## 1. Understand and check readiness
 
@@ -30,10 +38,10 @@ Own the task lifecycle. Wording such as "do", "work on", or "pickup" must not se
 
 ## 4. Verify, summarize, and close
 
-- Use [task-close-gate](../task-close-gate/SKILL.md) in **assessment-only mode** in the current session. It returns completion evidence and a verdict; it must not post a closing comment or change task status for this caller.
+- Use [task-close-gate](../task-close-gate/SKILL.md) in the current session. It is always assessment-only and returns completion evidence and a verdict without posting comments or changing status.
 - Verify the requested outcome and any acceptance criteria with concrete, proportional evidence. When there is no formal criteria section, assess the agreed outcome instead. Do not invent requirements or substitute an unsupported "done" claim for evidence. Reuse applicable existing checks/review artifacts; gather targeted evidence when needed.
 - All applicable project gates must be satisfied before closure, including explicit merge approval and completed merge when required. Automatic completion never bypasses an approval gate. Waiting for approval is not completion.
 - If work is blocked, verification fails, or evidence is inconclusive, post a concise comment explaining what was done, what remains, and any decision needed. Keep the task open; do not mark it `done` or change it to another status merely to signal a blocker. Report a failed comment write as well as the underlying issue.
 - When verification and applicable gates pass, post a completion comment describing what changed and the verification evidence. Only after confirmed comment success call `task_update` with only `taskId` and `status: "done"`. Do not ask for an additional default completion approval.
 - If a write fails or its outcome is uncertain, report partial completion and reconcile current task/comment state before retrying. A successful comment followed by a failed status update must not produce a false closure claim or a blind duplicate comment.
-- Report the actual final status and any unresolved issue concisely. Task lookup, readiness-only, habit, and standalone close requests must not accidentally start execution through this skill.
+- Report the actual final status and any unresolved issue concisely. Task lookup, readiness-only, verification-only, and habit requests must not start this lifecycle. Explicit close requests use the closure-only path, never execution sections 1–3.

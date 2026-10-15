@@ -71,18 +71,11 @@ To test the full review flow:
 
 When testing through the tmux sub-agent wrapper, use a small PR and the wrapper's 120-second timeout. Verify that the review follows the bounded checklist, uses `task-comment-authoring` only for concise artifact drafting, posts both required comments, emits the marker-delimited `PR Review Status`, signals completion immediately, and does not continue with extra exploration after the verdict.
 
-### task-close-gate Skill
+### Task Close Gate and Closure-only Requests
 
-To test close-gate behavior:
+Use [Task Close Gate Evaluation](evals/task-close-gate.md) with complete verifier/caller skills, explicit mock evidence, native input schemas, and no live writes. Repeat in three fresh contexts. Cover outcomes without formal sections, supported versus unsupported/stale evidence, missing/partial completion, artifact reuse, targeted permitted checks and failures, outstanding project gates, and verification-only versus explicit/automatic closure.
 
-1. Use a task with clear acceptance criteria and existing completion evidence in task comments or a referenced merged PR.
-2. Run: `verify and close task #<task-id>`.
-3. Verify:
-   - Each acceptance criterion is marked `met`, `partial`, or `missing` with explicit evidence
-   - The task is marked done only when all criteria are met
-   - A closing task comment is posted via `task-comment-create`
-
-When testing through the tmux sub-agent wrapper, use the wrapper's 120-second timeout. Verify that the close gate follows the bounded checklist, uses only bounded evidence sources, emits the marker-delimited close-gate result, signals completion immediately after the closing update or `BLOCKED` decision, and does not invoke unrelated skills or continue exploratory checks.
+The verifier returns only a concise assessment and evidence; it never posts comments, changes status, launches tmux, implements missing work, or initiates another PR review. For authorized closure, task-perform uses its closure-only path or existing execution completion path, confirms the completion comment via native task_comment_create before task_update(done), and accurately handles failures. Explicit close requests must not start preflight, set inprogress, or post starting comments. Verification-only requests must not write or imply actual closure. Check these ownership/order boundaries rather than requiring a rigid report or redundant tests.
 
 ## Automated Testing
 

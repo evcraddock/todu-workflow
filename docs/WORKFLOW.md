@@ -87,7 +87,7 @@ At the end of execution:
 → Posts completion evidence, then marks done without another default approval prompt
 → Leaves the task open with an explanation when blocked or evidence is inconclusive
 
-Standalone "Close task #1234" requests still use the close gate without starting execution.
+Explicit "Close task #1234" / "Verify and close task #1234" requests use task-perform's closure-only path: shared completion assessment, then owner-controlled comment/status writes if ready. They do not run start preflight, set inprogress, post a starting comment, or implement missing work. Verification-only requests stop after task-close-gate returns its verdict, with no lifecycle writes.
 ```
 
 ### 4. Development Delivery Stages (Required When Applicable)
@@ -233,9 +233,9 @@ Any unresolved readiness, verification, write, or approval issue
 | `task-comment-authoring` | "draft a task comment", "write a task update", "help me write a note for task #X", "summarize progress for task #X" |
 | `task-start-preflight` | "check readiness", "run preflight" (read-only) |
 | `task-pipeline` | Development reference loaded by task-perform, not a direct execution trigger |
-| `task-perform` | "do/perform/execute/handle/start task #X", "work on task #X", "pickup task #X", "get started on task #X" |
+| `task-perform` | Execution: "do/work on/start/pickup task #X"; closure-only: "close/complete/verify and close task #X" |
 | `habit-perform` | "do habit #X", "perform habit #X", "handle habit #X", "work on habit #X" |
-| `task-close-gate` | "close task #X", "complete task", "finish task" |
+| `task-close-gate` | "verify completion only", "is task #X complete?"; shared assessment for task-perform, never lifecycle writes |
 | `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 
 ## Best Practices
@@ -244,7 +244,7 @@ Any unresolved readiness, verification, write, or approval issue
 
 - **Readiness**: `task-start-preflight` is the shared read-only check for starting active tasks, resuming inprogress tasks, and standalone readiness requests. Return a concise explanation of status, intent, and actual blockers; implementation-ready specifications and a full report template are not required. Resolve explicit dependencies directly with native `task_show`, including cross-project references; missing or failed lookups never imply completion. Project planning/approval and execution remain separate.
 - **Execution**: `task-perform` confirms inprogress before work, records meaningful comments, and loads applicable development guidance.
-- **Completion**: `task-close-gate` assesses evidence for the lifecycle owner, which posts completion and marks done only after applicable gates pass. Standalone close requests do not start execution.
+- **Completion**: `task-close-gate` always returns an assessment without task mutations. It assesses formal criteria or the agreed outcome, reuses relevant evidence, and permits targeted proportionate checks when needed. task-perform owns explicit and automatic closure after applicable gates pass; verification-only requests stop at the verdict. An unsupported done claim is not evidence, and explicit close requests never start implementation.
 
 ### Keep PRs Focused
 
