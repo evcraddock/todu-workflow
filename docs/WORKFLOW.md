@@ -60,35 +60,43 @@ Use `task-comment-authoring` when the request needs a clearer progress update, b
 ### 1. Start a Task
 
 ```
-"Start task #1234"
-→ Triggers task-start-preflight skill
-→ Runs readiness gates for task status, requirements, and dependencies
-→ Returns READY or BLOCKED
+"Start task #1234" / "Do task #1234" / "Pickup task #1234"
+→ Triggers task-perform
+→ Loads task/project instructions and uses shared read-only readiness checks
+→ Obtains required plan approval
+→ Confirms inprogress before work, then posts a starting/resuming comment
 ```
 
 ### 2. Do the Work
 
 ```
-"Pickup task #1234"
-→ Triggers task-pipeline skill
-→ Uses project contributing instructions
-→ Executes task instructions in gated steps
-→ Stops only on BLOCKED or when complete
+task-perform owns the lifecycle for every execution wording
+→ Follows the agreed deliverable and project instructions
+→ Records meaningful progress, decisions, and blockers
+→ Loads task-pipeline development guidance for applicable repository changes
+→ Verifies completion and closes only after evidence and applicable gates pass
 ```
 
-### 3. Verify Before Closing (Post-Merge)
+### 3. Verify Before Closing
 
 ```
-"Close task #1234"
-→ Triggers task-close-gate skill
-→ Verifies acceptance criteria with explicit evidence
-→ Runs only after merge is complete
-→ Closes when READY, blocks when criteria are incomplete
+At the end of execution:
+→ task-perform uses task-close-gate in assessment-only mode in the current session
+→ Verifies the agreed outcome and any acceptance criteria with proportional evidence
+→ Requires merge completion when the delivery workflow calls for it
+→ Posts completion evidence, then marks done without another default approval prompt
+→ Leaves the task open with an explanation when blocked or evidence is inconclusive
+
+Standalone "Close task #1234" requests still use the close gate without starting execution.
 ```
 
-### 4. Mandatory Post-PR Pipeline (Required Sequence)
+### 4. Development Delivery Stages (Required When Applicable)
 
-After implementation is complete, agents MUST execute these steps in order.
+For planned tracked repository changes, default to branch/PR/independent review/human-approved merge unless explicit project policy permits another delivery path. Resolve unclear policy before editing; small or documentation-only changes do not silently bypass applicable gates. Non-repository work does not automatically require these stages, and brainstorming has no fixed storage destination.
+
+`task-perform` owns lifecycle state and uses `task-pipeline` as development guidance, not as a competing executor. Execution and completion verification do not require tmux delegation. Independent review must remain independent; report unavailable required review rather than substitute self-review silently.
+
+For work using the PR delivery path, after implementation is complete, agents MUST execute these steps in order.
 Do not treat these as optional, and do not ask "want me to...?" when the next step is required.
 
 1. **Run local gate**
@@ -172,61 +180,38 @@ Rules:
 - Do not present required next steps as optional questions.
 - If `ci=unavailable-needs-human-decision`, either apply a documented standing policy or ask the human before review request.
 
-### 7. Close Task (After Merge + Cleanup)
+### 7. Complete the Task Lifecycle
 
 ```
-"Close task #1234"
-→ Run after merge is complete and repo state is normalized
-→ Adds completion comment
-→ Marks task as done
+task-perform completion
+→ Confirm the agreed outcome and applicable delivery gates, including merge/cleanup when required
+→ Obtain a completion assessment without lifecycle writes from the verifier
+→ Post a completion comment with evidence and confirm success
+→ Mark done and report the actual result; no additional default completion approval
+
+If comment posting or the status update fails or has an uncertain outcome, report the partial result and reconcile before retrying. Never duplicate comments blindly or claim closure without confirmation.
 ```
 
 ## Workflow Diagram
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     PROJECT CREATION                         │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  project-init ─────┬──► project-scaffold                    │
-│                    ├──► quality-tooling                     │
-│                    ├──► dev-environment                     │
-│                    └──► Creates design/backlog task         │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      TASK WORKFLOW                           │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  task-authoring (create well-structured tasks)               │
-│  task-comment-authoring (draft task updates)                 │
-│         │                                                    │
-│         ▼                                                    │
-│  task-start-preflight                                        │
-│         │                                                    │
-│         ▼                                                    │
-│  ┌───────────────┐                                           │
-│  │ task-pipeline │  ◄─── Implement, test, commit             │
-│  └───────────────┘                                           │
-│         │                                                    │
-│         ▼                                                    │
-│  Create/Update PR ───────────────► CI gate (required)        │
-│                                  │                           │
-│                                  ▼                           │
-│                          pr-review                           │
-│                                  │                           │
-│                                  ▼                           │
-│                  Wait for human merge approval (required)    │
-│                                  │                           │
-│                                  ▼                           │
-│          Merge + switch to main + branch cleanup             │
-│                                  │                           │
-│                                  ▼                           │
-│                          task-close-gate                     │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+```text
+Project initialization
+  project-init -> repo/scaffold/tooling/dev-environment helpers
+
+Task execution (task-perform owns every lifecycle write)
+  task + project instructions
+    -> shared readiness + required plan approval
+    -> confirmed inprogress + starting/resuming comment
+    -> agreed work + meaningful updates
+    -> applicable delivery path:
+         repository PR path -> checks -> independent review
+                            -> human merge approval -> merge/cleanup
+         non-repository or explicit alternate policy -> agreed deliverable
+    -> current-session completion assessment (no lifecycle writes)
+    -> confirmed completion comment -> done
+
+Any unresolved readiness, verification, write, or approval issue
+  -> explain/record the issue, keep the task open, and reconcile before retry
 ```
 
 ## Skills Reference
@@ -239,9 +224,9 @@ Rules:
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-authoring` | "create a task", "new issue", "create bug", "draft a task", "help me write a task" |
 | `task-comment-authoring` | "draft a task comment", "write a task update", "help me write a note for task #X", "summarize progress for task #X" |
-| `task-start-preflight` | "start task #X", "work on task #X", "begin task" |
-| `task-pipeline` | "pickup task <id>", "get started on task <id>", "work on task <id>" |
-| `task-perform` | "do task #X", "perform task #X", "execute task #X", "handle task #X" |
+| `task-start-preflight` | "check readiness", "run preflight" (read-only) |
+| `task-pipeline` | Development reference loaded by task-perform, not a direct execution trigger |
+| `task-perform` | "do/perform/execute/handle/start task #X", "work on task #X", "pickup task #X", "get started on task #X" |
 | `habit-perform` | "do habit #X", "perform habit #X", "handle habit #X", "work on habit #X" |
 | `task-close-gate` | "close task #X", "complete task", "finish task" |
 | `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
@@ -250,9 +235,9 @@ Rules:
 
 ### Always Use Preflights
 
-- **Starting**: `task-start-preflight` ensures you understand the task and have an approved execution plan
-- **Execution**: `task-pipeline` runs the gated task execution flow using project-owned instructions
-- **Closing**: `task-close-gate` verifies acceptance criteria after merge and repo cleanup
+- **Readiness**: `task-start-preflight` checks readiness without implementation or status mutations; plan approval is separate.
+- **Execution**: `task-perform` confirms inprogress before work, records meaningful comments, and loads applicable development guidance.
+- **Completion**: `task-close-gate` assesses evidence for the lifecycle owner, which posts completion and marks done only after applicable gates pass. Standalone close requests do not start execution.
 
 ### Keep PRs Focused
 

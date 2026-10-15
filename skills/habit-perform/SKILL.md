@@ -41,5 +41,5 @@ Views a habit, follows the instructions in its description, and asks before chec
 
 - Ask the user before recording a note or checking in a habit
 - Use `habit_note_add` to record notes on habits
-- Use `task-perform` or `task-pipeline` for task requests
+- Use `task-perform` for task execution requests; `task-pipeline` is development guidance loaded by that lifecycle owner
 - Use `habit-check` when the user only wants to check in or undo a check-in

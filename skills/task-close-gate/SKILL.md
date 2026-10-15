@@ -7,6 +7,12 @@ description: Verify a Todu task is ready to close against acceptance criteria. U
 
 Minimal closure gate for one task.
 
+## Assessment-only integration
+
+When called by `task-perform`, assess the agreed outcome and any acceptance criteria without posting comments or changing status. Use concrete, proportional evidence, including targeted checks when existing artifacts are insufficient; do not invent criteria for tasks without a formal checklist. Return the verdict, evidence, and unresolved issues to the caller in the current session. This mode overrides the standalone write steps, command prohibition, and closing-output wording below. The caller owns the completion comment and status update. No tmux session or additional verification approval is required by this integration.
+
+Standalone close requests retain the existing closure flow below until its separate redesign in task-25854af5.
+
 ## Input
 
 - task ID (required)
@@ -26,7 +32,7 @@ If evidence is not found after the bounded checks below, return `BLOCKED` instea
 
 ## Steps
 
-1. Load task details via `task-show`.
+1. Load task details using the native `task_show` tool.
 2. Extract acceptance criteria from the task description.
 3. Gather concise evidence from bounded sources only:
    - recent task comments,
@@ -40,9 +46,9 @@ If evidence is not found after the bounded checks below, return `BLOCKED` instea
    - all criteria `met` => `READY`
    - any `partial`/`missing` => `BLOCKED`
 6. Prepare a closing summary comment.
-7. If status is `READY`:
-   - add closing summary comment via `task-comment-create`
-   - close task
+7. If status is `READY` in standalone mode:
+   - add closing summary comment using the native `task_comment_create` tool
+   - only after comment success, set status to `done` using the native `task_update` tool
    If status is `BLOCKED`, stop and report issues.
 8. Emit the required output and stop immediately.
 

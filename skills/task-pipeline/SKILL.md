@@ -1,11 +1,19 @@
 ---
 name: task-pipeline
-description: Run the full gated coding-task pickup flow. Use for "pickup task", "get started on task", or "work on task". Do not use for simple show/start/done task actions.
+description: Development-workflow guidance loaded by task-perform for applicable repository changes. Not a separate task execution entry point; route do, work-on, and pickup requests to task-perform.
 ---
 
 # task-pipeline
 
-Single gated flow for picking up and finishing one coding task.
+Development stages for repository work owned by [task-perform](../task-perform/SKILL.md).
+
+## Lifecycle integration
+
+`task-perform` is the single execution entry point and owns readiness, planning, confirmed start, task comments, and verified closure. For direct pickup/work-on requests, enter through that skill; do not recursively invoke it after it has loaded this reference.
+
+When loaded by `task-perform`, use only the applicable development instructions in steps 3–5 below, subject to explicit project policy. Return development/merge evidence to the caller. Do not repeat steps 1–2 or run step 6: the caller owns those lifecycle actions, uses completion verification in the current session, and does not require tmux delegation or an extra default completion approval. Required independent review and explicit human merge approval remain effective.
+
+The fuller reference cleanup is tracked separately in task-d9b978d2; the retained steps below are not a second execution entry point.
 
 ## Steps
 
@@ -53,5 +61,5 @@ Single gated flow for picking up and finishing one coding task.
 ## Rules
 
 - Do not move to the next step until the current step is `READY`.
-- All task comments must be created with the `task-comment-create` skill.
+- The lifecycle owner posts task comments with the native `task_comment_create` tool.
 - Do not add manual line breaks in markdown paragraphs.
