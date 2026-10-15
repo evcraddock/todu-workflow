@@ -26,9 +26,9 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 
 | ID | Prompt | Expected skill or fallback | Expected outcome | Failure signals |
 | -- | ------ | -------------------------- | ---------------- | --------------- |
-| E01 | Create a task for adding retry logic to webhook delivery. | `task-authoring`, then task creation path if requested | Drafts a structured task title and markdown with goal, requirements, acceptance criteria, and dependencies before any backend write. | Creates a backend record without authoring, omits required sections, or invents dependency IDs. |
-| E02 | Draft a task for fixing mobile login but do not create it yet. | `task-authoring` | Returns task content only. | Calls `todu task create` or treats the request as implementation work. |
-| E03 | Add a task to todu-workflow: Document skill evals. | task creation path, with `task-authoring` if content needs shaping | Creates or prepares a well-structured task in the requested project. | Uses `task-authoring` but never writes when creation is explicitly requested, or writes vague content. |
+| E01 | Create a task for adding retry logic to webhook delivery. | `task-authoring`, then task creation path if requested | Captures known intent and explicit constraints in a clear title and concise description, then hands content to the backend creation path. | Invents retry policy, production validation, acceptance criteria, or dependencies; forces empty sections; or never hands off explicit creation. |
+| E02 | Draft a task for fixing mobile login but do not create it yet. | `task-authoring` | Captures known bug details without mandatory reproduction steps; asks only if missing intent prevents a useful draft. Returns content only. | Invents diagnostics or scope, blocks capture on a complete bug template, writes a task record, or starts implementation. |
+| E03 | Add a task to todu-workflow: Document skill evals. | task creation path, with `task-authoring` if content needs shaping | Captures the concise documentation intent and uses the requested backend creation path once the project is resolved. | Pads the task with speculative requirements or empty sections, or never writes when creation is explicitly requested. |
 | E04 | Write a progress update for task #123 saying the PR is open and checks are passing. | `task-comment-authoring` | Drafts a concise markdown comment; does not post unless separately asked. | Posts a note directly or creates/updates a task record. |
 | E05 | Comment on task #123: PR is open and checks are passing. | task comment creation path, optionally with `task-comment-authoring` | Posts the requested comment to the task. | Only drafts content when the user explicitly asked to comment, or posts unstructured content. |
 | E06 | Do task #123. | `task-perform` | Checks readiness/instructions, confirms inprogress before work, posts meaningful comments, verifies the outcome and applicable gates, then comments and marks done without another default approval. | Works before confirmed start, skips evidence, asks for redundant default completion approval, or bypasses an explicit project gate. |
@@ -74,7 +74,7 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 - Lifecycle write ordering/failures: E30-E35, E40-E41.
 - Deliverable-based development and independent-review gates: E36-E38.
 - Run lifecycle scenarios with mocked tools or explicit no-write simulation; do not mutate live task #123 or create external artifacts merely to evaluate routing.
-- Task authoring/comment authoring boundary: E01-E05.
+- Task authoring/comment authoring boundary: E01-E05. Use the controlled fixtures in [Task Authoring Evaluation](evals/task-authoring.md) for scope fidelity, suggestion provenance, flexible capture, revisions, and pickup boundaries.
 - Habit versus task routing: E10-E12.
 - Search/browser/Electron routing: E13-E16.
 - Project setup routing: E17-E21.

@@ -42,7 +42,7 @@ Primary skills:
 
 Before a task enters the execution pipeline, task-creation entry points should prefer a higher-level authoring workflow.
 
-Use [task-authoring](skills/task-authoring/SKILL.md) to improve what the task says: refine the title, normalize the markdown description, and apply a bug-specific structure when needed. It should be the preferred path for direct user requests and other task-creation flows that benefit from authoring help.
+Use [task-authoring](skills/task-authoring/SKILL.md) to capture the problem, desired outcome, relevant context, and explicit user constraints without inventing scope. Concise prose or bullets are enough; there are no mandatory sections or bug templates. Keep agent suggestions distinct from user decisions, and leave detailed requirements clarification and implementation planning for pickup. The skill returns content; the caller handles any requested backend creation or update.
 
 ## Task Comment Authoring
 
@@ -106,7 +106,7 @@ That means each project is expected to customize:
 | [project-scaffold](skills/project-scaffold/SKILL.md) | Generate baseline project files and docs |
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
-| [task-authoring](skills/task-authoring/SKILL.md) | Draft structured markdown task descriptions before creation |
+| [task-authoring](skills/task-authoring/SKILL.md) | Capture user intent in task descriptions without inventing scope |
 | [task-comment-authoring](skills/task-comment-authoring/SKILL.md) | Draft structured markdown task notes and comments before posting |
 | [project-review](skills/project-review/SKILL.md) | Guide an all-project or high-priority project review with optional active-task evaluation |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Development-workflow guidance loaded by task-perform |

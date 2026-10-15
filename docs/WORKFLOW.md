@@ -33,13 +33,13 @@ Use individual skills to add specific capabilities:
 ```
 "Create a task for adding webhook retries"
 → Triggers task-authoring skill
-→ Gathers only the missing context
-→ Produces a better title and structured markdown description
-→ Uses implementation or bug structure as appropriate
-→ Returns authored task content
+→ Captures known intent, context, and explicit user constraints
+→ Asks only when missing intent prevents a useful capture
+→ Produces a clear title and concise prose or bullets, with headings only when useful
+→ Returns authored content to the caller for any requested backend write
 ```
 
-Use `task-authoring` for task-creation entry points when the request needs shaping, requirements gathering, acceptance criteria drafting, dependency capture, bug-report structure, or title improvement. Implementation tasks should include `## Goal`, `## Requirements`, `## Acceptance criteria`, and `## Dependencies`, using real task IDs when known.
+Use `task-authoring` to capture a problem and desired outcome without inventing requirements, acceptance criteria, dependencies, or implementation plans. Preserve supplied constraints and known bug details; no fixed template or empty sections are required. Label retained agent suggestions as unapproved, and record useful open questions for pickup. Detailed requirements clarification and implementation planning happen when the task is picked up, not during speculative capture.
 
 ## Task Comment Authoring
 
