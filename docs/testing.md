@@ -12,6 +12,10 @@ Run the prompt matrix manually in a fresh agent context when practical. Record w
 
 When an eval fails, fix the relevant skill description first. Change the skill body only when the description is already clear and the loaded instructions are the problem.
 
+### Task Authoring
+
+Use the fixtures and inspection criteria in [Task Authoring Evaluation](evals/task-authoring.md) to test faithful intent capture, preservation of explicit constraints, unapproved suggestions, short tasks, incomplete bug reports, and draft/create/pickup boundaries. Repeat in three fresh contexts with no live writes. Inspect actual drafts; do not treat static checks or the calendar CLI tests as evidence of model compliance.
+
 ### Task Lifecycle
 
 Recorded dry-run fixtures, invocation details, results, and limitations are in [Task Lifecycle Evaluation](evals/task-lifecycle.md).
