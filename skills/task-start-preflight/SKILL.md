@@ -10,24 +10,24 @@ Preflight is a readiness gate. It does **not** plan implementation and does **no
 ## Purpose
 
 Confirm whether a task is ready to be worked on by checking:
-1. task status (`active` only),
+1. task status (`active`, or `inprogress` when resuming),
 2. task requirements (not empty/ambiguous),
 3. dependency blockers (none may be `active`, `waiting`, or `inprogress`).
 
 ## Execution Contract (Required)
 
 - Input: task ID.
-- Gate 0 must load task details by delegating to the `task-show` skill.
+- Gate 0 must load task details using the native `task_show` tool.
 - Run the 3 gates in order.
 - Stop on first failed gate.
 - Do not make side-effecting changes in preflight unless user explicitly asks.
 - Always output the preflight summary template.
 
-## Gate 0: Load Task Details via `task-show`
+## Gate 0: Load Task Details
 
-Invoke the `task-show` skill with `<task-id>` and use its returned task object as the source of truth for this preflight.
+Call the native `task_show` tool with `taskId` and use its returned task object as the source of truth for this preflight.
 
-If `task-show` cannot find or load the task, fail preflight immediately and stop.
+If `task_show` cannot find or load the task, fail preflight immediately and stop.
 
 Collect at minimum:
 - `id`
@@ -38,15 +38,12 @@ Collect at minimum:
 
 ## Gate 1: Is Active
 
-Preflight only applies to tasks with status `active`.
+Preflight applies to starting `active` tasks and resuming `inprogress` tasks.
 
-- If status is `active`: pass.
-- If status is anything else: fail and stop.
+- If status is `active` or `inprogress`: pass without changing status.
+- If status is anything else: fail and stop. Explain the current status and request the decision needed; never silently reopen a terminal task or reset a resumed task to `active`.
 
-When failed, report current status and ask user what to do:
-- set status to `active` and rerun preflight,
-- proceed without preflight,
-- stop.
+Preflight does not own the start transition. When called during execution, return readiness to `task-perform`, which confirms `inprogress` before work.
 
 ## Gate 2: Has Requirements
 
@@ -73,9 +70,9 @@ Look for dependency cues (for example: "depends on", "blocked by", "requires", "
 
 ### 2) Build in-flight task set (same project)
 
-Use the project from Gate 0 and delegate list queries to the `task-list` skill.
+Use the project from Gate 0 and the native `task_list` tool.
 
-Run `task-list` scoped to the same project for statuses:
+Run `task_list` scoped to the same project for statuses:
 - `active`
 - `waiting`
 - `inprogress`
@@ -118,5 +115,5 @@ Next Action: <proceed to next pipeline step | user decision required>
 
 - If all 3 gates pass: task is READY.
 - If any gate fails: task is BLOCKED and preflight stops.
-- For non-`active` status and missing/ambiguous requirements, ask user what to do next.
+- For status other than `active|inprogress` and missing/ambiguous requirements, ask user what to do next.
 - For dependency blockers, do not continue until blockers are resolved or user explicitly overrides policy.

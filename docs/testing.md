@@ -12,6 +12,14 @@ Run the prompt matrix manually in a fresh agent context when practical. Record w
 
 When an eval fails, fix the relevant skill description first. Change the skill body only when the description is already clear and the loaded instructions are the problem.
 
+### Task Lifecycle
+
+Recorded dry-run fixtures, invocation details, results, and limitations are in [Task Lifecycle Evaluation](evals/task-lifecycle.md).
+
+Use E06-E09 and E30-E41 in [skill-evals.md](skill-evals.md) to evaluate the shared task-perform lifecycle. Supply controlled task/project state and mocked tool outcomes in a fresh context; require a proposed tool/action trace only, with no real task, Git, or external writes. Include active and resumed tasks, terminal status, failed/uncertain writes, incomplete verification, non-repository deliverables, and explicit merge/review gates. Repeat high-risk cases at least three times. Record the model, loaded skill versions, verdict, and observed ordering; static document checks alone do not establish model compliance.
+
+Expected write ordering is confirmed inprogress, starting/resuming comment, meaningful work updates, assessment-only completion verification, confirmed completion comment, then done. Existing inprogress status does not require a redundant update. A failed start/comment or an unsatisfied project gate must prevent the corresponding later work/closure. Report limitations honestly if fresh-context behavioral evaluations cannot be run.
+
 ### tmux wait-for Signaling
 
 Test the wait-for pattern used for inter-agent communication:

@@ -56,18 +56,21 @@ Use [project-review](skills/project-review/SKILL.md) to walk through all Todu pr
 
 Purpose: pick up a task, execute it using project-owned rules, and close it correctly.
 
-Primary flow:
-1. readiness gate (`task-start-preflight`)
-2. load project contributing instructions (`docs/CONTRIBUTING.md`, fallback to default)
-3. execute task instructions
-4. run PR/review/merge flow with explicit human merge approval
-5. normalize post-merge repo state (switch to `main`, update, clean up feature branch)
-6. close readiness/verification (`task-close-gate`)
+`task-perform` is the single lifecycle entry point for do, work-on, start, and pickup requests:
+1. load the task/project instructions, check shared readiness (`task-start-preflight`), and obtain any required plan approval
+2. confirm `inprogress` before work and post a starting/resuming comment
+3. execute the agreed work and record meaningful progress, decisions, and blockers
+4. for tracked repository changes, load `task-pipeline` development guidance and default to branch/PR/independent review/human-approved merge unless explicit project policy permits another delivery path
+5. assess completion in the current session using `task-close-gate` in assessment-only mode
+6. after verification and applicable gates pass, post the completion evidence and mark `done` without another default approval prompt
+
+Non-repository deliverables do not automatically require PR/merge stages or a particular storage destination. Failed or inconclusive verification leaves the task open. Execution and completion verification do not mandate tmux delegation; required independent review and explicit project approval gates still apply.
 
 Primary skills:
 - [task-authoring](skills/task-authoring/SKILL.md)
 - [task-comment-authoring](skills/task-comment-authoring/SKILL.md)
-- [task-pipeline](skills/task-pipeline/SKILL.md)
+- [task-perform](skills/task-perform/SKILL.md)
+- [task-pipeline](skills/task-pipeline/SKILL.md) (development reference)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
 - [task-close-gate](skills/task-close-gate/SKILL.md)
 - [pr-review](skills/pr-review/SKILL.md)
@@ -106,9 +109,9 @@ That means each project is expected to customize:
 | [task-authoring](skills/task-authoring/SKILL.md) | Draft structured markdown task descriptions before creation |
 | [task-comment-authoring](skills/task-comment-authoring/SKILL.md) | Draft structured markdown task notes and comments before posting |
 | [project-review](skills/project-review/SKILL.md) | Guide an all-project or high-priority project review with optional active-task evaluation |
-| [task-pipeline](skills/task-pipeline/SKILL.md) | Gated task execution flow |
+| [task-pipeline](skills/task-pipeline/SKILL.md) | Development-workflow guidance loaded by task-perform |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
-| [task-perform](skills/task-perform/SKILL.md) | Perform a single task directly from its description |
+| [task-perform](skills/task-perform/SKILL.md) | Own task readiness, confirmed start, updates, execution, and verified completion |
 | [habit-perform](skills/habit-perform/SKILL.md) | Perform a habit and optionally check in |
 | [task-close-gate](skills/task-close-gate/SKILL.md) | Close-readiness verification |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
