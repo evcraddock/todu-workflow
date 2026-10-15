@@ -66,6 +66,8 @@ Purpose: pick up a task, execute it using project-owned rules, and close it corr
 
 Non-repository deliverables do not automatically require PR/merge stages or a particular storage destination. Failed or inconclusive verification leaves the task open. Execution and completion verification do not mandate tmux delegation; required independent review and explicit project approval gates still apply.
 
+[task-pipeline](skills/task-pipeline/SKILL.md) contains only delivery-path selection and applicable repository development stages, then returns development evidence to task-perform. It does not restart readiness or own task status, comments, or closure. Small tracked fixes and committed documentation retain the default review/merge path unless explicit project policy permits an alternative; chat-only or untracked local results do not inherit that path.
+
 Primary skills:
 - [task-authoring](skills/task-authoring/SKILL.md)
 - [task-comment-authoring](skills/task-comment-authoring/SKILL.md)

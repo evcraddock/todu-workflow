@@ -94,7 +94,14 @@ Standalone "Close task #1234" requests still use the close gate without starting
 
 For planned tracked repository changes, default to branch/PR/independent review/human-approved merge unless explicit project policy permits another delivery path. Resolve unclear policy before editing; small or documentation-only changes do not silently bypass applicable gates. Non-repository work does not automatically require these stages, and brainstorming has no fixed storage destination.
 
-`task-perform` owns lifecycle state and uses `task-pipeline` as development guidance, not as a competing executor. Execution and completion verification do not require tmux delegation. Independent review must remain independent; report unavailable required review rather than substitute self-review silently.
+`task-perform` owns lifecycle state and uses `task-pipeline` as development guidance, not as a competing executor. Loading the reference does not restart readiness, planning, task status, or comments. It returns development/check/review/merge evidence to the caller for current-session completion assessment, without a hidden verifier or another default approval prompt. Execution and completion verification do not require tmux delegation. Independent review must remain independent; report unavailable required review rather than substitute self-review silently.
+
+| Agreed deliverable/policy | Delivery path |
+| --- | --- |
+| Tracked code, a tiny fix, or committed documentation; no explicit alternative policy | Default branch/PR/independent review/human-approved merge |
+| Tracked change with an explicit applicable alternative policy | The permitted alternative, preserving its verification and approval gates |
+| Chat-only brainstorming, Todu-only conclusions, or an explicitly untracked local note | No automatic repository gates or fixed storage requirement |
+| Unclear/conflicting policy or substantial/ambiguous work without plan agreement | Resolve the decision/plan with task-perform before editing |
 
 For work using the PR delivery path, after implementation is complete, agents MUST execute these steps in order.
 Do not treat these as optional, and do not ask "want me to...?" when the next step is required.
