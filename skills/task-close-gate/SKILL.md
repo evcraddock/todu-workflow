@@ -1,84 +1,29 @@
 ---
 name: task-close-gate
-description: Verify a Todu task is ready to close against acceptance criteria. Use for "close task", "complete task", or "verify and close". Do not use to start work.
+description: Assess task completion against the agreed outcome and evidence without task mutations. Use for verification-only requests and task-perform completion checks. Explicit close/complete/verify-and-close requests use task-perform's closure-only path. Do not start or implement work.
 ---
 
-# Task Close Gate
+# Task Close Gate — Completion Assessment
 
-Minimal closure gate for one task.
+One shared verifier for completion, always assessment-only. Return evidence and a readiness verdict; never post task comments or change task status. [task-perform](../task-perform/SKILL.md) owns lifecycle writes for automatic completion and explicit close requests.
 
-## Assessment-only integration
+## Assess the agreed outcome
 
-When called by `task-perform`, assess the agreed outcome and any acceptance criteria without posting comments or changing status. Use concrete, proportional evidence, including targeted checks when existing artifacts are insufficient; do not invent criteria for tasks without a formal checklist. Return the verdict, evidence, and unresolved issues to the caller in the current session. This mode overrides the standalone write steps, command prohibition, and closing-output wording below. The caller owns the completion comment and status update. No tmux session or additional verification approval is required by this integration.
+1. Load the task with native `task_show` (`taskId`), or reuse the caller's fresh successful result. Use the task, relevant agreed context, and explicit project gates to identify what completion means. Assess supplied acceptance criteria when present, or the agreed outcome when no formal section exists. Do not invent requirements or demand a template. Missing/failed task retrieval or unresolved scope prevents a ready verdict; explain the specific issue.
+2. Prefer relevant existing evidence: delivered results, task-linked check reports, review artifacts, merge/approval state when required, and directly relevant files. Check that evidence actually supports the agreed outcome and delivered version. A prior comment merely saying "done" is not proof; neither is an irrelevant test result or an unmerged PR when merge is required.
+3. If evidence is insufficient and a focused check can resolve it, use available native task/note tools, ordinary file reads, or targeted, proportionate non-destructive verification commands. Do not require another test run when existing evidence is sufficient. Respect explicit approvals and safety constraints for any particular action; do not add a default permission prompt merely to verify.
+4. Assess the outcome/criteria as met, partial, or missing, with source references or observed results. A failed/unavailable check or unconfirmed result is not proof. Stop once evidence is sufficient or an actual blocker is established; do not search indefinitely for a passing result.
 
-Standalone close requests retain the existing closure flow below until its separate redesign in task-25854af5.
+Verification is not implementation or another PR review. Do not fill in missing work, change the agreed deliverable, start a review/merge flow, or broaden into unrelated files, checks, or environment setup. Report what remains to the caller instead.
 
-## Input
+## Return readiness, not closure
 
-- task ID (required)
+- Ready only when the agreed outcome and any acceptance criteria are supported and applicable project gates are satisfied. Explicit merge/approval requirements remain effective; waiting for approval or missing gate evidence is not completion.
+- Otherwise return not ready, distinguishing partial/missing outcomes, insufficient evidence, lookup/check failures, and pending decisions or gates. Explain only the actual gap and any focused next decision needed.
+- Keep the result concise: task identity, verdict, supporting evidence, and unresolved items when relevant. No rigid output template, empty sections, mandatory criteria count, or claim that a closing comment/status change occurred.
 
-## Bounded Execution Contract
+Run in the current session; no tmux wrapper, detached verifier, or separate verification approval is required. A successful assessment is not independent PR review and does not replace one when project policy requires it.
 
-Complete the close gate with this short checklist only:
+## Handoff boundary
 
-1. Load task details once.
-2. Extract acceptance criteria.
-3. Gather concise evidence from already-available artifacts.
-4. Decide `READY` or `BLOCKED`.
-5. If `READY`, post the closing comment and mark the task done.
-6. Emit the close-gate result and stop.
-
-If evidence is not found after the bounded checks below, return `BLOCKED` instead of broadening the search.
-
-## Steps
-
-1. Load task details using the native `task_show` tool.
-2. Extract acceptance criteria from the task description.
-3. Gather concise evidence from bounded sources only:
-   - recent task comments,
-   - referenced PR or merge status already present in task comments,
-   - current branch/commit status when the user explicitly asked to verify a merged branch,
-   - files directly named by the task, PR, or comments.
-4. Evaluate each acceptance criterion with explicit evidence.
-   - status per criterion: `met` | `partial` | `missing`
-   - do not assume evidence
-5. Determine readiness.
-   - all criteria `met` => `READY`
-   - any `partial`/`missing` => `BLOCKED`
-6. Prepare a closing summary comment.
-7. If status is `READY` in standalone mode:
-   - add closing summary comment using the native `task_comment_create` tool
-   - only after comment success, set status to `done` using the native `task_update` tool
-   If status is `BLOCKED`, stop and report issues.
-8. Emit the required output and stop immediately.
-
-## Rules
-
-- Do not close a task with incomplete criteria.
-- Keep checks focused on acceptance criteria and closure readiness.
-- Do not run stack-specific verification commands here (tests/log scraping/CI checks).
-- Do not invoke unrelated skills such as `pr-review`; use existing review artifacts as evidence instead.
-- Do not reread broad repository context, inspect unrelated files, or continue exploratory checks after each criterion has evidence.
-- Do not add commentary after the required output.
-
-## Tmux Completion Rule
-
-When this skill runs inside the tmux sub-agent wrapper, emit the final close-gate output between the wrapper's result markers and signal completion immediately after the closing comment/status update or `BLOCKED` decision. No additional commentary, verification, or exploration may follow the marker-delimited result.
-
-## Output Template
-
-```text
-=== Task Close Gate: Task #<id> ===
-
-Task: <title>
-Acceptance Criteria:
-- [ ] <criterion 1> — met|partial|missing — <evidence>
-- [ ] <criterion 2> — met|partial|missing — <evidence>
-
-Readiness: READY | BLOCKED
-
-Proposed Closing Comment:
-<comment>
-
-Next Action: close-task | needs-work
-```
+When invoked by task-perform, return the assessment to that existing caller without recursively invoking it. For a verification-only request, stop after the verdict: verification does not authorize closure. For an explicit close/complete/verify-and-close request, [task-perform's closure-only path](../task-perform/SKILL.md#closure-only-requests) owns the request and calls this verifier; it must not start implementation just to close already-delivered work. After successful verification and applicable gates, that owner records completion and changes status without an extra default approval prompt. This verifier performs neither write.

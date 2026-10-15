@@ -64,6 +64,8 @@ Purpose: pick up a task, execute it using project-owned rules, and close it corr
 5. assess completion in the current session using `task-close-gate` in assessment-only mode
 6. after verification and applicable gates pass, post the completion evidence and mark `done` without another default approval prompt
 
+Explicit close/complete/verify-and-close requests use task-perform's closure-only path: assess already-delivered work without starting implementation, then perform completion writes only after evidence and applicable gates pass. Verification-only requests stop at task-close-gate's assessment; that verifier never posts comments or changes status.
+
 Non-repository deliverables do not automatically require PR/merge stages or a particular storage destination. Failed or inconclusive verification leaves the task open. Execution and completion verification do not mandate tmux delegation; required independent review and explicit project approval gates still apply.
 
 [task-pipeline](skills/task-pipeline/SKILL.md) contains only delivery-path selection and applicable repository development stages, then returns development evidence to task-perform. It does not restart readiness or own task status, comments, or closure. Small tracked fixes and committed documentation retain the default review/merge path unless explicit project policy permits an alternative; chat-only or untracked local results do not inherit that path.
@@ -115,7 +117,7 @@ That means each project is expected to customize:
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
 | [task-perform](skills/task-perform/SKILL.md) | Own task readiness, confirmed start, updates, execution, and verified completion |
 | [habit-perform](skills/habit-perform/SKILL.md) | Perform a habit and optionally check in |
-| [task-close-gate](skills/task-close-gate/SKILL.md) | Close-readiness verification |
+| [task-close-gate](skills/task-close-gate/SKILL.md) | Evidence-based completion assessment without task mutations |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
