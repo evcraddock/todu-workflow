@@ -28,6 +28,10 @@ Expected write ordering is confirmed inprogress, starting/resuming comment, mean
 
 Use [Task Pipeline Evaluation](evals/task-pipeline.md) to evaluate the complete development reference together with the lifecycle/readiness/completion skills. Cover do/work-on/pickup equivalence, tiny tracked changes, explicit alternative policy, policy conflicts, planning requirements, chat/backend/untracked versus committed results, failed gates, independent review, human merge approval, and current-session completion handoff. Use controlled no-write proposals in three fresh contexts, not real task or repository writes; distinguish author verification from independent review and report simulation limits.
 
+### Task Comments
+
+Use [Task Comment Evaluation](evals/task-comments.md) for direct drafting versus authorized posting, factual/proportional content, evidence limitations, missing identity, lifecycle ordering, both review hosts, and partial posting failures. Repeat in three fresh no-write contexts with the active repository skill catalog and native schemas. Verify simple updates need neither a generic template nor an authoring-skill handoff, drafts do not write, authorized workflow posts do not acquire a new default approval gate, and comment-only requests do not start or close tasks.
+
 ### Task Start Preflight
 
 Use [Task Start Preflight Evaluation](evals/task-start-preflight.md) for the shared read-only readiness contract. Cover active/resumed/terminal/waiting tasks, genuinely missing intent versus pickup details, direct cross-project lookups, incomplete/cancelled/missing/failed dependencies, unresolved references, and standalone-versus-execution ownership. Repeat controlled no-write simulations in three fresh contexts. Inspect proposed calls and actual concise responses; no-tool simulations do not validate live tool behavior or automatic discovery.
@@ -69,7 +73,7 @@ To test the full review flow:
    - Review comment is posted to the task via `task-comment-create`
    - Agent reports review outcome and waits for explicit merge approval
 
-When testing through the tmux sub-agent wrapper, use a small PR and the wrapper's 120-second timeout. Verify that the review follows the bounded checklist, uses `task-comment-authoring` only for concise artifact drafting, posts both required comments, emits the marker-delimited `PR Review Status`, signals completion immediately, and does not continue with extra exploration after the verdict.
+When testing through the tmux sub-agent wrapper, use a small PR and the wrapper's 120-second timeout. Verify that the review follows the bounded checklist, drafts concise factual artifacts inline without a separate authoring handoff, posts both required comments, emits the marker-delimited `PR Review Status`, signals completion immediately, and does not continue with extra exploration after the verdict.
 
 ### Task Close Gate and Closure-only Requests
 

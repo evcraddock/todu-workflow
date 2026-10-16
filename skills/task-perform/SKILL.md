@@ -7,6 +7,8 @@ description: Own the Todu task lifecycle for do/work-on/start/pickup requests, o
 
 Own the task lifecycle. Wording such as "do", "work on", or "pickup" must not select different approval rules. Use native `task_show`, `task_update`, and `task_comment_create` tools, not CLI commands or task/comment wrapper skills. If required tools are unavailable, report the limitation; do not pretend a status change or comment succeeded.
 
+Write task comments inline in this workflow: keep them factual and proportional, preserve supplied constraints, and include relevant verification evidence without inventing results. A simple update may be one sentence; no generic template or separate authoring handoff is required. Drafting alone does not authorize posting; an explicit posting request or this already-authorized lifecycle does, without another default approval step. A comment-only request does not start this lifecycle or authorize a status change.
+
 ## Closure-only requests
 
 For an explicit close/complete/verify-and-close request, load the task and applicable project instructions, then enter section 4 directly. Do not run start preflight, set inprogress, post a starting/resuming comment, or implement missing work. Reuse a fresh successful task load from the caller when available; do not restart an existing invocation.

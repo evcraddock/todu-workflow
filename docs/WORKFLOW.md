@@ -41,19 +41,20 @@ Use individual skills to add specific capabilities:
 
 Use `task-authoring` to capture a problem and desired outcome without inventing requirements, acceptance criteria, dependencies, or implementation plans. Preserve supplied constraints and known bug details; no fixed template or empty sections are required. Label retained agent suggestions as unapproved, and record useful open questions for pickup. Detailed requirements clarification and implementation planning happen when the task is picked up, not during speculative capture.
 
-## Task Comment Authoring
+## Task Comments
 
-### Draft Better Task Comments
+Draft comments directly; there is no authoring-skill handoff or mandatory generic template. Keep content factual and proportional, retain supplied constraints, and include relevant verification evidence without inventing results. A simple update can be one sentence.
 
 ```
-"Write a progress update for task #1234"
-→ Triggers task-comment-authoring skill
-→ Gathers only the missing context
-→ Produces structured markdown comment content
-→ Returns authored comment content without posting it
+"Draft a progress update for task #1234"
+→ Returns a concise draft without posting or starting task execution
+
+"Comment on task #1234: the PR is open and checks passed"
+→ Posts the authorized factual update directly through native task_comment_create
+→ Confirms success, or reports the actual failure without claiming it was posted
 ```
 
-Use `task-comment-authoring` when the request needs a clearer progress update, blocker note, completion summary, or review summary before handing the markdown to comment or note tooling.
+Drafting is not permission to post. An explicit posting request or an already-authorized workflow provides that authorization without a separate default drafting/approval step. Resolve the task ID rather than guessing. Posting a comment alone does not authorize changing task status, starting implementation, or closing the task. Workflow-specific review artifacts and completion gates still apply.
 
 ## Task Workflow
 
@@ -230,7 +231,7 @@ Any unresolved readiness, verification, write, or approval issue
 | `quality-tooling` | "add linting", "set up eslint", "configure testing" |
 | `dev-environment` | "set up dev environment", "add Makefile", "add docker" |
 | `task-authoring` | "create a task", "new issue", "create bug", "draft a task", "help me write a task" |
-| `task-comment-authoring` | "draft a task comment", "write a task update", "help me write a note for task #X", "summarize progress for task #X" |
+| Ordinary comment handling (no skill handoff) | "draft a task comment" returns content only; "comment on task #X" uses native task_comment_create when authorized |
 | `task-start-preflight` | "check readiness", "run preflight" (read-only) |
 | `task-pipeline` | Development reference loaded by task-perform, not a direct execution trigger |
 | `task-perform` | Execution: "do/work on/start/pickup task #X"; closure-only: "close/complete/verify and close task #X" |

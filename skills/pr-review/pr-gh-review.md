@@ -14,7 +14,7 @@ Review GitHub PR content and post review artifacts.
    - require `state=OPEN`
    - `gh pr diff <number>`
 2. Follow shared review logic in `./pr-review-common.md`.
-3. Draft the structured task-facing review summary with `task-comment-authoring` before posting artifact content.
+3. Draft the task-facing review summary inline using the shared review guidance; no separate authoring handoff is required.
 4. Post structured PR review comment:
    - `gh pr comment <number> --body-file <review-file>`
 5. Add matching task review comment via `task-comment-create`.

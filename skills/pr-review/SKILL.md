@@ -47,7 +47,8 @@ Do not broaden the review after the worker returns a verdict. Do not reread unre
 - Never merge in this skill.
 - Never claim completion while required artifacts are missing.
 - Do not phrase required next steps as optional.
-- Avoid sub-skill calls except the explicitly required task/comment tooling used to post artifacts and `task-comment-authoring` when drafting structured review/task comments.
+- Draft review comments inline using the shared review guidance; drafting alone does not authorize posting. This authorized review workflow posts the required artifacts without a separate authoring handoff or extra default approval step.
+- Avoid sub-skill calls except the required host worker and task/comment tooling used to post artifacts.
 - After the verdict is determined and required artifacts are posted, do not run additional checks or broad rereads.
 
 ## Tmux Completion Rule
