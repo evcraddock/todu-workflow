@@ -44,9 +44,9 @@ Before a task enters the execution pipeline, task-creation entry points should p
 
 Use [task-authoring](skills/task-authoring/SKILL.md) to capture the problem, desired outcome, relevant context, and explicit user constraints without inventing scope. Concise prose or bullets are enough; there are no mandatory sections or bug templates. Keep agent suggestions distinct from user decisions, and leave detailed requirements clarification and implementation planning for pickup. The skill returns content; the caller handles any requested backend creation or update.
 
-## Task Comment Authoring
+## Task Comments
 
-Use [task-comment-authoring](skills/task-comment-authoring/SKILL.md) to shape progress updates, blockers, completion notes, and review summaries before posting them to a task. It should be the preferred path when a workflow needs well-structured markdown comment content without creating the task note record itself.
+Draft comments directly in chat or the posting workflow; no separate authoring skill is needed. Keep updates factual and proportional, preserve supplied constraints, and include relevant verification evidence without inventing results. One sentence can be enough; there is no mandatory generic template. Draft-only requests do not authorize posting. An explicit posting request or an already-authorized workflow uses native `task_comment_create` with the resolved task ID and `content`, without another default approval step. Confirm success before claiming the comment was posted; a comment request alone does not authorize starting or closing a task.
 
 ## Project Review
 
@@ -72,7 +72,6 @@ Non-repository deliverables do not automatically require PR/merge stages or a pa
 
 Primary skills:
 - [task-authoring](skills/task-authoring/SKILL.md)
-- [task-comment-authoring](skills/task-comment-authoring/SKILL.md)
 - [task-perform](skills/task-perform/SKILL.md)
 - [task-pipeline](skills/task-pipeline/SKILL.md) (development reference)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
@@ -111,7 +110,6 @@ That means each project is expected to customize:
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
 | [task-authoring](skills/task-authoring/SKILL.md) | Capture user intent in task descriptions without inventing scope |
-| [task-comment-authoring](skills/task-comment-authoring/SKILL.md) | Draft structured markdown task notes and comments before posting |
 | [project-review](skills/project-review/SKILL.md) | Guide an all-project or high-priority project review with optional active-task evaluation |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Development-workflow guidance loaded by task-perform |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |

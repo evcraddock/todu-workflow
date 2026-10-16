@@ -46,7 +46,8 @@ Stop once the outcome and artifact content are ready. Do not reread broad contex
 
 ## Required Review Content
 
-Use `task-comment-authoring` when drafting the task-facing review summary. Review comment content must include:
+Draft the task-facing summary inline. Keep it factual and proportional, preserve agreed constraints, and include relevant evidence without inventing check results or posting success. Draft-only requests do not authorize artifact writes; an authorized review workflow posts its required artifacts without another authoring step. No generic comment template is required; retain these review-specific content requirements:
+
 - summary
 - acceptance criteria checklist with per-criterion status
 - blocking issues (if any)

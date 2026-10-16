@@ -2,7 +2,7 @@
 
 ## Method and limits
 
-Use the fixtures below to evaluate intent capture, not implementation readiness. Supply the complete task-authoring skill and the descriptions of task-perform and task-comment-authoring to a fresh context. Treat every fixture as an independent conversation. No real tasks, files, or external artifacts may be created or updated. Propose the response and any tool/action trace only. Do not supply expected answers or the Results section to the evaluated model.
+Use the fixtures below to evaluate intent capture, not implementation readiness. Supply the complete task-authoring skill, the description of task-perform, and README's ordinary Task Comments guidance to a fresh context. Treat every fixture as an independent conversation. No real tasks, files, or external artifacts may be created or updated. Propose the response and any tool/action trace only. Do not supply expected answers or the Results section to the evaluated model.
 
 Repeat the batch in three fresh processes. Inspect the actual drafts for invented requirements, lost constraints, suggestion/decision confusion, unnecessary clarification, empty template sections, and authoring-versus-execution boundaries. A no-tool simulation tests instruction following, not live backend behavior or automatic skill discovery. The Python tests cover the separate calendar CLI, not skill compliance.
 
@@ -40,8 +40,10 @@ print('Controlled no-write simulation. Treat each fixture as independent. '
       'response (actual concise draft or clarification), and proposed actions. '
       'Do not grade yourself. Caller has native task tools.')
 print(Path('skills/task-authoring/SKILL.md').read_text())
-for skill in ['task-perform', 'task-comment-authoring']:
-    print(Path(f'skills/{skill}/SKILL.md').read_text().split('---')[1])
+print(Path('skills/task-perform/SKILL.md').read_text().split('---')[1])
+print('## Task Comments\n' + Path('README.md').read_text().split(
+    '## Task Comments\n', 1
+)[1].split('\n## ', 1)[0])
 report = Path('docs/evals/task-authoring.md').read_text()
 print(report.split('## Fixtures\n', 1)[1].split('## Repeating', 1)[0])
 PY
@@ -54,9 +56,11 @@ PY
 - Brief captures and incomplete bug reports remain useful without mandatory headings, empty sections, invented reproduction steps, or a task-type questionnaire.
 - Useful open questions can remain for pickup; genuinely missing task intent prompts a focused clarification.
 - Revisions preserve unaffected intent, constraints, and explicit dependency IDs; missing IDs are never invented.
-- Draft-only requests do not write; explicit creation hands authored content to the backend path. Pickup and comment requests route to their own skills.
+- Draft-only requests do not write; explicit creation hands authored content to the backend path. Pickup selects task-perform; comment drafts use ordinary drafting without task-description authoring or a separate comment skill.
 
 ## Results
+
+These historical runs predate task-991dde58's removal of standalone comment authoring; their recorded comment-skill selection is no longer the current route. The repeat instructions above now use ordinary comment guidance without reading the removed skill. See [Task Comment Evaluation](task-comments.md) for current draft/post and workflow integration evidence.
 
 Ran three fresh Pi print-mode processes with `openai-codex/gpt-6.1-sol`, low thinking, using the flags above. Each process received the complete revised task-authoring skill, neighboring skill descriptions, and all 12 fixtures without expected answers or results. All processes exited successfully. Inspected all 36 returned drafts/action proposals against the criteria above:
 
