@@ -48,10 +48,6 @@ Use [task-authoring](skills/task-authoring/SKILL.md) to capture the problem, des
 
 Draft comments directly in chat or the posting workflow; no separate authoring skill is needed. Keep updates factual and proportional, preserve supplied constraints, and include relevant verification evidence without inventing results. One sentence can be enough; there is no mandatory generic template. Draft-only requests do not authorize posting. An explicit posting request or an already-authorized workflow uses native `task_comment_create` with the resolved task ID and `content`, without another default approval step. Confirm success before claiming the comment was posted; a comment request alone does not authorize starting or closing a task.
 
-## Project Review
-
-Use [project-review](skills/project-review/SKILL.md) to walk through all Todu projects—or explicitly only high-priority projects—in order, optionally update project status and priority, and explicitly keep, reprioritize, or cancel each active task.
-
 ## 2) Task Workflow pipeline
 
 Purpose: pick up a task, execute it using project-owned rules, and close it correctly.
@@ -110,7 +106,6 @@ That means each project is expected to customize:
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
 | [task-authoring](skills/task-authoring/SKILL.md) | Capture user intent in task descriptions without inventing scope |
-| [project-review](skills/project-review/SKILL.md) | Guide an all-project or high-priority project review with optional active-task evaluation |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Development-workflow guidance loaded by task-perform |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
 | [task-perform](skills/task-perform/SKILL.md) | Own task readiness, confirmed start, updates, execution, and verified completion |
