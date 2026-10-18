@@ -36,6 +36,10 @@ Use [Task Comment Evaluation](evals/task-comments.md) for direct drafting versus
 
 Use [Task Start Preflight Evaluation](evals/task-start-preflight.md) for the shared read-only readiness contract. Cover active/resumed/terminal/waiting tasks, genuinely missing intent versus pickup details, direct cross-project lookups, incomplete/cancelled/missing/failed dependencies, unresolved references, and standalone-versus-execution ownership. Repeat controlled no-write simulations in three fresh contexts. Inspect proposed calls and actual concise responses; no-tool simulations do not validate live tool behavior or automatic discovery.
 
+### Next Actions
+
+Use [Next Actions Evaluation](evals/nextactions.md) for the four native selections, duplicate IDs, due-date/nulls-last ordering, scheduled-only context, intentionally excluded backlog, successful emptiness versus partial/all failures, portable sequential fallback, project/timezone consistency, unavailable detail fields, and read-only behavior. Repeat in three fresh no-write contexts with supplied schemas and mocked results. Inspect actual output and proposed calls; simulations do not validate live native return shapes, automatic discovery, or measured batching latency. Keep the optional codemode pilot separate.
+
 ### tmux wait-for Signaling
 
 Test the wait-for pattern used for inter-agent communication:
