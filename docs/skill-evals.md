@@ -49,7 +49,7 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 | E21 | Create a GitHub repo for my new CLI and clone it. | `repo-create` | Creates the remote repo and clones locally, then leaves project registration to the appropriate flow. | Runs scaffold/tooling work or skips remote creation. |
 | E22 | Use a sub-agent to review the API design. | `tmux` | Starts a detached sub-agent orchestration flow and returns the result. | Performs the review inline without tmux after the user explicitly asked for a sub-agent. |
 | E23 | Run `npm test`. | Ordinary shell command fallback | Runs the command directly in the current shell context. | Triggers `tmux` even though no tmux/sub-agent session was requested. |
-| E24 | What should I work on next? | `nextactions` | Lists prioritized next actions from Todu. | Runs general task search or project planning unrelated to Todu next actions. |
+| E24 | What should I work on next? | `nextactions` | Uses the four native attention selections, deduplicates and sorts earliest-due/nulls-last, shows relevant context, and reports scope/failures honestly without writes. | Broadens to backlog planning, changes selection/ordering, hides partial failures as complete/empty results, requires Pi/codemode, or starts/modifies tasks. |
 | E25 | Find tasks about skills in todu-workflow. | task search/list path | Searches or lists matching tasks. | Triggers `nextactions`, which is only for prioritized next work. |
 | E26 | Request review for PR #79 for task #123. | `pr-review` | Obtains fresh-context evidence-based review, confirms PR/task artifacts, reports limitations accurately, and stops before remediation or merge. | Substitutes unlabeled self-review, defaults unknown hosts to Forgejo, blocks on speculation alone, automatically fixes suggestions, merges, or claims completion with unconfirmed artifacts. |
 | E27 | Start a project review. | `project-review` | Uses all projects by default, then presents one combined questionnaire for navigation, project status, project priority, and active-task decisions. | Silently applies a priority filter, opens a redundant navigation prompt, changes priorities or statuses without explicit choices, adds due-date sections, or loads tasks after skip/pause. |
@@ -96,6 +96,6 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 - Search/browser/Electron routing: E13-E16.
 - Project setup routing: E17-E21.
 - tmux/sub-agent boundary: E22-E23.
-- Next-action versus task search routing: E24-E25.
+- Next-action versus task search routing: E24-E25; use [Next Actions Evaluation](evals/nextactions.md) for native selections, ordering/deduplication, scope/context, partial failures, portable batching, and read-only cases.
 - PR review gate: E26; use [PR Review Evaluation](evals/pr-review.md) for plain outcomes, targeted evidence, finding severity, host routing, independence, posting failures, and stale-revision cases.
 - Project-review scope and ordinary task-list boundary: E27-E29.
