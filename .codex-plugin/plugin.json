@@ -1,0 +1,37 @@
+{
+  "name": "todu-workflow",
+  "version": "0.1.0",
+  "description": "Project initialization and task execution workflows for todu, with authoring, review, and development tools.",
+  "author": {
+    "name": "Erik Craddock",
+    "url": "https://github.com/evcraddock"
+  },
+  "homepage": "https://github.com/evcraddock/todu-workflow",
+  "repository": "https://github.com/evcraddock/todu-workflow",
+  "license": "MIT",
+  "keywords": [
+    "todu",
+    "workflow",
+    "development",
+    "tasks"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Todu Workflow",
+    "shortDescription": "Initialize projects and execute todu task workflows",
+    "longDescription": "Run project initialization, task authoring, readiness checks, implementation, PR review, and completion workflows using the bundled skills.",
+    "developerName": "Erik Craddock",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/evcraddock/todu-workflow",
+    "defaultPrompt": [
+      "Show my next actions",
+      "Pick up a todu task",
+      "Initialize a new project"
+    ]
+  }
+}

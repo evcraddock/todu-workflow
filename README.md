@@ -140,13 +140,39 @@ ln -s ~/.local/share/todu-workflow/skills ~/.pi/agent/skills/todu-workflow
 # Claude Code
 mkdir -p ~/.claude/skills
 ln -s ~/.local/share/todu-workflow/skills ~/.claude/skills/todu-workflow
-
-# Codex CLI
-mkdir -p ~/.codex/skills
-ln -s ~/.local/share/todu-workflow/skills ~/.codex/skills/todu-workflow
 ```
 
 Restart your agent after installing.
+
+### Codex plugin
+
+This repository is a Codex plugin containing all bundled skills. It uses `.codex-plugin/plugin.json` and does not need a link under `~/.codex/skills`.
+
+To install from a local checkout, add an entry to the `plugins` array in `~/.agents/plugins/marketplace.json` (preserve any existing entries):
+
+```json
+{
+  "name": "todu-workflow",
+  "source": {
+    "source": "local",
+    "path": "./path/from/home/to/todu-workflow"
+  },
+  "policy": {
+    "installation": "AVAILABLE",
+    "authentication": "ON_INSTALL"
+  },
+  "category": "Productivity"
+}
+```
+
+The personal marketplace should have a top-level `"name": "local"` and a `plugins` array. The source path is relative to your home directory and must point to this repository's root. Then install and verify:
+
+```bash
+codex plugin add todu-workflow@local
+codex plugin list --marketplace local
+```
+
+Restart the desktop app and open a new chat to load the plugin skills. The plugin appears as **Todu Workflow** under **Local Plugins**. After updating the checkout, rerun the install command to refresh the cached copy. Remove an old `~/.codex/skills/todu-workflow` symlink, if present, to avoid duplicate skills.
 
 ## Radicale calendar CLI
 
