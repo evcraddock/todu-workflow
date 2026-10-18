@@ -115,11 +115,10 @@ That means each project is expected to customize:
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
 | [radicale-calendar](skills/radicale-calendar/SKILL.md) | Safely manage Radicale CalDAV events through a structured JSON CLI |
 | [brave-search](skills/brave-search/SKILL.md) | Vendored Brave Search skill for headless web search |
-| [browser-tools](skills/browser-tools/SKILL.md) | Vendored browser automation skill using Chrome DevTools Protocol |
 
 ## Vendored external skills
 
-This repo also includes local copies of `brave-search` and `browser-tools` under `skills/` so they can be used without depending on separately installed or symlinked third-party skill folders. `vscode` is intentionally omitted for now. See [skills/VENDORED.md](skills/VENDORED.md) for source and maintenance notes.
+This repo also includes a local copy of `brave-search` under `skills/` so it can be used without depending on a separately installed or symlinked third-party skill folder. `vscode` is intentionally omitted for now. See [skills/VENDORED.md](skills/VENDORED.md) for source and maintenance notes.
 
 ## Quick start
 

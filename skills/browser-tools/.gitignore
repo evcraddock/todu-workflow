@@ -1,9 +1,0 @@
-# Browser profile data
-.headless-profile/
-chromium-profile/
-
-# Node modules
-node_modules/
-
-# Debug files
-debug-*.png
