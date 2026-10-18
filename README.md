@@ -114,11 +114,6 @@ That means each project is expected to customize:
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
 | [radicale-calendar](skills/radicale-calendar/SKILL.md) | Safely manage Radicale CalDAV events through a structured JSON CLI |
-| [brave-search](skills/brave-search/SKILL.md) | Vendored Brave Search skill for headless web search |
-
-## Vendored external skills
-
-This repo also includes a local copy of `brave-search` under `skills/` so it can be used without depending on a separately installed or symlinked third-party skill folder. `vscode` is intentionally omitted for now. See [skills/VENDORED.md](skills/VENDORED.md) for source and maintenance notes.
 
 ## Quick start
 
