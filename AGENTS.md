@@ -1,6 +1,6 @@
 # Working on todu-workflow
 
-These instructions apply to agents developing this repository, not machine-wide configuration or the behavior of its distributed workflow skills. Follow the existing [coding guidelines](CODING.md) and [development workflow](docs/WORKFLOW.md).
+These instructions apply to agents developing this repository, not machine-wide configuration or the behavior of its distributed workflow skills. Follow the [development workflow](docs/WORKFLOW.md).
 
 ## Codex plugin version bumps
 
