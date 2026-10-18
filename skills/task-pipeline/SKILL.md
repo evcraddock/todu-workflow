@@ -1,57 +1,39 @@
 ---
 name: task-pipeline
-description: Run the full gated coding-task pickup flow. Use for "pickup task", "get started on task", or "work on task". Do not use for simple show/start/done task actions.
+description: Development-delivery reference loaded by task-perform for applicable repository changes. Not a standalone execution workflow; route do, work-on, start, and pickup requests to task-perform.
 ---
 
-# task-pipeline
+# Task Pipeline — Development Reference
 
-Single gated flow for picking up and finishing one coding task.
+Use this reference for the development stages of work owned by [task-perform](../task-perform/SKILL.md), not as another task executor.
 
-## Steps
+## Lifecycle boundary
 
-1. Check task readiness with `task-start-preflight`.
-   - `READY` → continue
-   - `BLOCKED` → stop
+`task-perform` owns task/instruction loading, the shared [readiness check](../task-start-preflight/SKILL.md), plan agreement, confirmed start/resume, task comments, completion assessment, and closure. Direct execution requests enter through that skill regardless of wording. If it has already loaded this reference, continue the applicable development stages without recursively invoking it or repeating its lifecycle actions.
 
-2. Load instructions and task description.
-   - Use `docs/CONTRIBUTING.md` if it exists.
-   - Otherwise use `DEFAULT_CONTRIBUTING.md` in this skill directory.
-   - If neither can be loaded, return `BLOCKED`.
-   - Load the task description for the selected task.
-   - If the task description cannot be loaded, return `BLOCKED`.
-   - Determine the concrete steps to take from the contributing instructions and task description.
-   - Ask the user to approve the planned steps before proceeding.
-   - If the user does not approve, return `BLOCKED`.
+The caller obtains plan agreement for substantial or ambiguous work and honors additional explicit project preview/approval requirements before implementation. Do not add a second default planning gate here. Project contributing instructions apply; when none exist, the caller uses [DEFAULT_CONTRIBUTING.md](DEFAULT_CONTRIBUTING.md).
 
-3. Follow contributing instructions.
-   - Treat loaded contributing instructions as active constraints.
-   - If instructions are ambiguous/conflicting, return `BLOCKED`.
+## Choose the delivery path before editing
 
-4. Follow the instructions in the task description.
-   - Implement exactly what the task asks for.
-   - If task instructions are ambiguous/conflicting, return `BLOCKED`.
+- Use the agreed deliverable and explicit applicable project policy, not request wording, file type, or a judgment that a change is too small for review.
+- For planned tracked repository changes, default to a branch, PR, independent review, and explicit human-approved merge unless project policy explicitly permits a different delivery path. Small fixes and documentation-only changes do not bypass applicable gates.
+- If policy is conflicting or unclear, return the specific decision needed to the caller for resolution during planning, before editing. An absent alternative policy uses the default repository path; it is not itself a conflict.
+- Non-repository deliverables do not automatically need branch/PR/review/merge stages. Brainstorming may stay in chat, Todu, or an untracked local document, or become committed repository documentation as agreed. There is no fixed storage destination; planned tracked documentation uses the repository delivery path.
 
-5. Complete merge flow before closure.
-   - Open or update the PR for the task branch.
-   - Run required review flow and wait for explicit human merge approval.
-   - Do not merge without explicit approval.
-   - If merge is not completed, return `BLOCKED` and do not continue to closure.
-   - After merge, switch to `main` and fast-forward/update local `main`.
-   - Perform feature branch cleanup by default:
-     - delete local feature branch
-     - delete remote feature branch
-   - If branch cleanup policy is uncertain for the current host/workflow, ask the user before deleting.
+## Applicable repository delivery stages
 
-6. Ensure the task is closed correctly.
-   - This closure step is mandatory for every `task-pipeline` run and is not defined by contributing instructions.
-   - Ask the user for explicit approval before running the close gate.
-   - If approval is not given, return `BLOCKED` and do not run close gate.
-   - Run `task-close-gate` for the task in a hidden tmux sub-agent session (detached) via the `tmux` skill only after merge and after approval.
-   - Use the sub-agent result as the close gate.
-   - Move task status to `done` only when explicit approval was given and close gate passes.
+For the default PR path, follow these stages under project instructions. For an explicitly permitted alternative, follow that policy while retaining any applicable approval and verification requirements.
 
-## Rules
+1. **Implement on the task branch.** Make scoped changes for the agreed outcome, using existing project conventions and proportional tests/checks.
+2. **Verify and publish.** Run required local checks, address failures, push the branch, and open/update the PR. When CI exists, resolve failures and wait for required checks to pass. If CI is unavailable, follow an explicit fallback policy or obtain the needed decision; do not silently count absence as success.
+3. **Obtain independent review.** Use [pr-review](../pr-review/SKILL.md) and its existing mechanism. Fix requested changes and non-waived warnings, recheck, and obtain review of the updated changes. Current-session author verification is not independent review. If required review is unavailable, report the blocker rather than substitute self-review or skip it.
+4. **Wait for human merge approval.** Report the review result and stop until explicit approval is given. Review approval is not human merge approval; do not merge automatically or treat waiting as completed delivery.
+5. **Merge and normalize.** After approval and satisfied gates, merge the reviewed changes, update the local target branch, and clean up the task branch locally/remotely according to project policy. The default is branch cleanup after merge; ask if cleanup policy is uncertain. Do not force updates or discard unrelated work.
 
-- Do not move to the next step until the current step is `READY`.
-- All task comments must be created with the `task-comment-create` skill.
-- Do not add manual line breaks in markdown paragraphs.
+No tmux delegation is required for development execution or completion verification. This does not redefine the PR-review skill's independent-review mechanism or waive explicit project gates.
+
+## Return evidence to the lifecycle owner
+
+Return concise development evidence to `task-perform`: what changed, relevant check results, PR/review artifacts, approval and merge state, branch normalization/cleanup, and any unresolved issue. Do not claim a required gate passed without evidence or continue past a blocker as though delivery succeeded.
+
+The caller uses [task-close-gate](../task-close-gate/SKILL.md) in assessment-only mode in the current session to verify the agreed outcome and applicable gates with concrete evidence. This reference does not launch a hidden verifier, require another default permission prompt, or own task closure. After successful verification and applicable gates, `task-perform` posts its completion comment through native `task_comment_create` and then marks done through native `task_update`. If blocked or evidence is inconclusive, it records what remains and keeps the task open. Do not duplicate those lifecycle writes here.

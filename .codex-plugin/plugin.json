@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Todu Workflow",
     "shortDescription": "Initialize projects and execute todu task workflows",
-    "longDescription": "Run project initialization, task authoring, readiness checks, implementation, PR review, and completion workflows using 18 bundled skills.",
+    "longDescription": "Run project initialization, task authoring, readiness checks, implementation, PR review, and completion workflows using the bundled skills.",
     "developerName": "Erik Craddock",
     "category": "Productivity",
     "capabilities": [

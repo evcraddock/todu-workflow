@@ -42,28 +42,38 @@ Primary skills:
 
 Before a task enters the execution pipeline, task-creation entry points should prefer a higher-level authoring workflow.
 
-Use [task-authoring](skills/task-authoring/SKILL.md) to improve what the task says: refine the title, normalize the markdown description, and apply a bug-specific structure when needed. It should be the preferred path for direct user requests and other task-creation flows that benefit from authoring help.
+Use [task-authoring](skills/task-authoring/SKILL.md) to capture the problem, desired outcome, relevant context, and explicit user constraints without inventing scope. Concise prose or bullets are enough; there are no mandatory sections or bug templates. Keep agent suggestions distinct from user decisions, and leave detailed requirements clarification and implementation planning for pickup. The skill returns content; the caller handles any requested backend creation or update.
 
-## Task Comment Authoring
+## Task Comments
 
-Use [task-comment-authoring](skills/task-comment-authoring/SKILL.md) to shape progress updates, blockers, completion notes, and review summaries before posting them to a task. It should be the preferred path when a workflow needs well-structured markdown comment content without creating the task note record itself.
+Draft comments directly in chat or the posting workflow; no separate authoring skill is needed. Keep updates factual and proportional, preserve supplied constraints, and include relevant verification evidence without inventing results. One sentence can be enough; there is no mandatory generic template. Draft-only requests do not authorize posting. An explicit posting request or an already-authorized workflow uses native `task_comment_create` with the resolved task ID and `content`, without another default approval step. Confirm success before claiming the comment was posted; a comment request alone does not authorize starting or closing a task.
+
+## Project Review
+
+Use [project-review](skills/project-review/SKILL.md) to walk through all Todu projects—or explicitly only high-priority projects—in order, optionally update project status and priority, and explicitly keep, reprioritize, or cancel each active task.
 
 ## 2) Task Workflow pipeline
 
 Purpose: pick up a task, execute it using project-owned rules, and close it correctly.
 
-Primary flow:
-1. readiness gate (`task-start-preflight`)
-2. load project contributing instructions (`docs/CONTRIBUTING.md`, fallback to default)
-3. execute task instructions
-4. run PR/review/merge flow with explicit human merge approval
-5. normalize post-merge repo state (switch to `main`, update, clean up feature branch)
-6. close readiness/verification (`task-close-gate`)
+`task-perform` is the single lifecycle entry point for do, work-on, start, and pickup requests:
+1. load the task/project instructions, check shared readiness (`task-start-preflight`), and obtain any required plan approval
+2. confirm `inprogress` before work and post a starting/resuming comment
+3. execute the agreed work and record meaningful progress, decisions, and blockers
+4. for tracked repository changes, load `task-pipeline` development guidance and default to branch/PR/independent review/human-approved merge unless explicit project policy permits another delivery path
+5. assess completion in the current session using `task-close-gate` in assessment-only mode
+6. after verification and applicable gates pass, post the completion evidence and mark `done` without another default approval prompt
+
+Explicit close/complete/verify-and-close requests use task-perform's closure-only path: assess already-delivered work without starting implementation, then perform completion writes only after evidence and applicable gates pass. Verification-only requests stop at task-close-gate's assessment; that verifier never posts comments or changes status.
+
+Non-repository deliverables do not automatically require PR/merge stages or a particular storage destination. Failed or inconclusive verification leaves the task open. Execution and completion verification do not mandate tmux delegation; required independent review and explicit project approval gates still apply.
+
+[task-pipeline](skills/task-pipeline/SKILL.md) contains only delivery-path selection and applicable repository development stages, then returns development evidence to task-perform. It does not restart readiness or own task status, comments, or closure. Small tracked fixes and committed documentation retain the default review/merge path unless explicit project policy permits an alternative; chat-only or untracked local results do not inherit that path.
 
 Primary skills:
 - [task-authoring](skills/task-authoring/SKILL.md)
-- [task-comment-authoring](skills/task-comment-authoring/SKILL.md)
-- [task-pipeline](skills/task-pipeline/SKILL.md)
+- [task-perform](skills/task-perform/SKILL.md)
+- [task-pipeline](skills/task-pipeline/SKILL.md) (development reference)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
 - [task-close-gate](skills/task-close-gate/SKILL.md)
 - [pr-review](skills/pr-review/SKILL.md)
@@ -99,16 +109,17 @@ That means each project is expected to customize:
 | [project-scaffold](skills/project-scaffold/SKILL.md) | Generate baseline project files and docs |
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
-| [task-authoring](skills/task-authoring/SKILL.md) | Draft structured markdown task descriptions before creation |
-| [task-comment-authoring](skills/task-comment-authoring/SKILL.md) | Draft structured markdown task notes and comments before posting |
-| [task-pipeline](skills/task-pipeline/SKILL.md) | Gated task execution flow |
+| [task-authoring](skills/task-authoring/SKILL.md) | Capture user intent in task descriptions without inventing scope |
+| [project-review](skills/project-review/SKILL.md) | Guide an all-project or high-priority project review with optional active-task evaluation |
+| [task-pipeline](skills/task-pipeline/SKILL.md) | Development-workflow guidance loaded by task-perform |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
-| [task-perform](skills/task-perform/SKILL.md) | Perform a single task directly from its description |
+| [task-perform](skills/task-perform/SKILL.md) | Own task readiness, confirmed start, updates, execution, and verified completion |
 | [habit-perform](skills/habit-perform/SKILL.md) | Perform a habit and optionally check in |
-| [task-close-gate](skills/task-close-gate/SKILL.md) | Close-readiness verification |
+| [task-close-gate](skills/task-close-gate/SKILL.md) | Evidence-based completion assessment without task mutations |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
+| [radicale-calendar](skills/radicale-calendar/SKILL.md) | Safely manage Radicale CalDAV events through a structured JSON CLI |
 | [brave-search](skills/brave-search/SKILL.md) | Vendored Brave Search skill for headless web search |
 | [browser-tools](skills/browser-tools/SKILL.md) | Vendored browser automation skill using Chrome DevTools Protocol |
 
@@ -129,18 +140,15 @@ ln -s ~/.local/share/todu-workflow/skills ~/.pi/agent/skills/todu-workflow
 # Claude Code
 mkdir -p ~/.claude/skills
 ln -s ~/.local/share/todu-workflow/skills ~/.claude/skills/todu-workflow
-
 ```
 
 Restart your agent after installing.
 
 ### Codex plugin
 
-This repository is a Codex plugin containing all 18 skills. It uses
-`.codex-plugin/plugin.json` and does not need a link under `~/.codex/skills`.
+This repository is a Codex plugin containing all bundled skills. It uses `.codex-plugin/plugin.json` and does not need a link under `~/.codex/skills`.
 
-To install from a local checkout, add an entry to the `plugins` array in
-`~/.agents/plugins/marketplace.json` (preserve any existing entries):
+To install from a local checkout, add an entry to the `plugins` array in `~/.agents/plugins/marketplace.json` (preserve any existing entries):
 
 ```json
 {
@@ -157,20 +165,18 @@ To install from a local checkout, add an entry to the `plugins` array in
 }
 ```
 
-The personal marketplace should have a top-level `"name": "local"` and a
-`plugins` array. The source path is relative to your home directory and must
-point to this repository's root. Then install and verify:
+The personal marketplace should have a top-level `"name": "local"` and a `plugins` array. The source path is relative to your home directory and must point to this repository's root. Then install and verify:
 
 ```bash
 codex plugin add todu-workflow@local
 codex plugin list --marketplace local
 ```
 
-Restart the desktop app and open a new chat to load the plugin skills. The
-plugin appears as **Todu Workflow** under **Local Plugins**. After updating the
-checkout, rerun the install command to refresh the cached copy. Remove an old
-`~/.codex/skills/todu-workflow` symlink, if present, to avoid duplicate skills.
+Restart the desktop app and open a new chat to load the plugin skills. The plugin appears as **Todu Workflow** under **Local Plugins**. After updating the checkout, rerun the install command to refresh the cached copy. Remove an old `~/.codex/skills/todu-workflow` symlink, if present, to avoid duplicate skills.
 
+## Radicale calendar CLI
+
+This repository also ships the installable `radicale-calendar` Python CLI and its globally discoverable pi skill. See [Radicale Calendar CLI](docs/radicale-calendar.md) for secure configuration, JSON schemas, supported recurrence behavior, and test instructions.
 
 ## Requirements
 

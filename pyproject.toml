@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "radicale-calendar-cli"
+version = "0.1.0"
+description = "Structured JSON CLI for safe Radicale CalDAV event management"
+readme = "docs/radicale-calendar.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+  "caldav>=2.2,<3",
+  "icalendar>=6.3,<7",
+  "keyring>=25,<26",
+  "pydantic>=2.11,<3",
+]
+
+[project.optional-dependencies]
+test = [
+  "Radicale>=3.5,<4",
+  "pytest>=8,<10",
+  "pytest-cov>=6,<8",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+radicale-calendar = "radicale_calendar.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/radicale_calendar"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
