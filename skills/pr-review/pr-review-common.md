@@ -1,66 +1,29 @@
-# PR Review Common Logic
+# PR Review — Shared Assessment
 
-Shared review logic for all hosts.
+Use this logic for either supported host. The [PR Review skill](SKILL.md) owns the single result format, independence requirement, artifact confirmation, and merge boundary; host guides supply commands rather than another review contract.
 
-## Required Inputs
+## Scope and evidence
 
-- task ID (required)
-- PR title/body
-- PR diff
+Load the linked task with native `task_show`, or reuse its fresh successful result. Establish the task's intent, agreed outcome, explicit constraints, and any acceptance criteria. A formal criteria section is not required: assess the actual agreed outcome without inventing obligations or mandatory counts.
 
-## Bounded Checklist
+Review the PR title/body, diff, base/head revision, and applicable project instructions against that outcome. Consider correctness, security, maintainability, scope, documentation impact, and relevant tests in proportion to the change. Assess formal criteria individually when present; otherwise explain how the outcome is or is not supported.
 
-1. Load task details once with `task-show` using the provided task ID.
-2. Extract task objective and acceptance criteria from the task description.
-3. Compare the PR diff against each acceptance criterion.
-4. Check only review-relevant quality concerns.
-5. Decide exactly one outcome.
-6. Prepare required artifact content.
+Permit relevant surrounding code, callers, configuration, and targeted non-destructive checks when needed to resolve a concrete review question. Existing task-linked check results may be reused when they support the reviewed revision. Distinguish tests actually run, supplied results, unrun checks, and unavailable verification; never invent passing checks. Missing tests matter when an agreed requirement or a concrete verification gap warrants them, not as an automatic rejection of every logic change.
 
-Stop once the outcome and artifact content are ready. Do not reread broad context, revisit settled criteria, or continue exploratory checks after choosing the verdict.
+Stop when sufficient evidence supports a verdict or a specific unresolved gap prevents it. Do not continue unrelated exploration, rerun broad suites without a reason, or enforce a diff-only evidence limit. Do not implement fixes during review.
 
-## Procedure
+## Findings and verdict
 
-1. Load task details via `task-show` using the provided task ID.
-2. Extract task objective and acceptance criteria from the task description.
-3. Review PR changes against each acceptance criterion.
-   - mark each criterion as: `met` | `partial` | `not-evident`
-4. Run quality checks during review:
-   - scope alignment
-   - code quality and maintainability
-   - tests for logic changes
-   - security concerns
-   - documentation impact
-5. Decide exactly one outcome:
-   - `approved`
-   - `warnings`
-   - `changes-requested`
+For each actionable finding, identify the relevant file/line or other concrete evidence and explain its impact. For correctness/security blockers, describe the input or conditions that produce the failure and why they contradict the agreed outcome or applicable policy. Distinguish:
 
-## Decision Rules
+- **Supported blockers:** demonstrated defects, unmet agreed requirements, or established policy violations. These support `changes-requested`, with a scoped correction described rather than implemented.
+- **Uncertainty:** evidence is missing or inconclusive. State what is known and the focused check/context needed. A speculative potential bug alone is not a demonstrated blocker. If the uncertainty prevents a credible assessment of the agreed outcome, use `pending`; do not approve without evidence or falsely label the uncertainty a proven defect.
+- **Non-blocking suggestions:** optional clarity/maintainability improvements or other concerns that do not prevent the agreed outcome. Use `warnings` when these are the only findings. Do not require their implementation or treat them as permission to expand scope; the execution caller handles any separate project policy.
 
-- Any acceptance criterion marked `not-evident` => `changes-requested`
-- Missing tests for logic changes => `changes-requested`
-- Potential bugs/correctness issues => `changes-requested`
-- Policy violations => `changes-requested`
-- `warnings` only for non-blocking concerns
+Use `approved` only when the evidence adequately supports the outcome and policy and there are no findings. Where a supported blocker and an evidence gap coexist, report both; do not hide a demonstrated failure behind uncertainty. Approval never authorizes merge.
 
-## Required Review Content
+## Artifact content
 
-Draft the task-facing summary inline. Keep it factual and proportional, preserve agreed constraints, and include relevant evidence without inventing check results or posting success. Draft-only requests do not authorize artifact writes; an authorized review workflow posts its required artifacts without another authoring step. No generic comment template is required; retain these review-specific content requirements:
+Draft a factual review containing the reviewed revision and review kind, outcome/criteria assessment, actionable findings and evidence, checks and limitations, and verdict. An empty section or generic checklist is unnecessary. The linked-task summary may be shorter, but must preserve blockers, unresolved questions, material suggestions, and the review's limitations. Include a PR reference so the task can be traced to the detailed assessment.
 
-- summary
-- acceptance criteria checklist with per-criterion status
-- blocking issues (if any)
-- warnings (if any)
-- final verdict
-
-## Common Result Fields
-
-```text
-- review: approved|warnings|changes-requested
-- blocking_issues: <count>
-- warnings: <count>
-- criteria_total: <count>
-- criteria_met: <count>
-- criteria_missing: <count>
-```
+Use the same assessment for both artifacts; do not fabricate posting success, independent review, test results, human approval, or completion. Draft-only work does not post. Authorized review posts directly through the host command and native `task_comment_create`; the [skill result](SKILL.md#result-and-boundaries) separately reports confirmed/failed/uncertain artifacts. No standalone task/comment skill or authoring handoff is required.

@@ -51,7 +51,7 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 | E23 | Run `npm test`. | Ordinary shell command fallback | Runs the command directly in the current shell context. | Triggers `tmux` even though no tmux/sub-agent session was requested. |
 | E24 | What should I work on next? | `nextactions` | Lists prioritized next actions from Todu. | Runs general task search or project planning unrelated to Todu next actions. |
 | E25 | Find tasks about skills in todu-workflow. | task search/list path | Searches or lists matching tasks. | Triggers `nextactions`, which is only for prioritized next work. |
-| E26 | Request review for PR #79 for task #123. | `pr-review` | Reviews the PR, posts required artifacts, and stops at human merge approval. | Merges the PR, omits task review comment, or treats review steps as optional. |
+| E26 | Request review for PR #79 for task #123. | `pr-review` | Obtains fresh-context evidence-based review, confirms PR/task artifacts, reports limitations accurately, and stops before remediation or merge. | Substitutes unlabeled self-review, defaults unknown hosts to Forgejo, blocks on speculation alone, automatically fixes suggestions, merges, or claims completion with unconfirmed artifacts. |
 | E27 | Start a project review. | `project-review` | Uses all projects by default, then presents one combined questionnaire for navigation, project status, project priority, and active-task decisions. | Silently applies a priority filter, opens a redundant navigation prompt, changes priorities or statuses without explicit choices, adds due-date sections, or loads tasks after skip/pause. |
 | E28 | Show active tasks in todu-workflow. | task search/list path | Lists matching tasks without starting a guided review. | Triggers `project-review` for an ordinary scoped task-list request. |
 | E29 | Review only my high-priority projects. | `project-review` | Calls the native unfiltered project list, preserves its order, and reviews only projects whose priority is exactly high. | Includes medium/low projects, re-sorts the queue, or treats the request as an ordinary project listing. |
@@ -97,5 +97,5 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 - Project setup routing: E17-E21.
 - tmux/sub-agent boundary: E22-E23.
 - Next-action versus task search routing: E24-E25.
-- PR review gate: E26.
+- PR review gate: E26; use [PR Review Evaluation](evals/pr-review.md) for plain outcomes, targeted evidence, finding severity, host routing, independence, posting failures, and stale-revision cases.
 - Project-review scope and ordinary task-list boundary: E27-E29.

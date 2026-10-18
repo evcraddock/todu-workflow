@@ -64,16 +64,9 @@ tmux -S "$SOCKET" kill-session -t "$SESSION"
 
 ### pr-review Skill
 
-To test the full review flow:
+Use [PR Review Evaluation](evals/pr-review.md) for controlled no-write scenarios covering plain outcomes and formal criteria, relevant context/targeted checks, supported blockers versus uncertainty and suggestions, explicit GitHub/Forgejo routing, independent review availability, self-review labeling, partial posting failures, stale revisions, and the prohibition on remediation/merge. Supply all four review documents in three fresh contexts; inspect proposed actions and actual reports, not just static wording. Report simulation limits and distinguish author checks from independent PR review.
 
-1. Create a PR in any project
-2. Run: `review PR #<number> for task #<task-id>`
-3. Verify:
-   - Review comment is posted to the PR
-   - Review comment is posted to the task via `task-comment-create`
-   - Agent reports review outcome and waits for explicit merge approval
-
-When testing through the tmux sub-agent wrapper, use a small PR and the wrapper's 120-second timeout. Verify that the review follows the bounded checklist, drafts concise factual artifacts inline without a separate authoring handoff, posts both required comments, emits the marker-delimited `PR Review Status`, signals completion immediately, and does not continue with extra exploration after the verdict.
+For an authorized live review, use `review PR #<number> for task <task-id>` on a known open PR. Verify that the fresh reviewer assesses the correct revision, the matching host command posts the PR artifact, native `task_comment_create` posts the linked-task summary, and both are confirmed with accurate references/statuses. The report must preserve evidence and limitations, stop before remediation/merge, and leave human merge approval outstanding. No tmux wrapper, marker-delimited output, mandatory criteria counts, or separate comment-authoring handoff is required. Test write failures with mocks rather than deliberately creating duplicate or broken live artifacts.
 
 ### Task Close Gate and Closure-only Requests
 
