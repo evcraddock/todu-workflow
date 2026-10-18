@@ -50,7 +50,7 @@ Use [Task Start Preflight Evaluation](evals/task-start-preflight.md) for the sha
 
 ### Next Actions
 
-Use [Next Actions Evaluation](evals/nextactions.md) for the four native selections, duplicate IDs, due-date/nulls-last ordering, scheduled-only context, intentionally excluded backlog, successful emptiness versus partial/all failures, portable sequential fallback, project/timezone consistency, unavailable detail fields, and read-only behavior. Repeat in three fresh no-write contexts with supplied schemas and mocked results. Inspect actual output and proposed calls; simulations do not validate live native return shapes, automatic discovery, or measured batching latency. Keep the optional codemode pilot separate.
+Use [Next Actions Evaluation](evals/nextactions.md) for high/medium/low priority fallback, undated work, dependency chains and cross-project prerequisites, completed/cancelled/waiting/missing/cyclic dependencies, blocked versus empty backlogs, lookup failures, scope, deduplication, and read-only recommendations. Repeat in three fresh no-write contexts with supplied schemas and mocked results. Inspect recommendations and proposed reads, not just rendered lists; simulations do not validate live return shapes, automatic discovery, or measured latency. The earlier four-query attention-view expectations are superseded, not regression requirements to preserve. Keep any optional codemode pilot separate.
 
 ### tmux wait-for Signaling
 
