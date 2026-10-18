@@ -235,7 +235,6 @@ Any unresolved readiness, verification, write, or approval issue
 | `task-start-preflight` | "check readiness", "run preflight" (read-only) |
 | `task-pipeline` | Development reference loaded by task-perform, not a direct execution trigger |
 | `task-perform` | Execution: "do/work on/start/pickup task #X"; closure-only: "close/complete/verify and close task #X" |
-| `habit-perform` | "do habit #X", "perform habit #X", "handle habit #X", "work on habit #X" |
 | `task-close-gate` | "verify completion only", "is task #X complete?"; shared assessment for task-perform, never lifecycle writes |
 | `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 

@@ -114,7 +114,6 @@ That means each project is expected to customize:
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Development-workflow guidance loaded by task-perform |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
 | [task-perform](skills/task-perform/SKILL.md) | Own task readiness, confirmed start, updates, execution, and verified completion |
-| [habit-perform](skills/habit-perform/SKILL.md) | Perform a habit and optionally check in |
 | [task-close-gate](skills/task-close-gate/SKILL.md) | Evidence-based completion assessment without task mutations |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |

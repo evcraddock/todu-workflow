@@ -24,6 +24,12 @@ Use E06-E09 and E30-E41 in [skill-evals.md](skill-evals.md) to evaluate the shar
 
 Expected write ordering is confirmed inprogress, starting/resuming comment, meaningful work updates, assessment-only completion verification, confirmed completion comment, then done. Existing inprogress status does not require a redundant update. A failed start/comment or an unsatisfied project gate must prevent the corresponding later work/closure. Report limitations honestly if fresh-context behavioral evaluations cannot be run.
 
+### Habit/Task Routing After Skill Removal
+
+Use E10-E12 in [skill-evals.md](skill-evals.md) with the current repository skill catalog and complete task-perform skill in three fresh no-write contexts. Ask only for the selected handler and a short reason, not task/habit execution or writes. Habit requests must stay outside the task lifecycle, and task execution must still select task-perform. This checks removal and neighboring routing, not a replacement habit workflow or live check-in behavior. Also confirm the removed skill is absent from the catalog, active indexes, and executable evaluation file arguments; historical records may retain explicitly labeled references.
+
+For task-a3f28dd0, three fresh Pi print-mode processes (`openai-codex/gpt-6.1-sol`, low thinking) received the updated catalog and complete task-perform skill, with tools, extensions, MCP, skill/context discovery, prompt templates, and session persistence disabled. All three selected native/ordinary habit handling for E10-E11 and task-perform for E12 (9/9 routing classifications); no work or writes were executed. Expected answers were not supplied. These explicitly supplied-catalog simulations do not establish automatic discovery, live habit-tool behavior, or policy for habit execution/check-ins. Historical lifecycle results remain historical, and installed plugin copies were not changed.
+
 ### Task Pipeline Development Reference
 
 Use [Task Pipeline Evaluation](evals/task-pipeline.md) to evaluate the complete development reference together with the lifecycle/readiness/completion skills. Cover do/work-on/pickup equivalence, tiny tracked changes, explicit alternative policy, policy conflicts, planning requirements, chat/backend/untracked versus committed results, failed gates, independent review, human merge approval, and current-session completion handoff. Use controlled no-write proposals in three fresh contexts, not real task or repository writes; distinguish author verification from independent review and report simulation limits.
