@@ -142,31 +142,23 @@ Restart your agent after installing.
 
 This repository is a Codex plugin containing all bundled skills. It uses `.codex-plugin/plugin.json` and does not need a link under `~/.codex/skills`.
 
-To install from a local checkout, add an entry to the `plugins` array in `~/.agents/plugins/marketplace.json` (preserve any existing entries):
-
-```json
-{
-  "name": "todu-workflow",
-  "source": {
-    "source": "local",
-    "path": "./path/from/home/to/todu-workflow"
-  },
-  "policy": {
-    "installation": "AVAILABLE",
-    "authentication": "ON_INSTALL"
-  },
-  "category": "Productivity"
-}
-```
-
-The personal marketplace should have a top-level `"name": "local"` and a `plugins` array. The source path is relative to your home directory and must point to this repository's root. Then install and verify:
+Register this repository as a Git marketplace, then install the plugin:
 
 ```bash
-codex plugin add todu-workflow@local
-codex plugin list --marketplace local
+codex plugin marketplace add evcraddock/todu-workflow --ref main
+codex plugin add todu-workflow@todu-workflow
+codex plugin list --marketplace todu-workflow
 ```
 
-Restart the desktop app and open a new chat to load the plugin skills. The plugin appears as **Todu Workflow** under **Local Plugins**. After updating the checkout, rerun the install command to refresh the cached copy. Remove an old `~/.codex/skills/todu-workflow` symlink, if present, to avoid duplicate skills.
+The repository's `.agents/plugins/marketplace.json` exposes the plugin at the marketplace root. Its `"source": "local"` entry refers to files inside the Git snapshot that Codex downloads; the marketplace itself is registered with `source_type = "git"`.
+
+Codex refreshes configured Git marketplaces at startup and refreshes their installed plugins when the repository revision changes. Publish changes to `main` and increment `.codex-plugin/plugin.json`'s version for releases. Restart the desktop app and open a new chat to use the refreshed skills. A custom monitor is unnecessary. To request a refresh immediately:
+
+```bash
+codex plugin marketplace upgrade todu-workflow
+```
+
+To migrate an existing `todu-workflow@local` installation, install and verify `todu-workflow@todu-workflow` first. Then remove only the `todu-workflow` entry from `~/.agents/plugins/marketplace.json` and its `[plugins."todu-workflow@local"]` section from `~/.codex/config.toml`, preserving other plugins. Remove an old `~/.codex/skills/todu-workflow` symlink, if present, to avoid duplicate skills.
 
 ## Radicale calendar CLI
 
