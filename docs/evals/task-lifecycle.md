@@ -2,6 +2,8 @@
 
 ## Method and limits
 
+Historical record: these runs included the now-removed `habit-perform` skill among their five input files. Their results are preserved below, not claimed as validation of the current catalog. The repeat command now loads only the four remaining task skills; the habit fixture checks that task execution does not trigger, without prescribing a replacement habit workflow.
+
 Evaluated the revised task-perform, pipeline integration, resumed-task preflight, assessment-only close-gate integration, and habit boundary using three fresh Pi print-mode processes with `openai-codex/gpt-6.1-sol`, low thinking. Each process received the five skill files in full and the 16 independent fixtures below, then proposed ordered action/tool traces without executing tools. All tools, extensions, MCP, and skill discovery were disabled for these simulations. The project fixture supplied contributing instructions, so the default contributing fallback was not evaluated here.
 
 Each process evaluated all 16 fixtures in one batch, treating them as independent conversations: 48 proposed traces total, not 48 separate sessions. This is a controlled instruction-following simulation, not a live backend test, full skill-discovery benchmark, or proof of reliable production behavior. Results were inspected for routing, write ordering, state handling, and approval boundaries; the model was not asked to grade itself. Existing Python tests cover the separate calendar CLI, not agent lifecycle behavior.
@@ -38,7 +40,7 @@ pi --print --no-session --no-extensions --no-mcp --no-skills \
   --no-prompt-templates --no-tools --thinking low \
   @skills/task-perform/SKILL.md @skills/task-pipeline/SKILL.md \
   @skills/task-start-preflight/SKILL.md @skills/task-close-gate/SKILL.md \
-  @skills/habit-perform/SKILL.md @docs/evals/task-lifecycle.md \
+  @docs/evals/task-lifecycle.md \
   'Simulate the independent fixtures using the supplied instructions and setup. Do not use tools or perform live actions. Return proposed traces, not grades.'
 ```
 
