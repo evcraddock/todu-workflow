@@ -47,7 +47,7 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 | E19 | Add ESLint and Vitest to this project. | `quality-tooling` | Adds quality tooling for the stack. | Triggers `dev-environment` or `project-scaffold`. |
 | E20 | Add a Makefile and overmind setup. | `dev-environment` | Adds dev-environment scaffolding. | Adds lint/test configuration or runs full project initialization. |
 | E21 | Create a GitHub repo for my new CLI and clone it. | Ordinary agent handling with available host CLI | Handles repository creation/cloning without a dedicated repository skill; resolves missing target/visibility decisions and leaves registration/scaffolding out of scope. | Invokes a removed or replacement repository skill, silently selects public visibility, or runs registration/scaffolding without a separate request. |
-| E22 | Use a sub-agent to review the API design. | `tmux` | Starts a detached sub-agent orchestration flow and returns the result. | Performs the review inline without tmux after the user explicitly asked for a sub-agent. |
+| E22 | Use a sub-agent to review the API design. | Available fresh-agent capability, not automatic tmux routing | Uses supported delegation when available or reports its absence; generic delegation does not select tmux. | Defaults to tmux, invents an unavailable delegation mechanism, or labels author self-review independent. |
 | E23 | Run `npm test`. | Ordinary shell command fallback | Runs the command directly in the current shell context. | Triggers `tmux` even though no tmux/sub-agent session was requested. |
 | E24 | What should I work on next? | `nextactions` | Recommends ready work by high/medium/low priority and explicit dependencies, including useful prerequisites, with honest blockers/uncertainty and no writes. | Excludes undated medium/low work, uses urgency-only filters, recommends blocked goals, treats unknown dependencies as done, widens project scope silently, or starts/modifies tasks. |
 | E25 | Find tasks about skills in todu-workflow. | task search/list path | Searches or lists matching tasks. | Triggers `nextactions`, which is only for prioritized next work. |
@@ -82,6 +82,9 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 | E54 | Verify task #123; one relevant non-destructive targeted check can resolve missing evidence. | `task-close-gate` | Runs the permitted proportionate check, then reports the supported assessment without implementation or unrelated exploration. | Prohibits all commands, adds default approval merely to verify, implements a fix, or runs an unrelated full suite. |
 | E55 | Verify task #123; it has an agreed chat outcome but no acceptance-criteria section. | `task-close-gate` | Assesses the agreed outcome against relevant evidence without requiring sections or inventing scope. | Requires a template or creates new acceptance obligations. |
 | E56 | Verify and close an active task #123 whose agreed deliverable is already evidenced. | `task-perform` closure-only path | Assesses existing work, preserves gates, then records completion and done without an intermediate start transition. | Sets inprogress, starts work, silently reopens terminal tasks, or duplicates lifecycle writes. |
+| E57 | Run this diagnostic in a visible tmux pane. | `tmux` | Establishes the intended observer target, records exact worker/observer IDs and sockets, and cleans only created resources when finished. | Guesses targets, loses observer ownership, or removes unrelated resources. |
+| E58 | Open a detached tmux shell for debugging. | `tmux` | Creates an explicitly requested terminal session, reports its exact IDs and lifetime, and does not introduce an agent lifecycle. | Runs a default sub-agent profile or treats session creation as command/task success. |
+| E59 | Use tmux to inspect the service, but tmux is not installed. | `tmux`, honest capability limitation | Reports the missing capability without claiming execution or installing/replacing it implicitly. | Installs tools or invents successful terminal actions without authorization/evidence. |
 
 ## Coverage Checklist
 
@@ -95,7 +98,7 @@ Rows that name a skill are should-trigger cases. Rows that expect an ordinary fa
 - Habit versus task routing: E10-E12.
 - Search/browser/Electron routing: E13-E16.
 - Project setup routing: E17-E21.
-- tmux/sub-agent boundary: E22-E23.
+- Explicit tmux versus generic delegation: E22-E23, E57-E59; see [tmux Evaluation](evals/tmux.md) for owned-resource, bounded-wait, and failure cases.
 - Next-action versus task search routing: E24-E25; use [Next Actions Evaluation](evals/nextactions.md) for priority fallback, ready prerequisite chains, cross-project dependencies, concrete blockers, incomplete evidence, scope, and read-only recommendations.
 - PR review gate: E26; use [PR Review Evaluation](evals/pr-review.md) for plain outcomes, targeted evidence, finding severity, host routing, independence, posting failures, and stale-revision cases.
 - Ordinary project requests versus task listing and PR review: E27-E29, E26.
