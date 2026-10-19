@@ -65,31 +65,18 @@ After gathering, the flow should have `name`, `host`, `stack`, `framework`, `des
 
 Follow `project-location.md` to determine `baseDir` and `localPath`.
 
-If `{localPath}` already exists, do not assume it belongs to the intended repository. Establish reuse intent and let repo-create verify the remote and local checkout before continuing after partial setup.
+If `{localPath}` already exists, do not assume it belongs to the intended repository. Verify it in the repository phase before continuing after partial setup.
 
 ## Create Repository
 
-Apply `repo-create` with:
+Use the installed host CLI (`gh` or `fj`) directly to create/inspect the remote and clone it locally. Inspect CLI help as needed and follow environment-specific tool instructions for authentication/keyring behavior; do not add a replacement skill or script.
 
-- `name`
-- `host`
-- `owner`
-- `instance`
-- `visibility`
-- `description`
-- `localPath`
+- Before creation, confirm the selected instance, owner/organization, name, and visibility, honoring the remote-creation approval gate. Never silently select public visibility.
+- Pass names, descriptions, and other inputs as literal arguments. If a shell wrapper is required by the environment, use positional arguments rather than interpolating values into shell code.
+- Obtain the actual repository URL from host metadata and verify its instance and owner/name before cloning; do not guess it from the authenticated username.
+- For existing repositories/directories or partial failure, establish reuse intent and verify remote identity plus the local checkout root/origin before reusing anything. Preserve local files, do not blindly retry remote creation or overwrite an unrelated path, and do not suggest repository deletion as routine recovery. Report remote creation and local cloning outcomes separately; stop on unavailable tools, authentication failure, or uncertain identity.
 
-Map these to the helper's explicit options as documented in repo-create. For intended recovery, pass `--reuse-existing`; this mode verifies the remote without creating another repository. Return the verified URL/path to this orchestrator. Repo-create itself does not register or scaffold the project.
-
-Handle common errors this way:
-
-| Error | Action |
-| ----- | ------ |
-| CLI not installed | Show install instructions, then stop. |
-| Not authenticated | Show auth instructions, then stop. |
-| Repo already exists / creation outcome uncertain | Verify the selected owner, instance, and repository; use `--reuse-existing` only when intended, otherwise choose another name. |
-| Directory exists | Use `--reuse-existing` only with established intent; the helper must verify an empty destination or an exact matching checkout root/origin. Never blindly skip clone/verification. |
-| Remote created, clone or verification failed | Stop; retain the remote and local files. Recover using the same identity and `--reuse-existing`, choosing a fresh local path if existing contents cannot be verified. |
+After verified creation/cloning or intended reuse, continue with registration below. Registration and scaffolding remain this orchestrator's responsibility, not implicit side effects of ordinary standalone repository creation.
 
 ## Register Project
 

@@ -24,7 +24,7 @@ command -v fj &>/dev/null && echo "OK: fj" || echo "MISSING: fj"
 command -v todu &>/dev/null && echo "OK: todu" || echo "MISSING: todu"
 ```
 
-Use the host-specific CLI only when that host is selected. For Forgejo authentication checks, use `zsh -ic "fj whoami"` so keyring access works.
+Use only the selected host's installed CLI (`gh` or `fj`), inspect its help as needed, and follow environment-specific tool instructions for authentication/keyring behavior. Do not embed machine-specific wrappers in this workflow.
 
 ## Approval Gates
 
@@ -46,8 +46,7 @@ Local generated scaffold/tooling files are part of this requested setup flow. Fo
    - If registered, follow `references/existing-project-rerun.md`.
    - If not registered, follow `references/new-project-flow.md`.
 2. For new projects, gather project inputs and determine `localPath` using `references/project-location.md`.
-3. Apply helper skills in order:
-   - `repo-create`
+3. Create/verify the remote and clone/verify the local checkout directly with the host CLI, following the concise safeguards in `references/new-project-flow.md`. Then apply helper skills in order:
    - `project-register`
    - `project-scaffold`
    - `quality-tooling`
@@ -63,7 +62,7 @@ Track these variables across the flow:
 - `host` - `github` or `forgejo`
 - `owner` - intended repository user/organization
 - `instance` - selected host; explicit for Forgejo, defaults to `github.com` for GitHub
-- `visibility` - explicit intent or established preference; passed to repo-create, never silently public
+- `visibility` - explicit intent or established preference; never silently public
 - `stack` - `typescript`, `go`, `python`, or `rust`
 - `framework` - stack-appropriate framework or `none`
 - `description` - project description
@@ -82,4 +81,4 @@ Track these variables across the flow:
 
 ## Scripts
 
-This refactor does not add project-init-specific scripts. Deterministic file generation remains owned by downstream skills such as `project-scaffold`, `quality-tooling`, and `dev-environment`.
+Repository creation uses the installed host CLIs directly; no repository-creation helper is bundled. Deterministic file generation remains owned by downstream skills such as `project-scaffold`, `quality-tooling`, and `dev-environment`.

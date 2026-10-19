@@ -64,6 +64,12 @@ Use [Task Start Preflight Evaluation](evals/task-start-preflight.md) for the sha
 
 Use [Next Actions Evaluation](evals/nextactions.md) for high/medium/low priority fallback, undated work, dependency chains and cross-project prerequisites, completed/cancelled/waiting/missing/cyclic dependencies, blocked versus empty backlogs, lookup failures, scope, deduplication, and read-only recommendations. Repeat in three fresh no-write contexts with supplied schemas and mocked results. Inspect recommendations and proposed reads, not just rendered lists; simulations do not validate live return shapes, automatic discovery, or measured latency. The earlier four-query attention-view expectations are superseded, not regression requirements to preserve. Keep any optional codemode pilot separate.
 
+### Repository Creation After Skill Removal
+
+Use E21 with the current repository skill catalog, plus E17-E19 as neighboring project-init/scaffold/tooling checks. In three fresh no-write contexts, ask for the selected handler and intended next step, not repository operations. Include standalone creation with explicit owner/visibility, missing target/visibility, and unavailable host CLI scenarios. Standalone repository creation should use ordinary agent/CLI handling, without a replacement skill or implicit Todu registration/scaffolding. Full project setup should still select project-init. Verify that the deleted skill/helper and active references are absent and project-init retains concise direct-CLI identity, visibility, argument-safety, and recovery guidance. Do not change machine wrappers, credentials, or installed plugin copies to test removal.
+
+For task-0769a4fb, three fresh Pi print-mode processes (`openai-codex/gpt-6.1-sol`, low thinking) received the updated catalog, complete project-init skill/new-project reference, and six independent cases: explicit standalone creation, unspecified owner/visibility/path, missing CLI, and E17-E19. Tools, extensions, MCP, skill/context discovery, prompt templates, and session persistence were disabled. All selected ordinary CLI handling for the standalone cases (clarification or an honest capability blocker where needed), project-init for full app setup, project-scaffold for foundational files, and quality-tooling for ESLint/Vitest (18/18 routing classifications). Expected answers were not supplied; no operations or live writes were executed. These supplied-catalog simulations do not establish automatic discovery or live CLI/keyring/recovery behavior. Installed copies and machine configuration were not changed.
+
 ### tmux wait-for Signaling
 
 Test the wait-for pattern used for inter-agent communication:
@@ -104,6 +110,4 @@ The verifier returns only a concise assessment and evidence; it never posts comm
 
 ## Automated Testing
 
-Run `./scripts/pre-pr.sh` for formatting, lint, and pytest checks. `tests/test_repo_create.py` exercises the distributed repo-create Bash helper with fail-closed fake GitHub/Forgejo CLIs, isolated interactive zsh startup files, and local-only Git operations. Bash, Git, and zsh must be installed. Run the focused suite with `uv run pytest tests/test_repo_create.py`.
-
-The suite covers explicit visibility and owner/instance selection, literal Forgejo descriptions through real zsh, missing option values, invalid identities, remote lookup/identity failures, creation conflicts and uncertain outcomes, clone-failure recovery, and local-path/origin verification without changing existing files. No live repositories are created, no host credentials are used, and no registration/scaffolding commands run. These helper tests do not establish live server/keyring behavior or agent compliance with skill instructions; use fresh-context/manual checks for those claims.
+TODO: Add automated tests for skills.
