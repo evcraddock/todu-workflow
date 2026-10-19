@@ -104,4 +104,6 @@ The verifier returns only a concise assessment and evidence; it never posts comm
 
 ## Automated Testing
 
-TODO: Add automated tests for skills.
+Run `./scripts/pre-pr.sh` for formatting, lint, and pytest checks. `tests/test_repo_create.py` exercises the distributed repo-create Bash helper with fail-closed fake GitHub/Forgejo CLIs, isolated interactive zsh startup files, and local-only Git operations. Bash, Git, and zsh must be installed. Run the focused suite with `uv run pytest tests/test_repo_create.py`.
+
+The suite covers explicit visibility and owner/instance selection, literal Forgejo descriptions through real zsh, missing option values, invalid identities, remote lookup/identity failures, creation conflicts and uncertain outcomes, clone-failure recovery, and local-path/origin verification without changing existing files. No live repositories are created, no host credentials are used, and no registration/scaffolding commands run. These helper tests do not establish live server/keyring behavior or agent compliance with skill instructions; use fresh-context/manual checks for those claims.

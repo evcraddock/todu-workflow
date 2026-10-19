@@ -101,7 +101,7 @@ That means each project is expected to customize:
 | Skill | Description |
 |---|---|
 | [project-init](skills/project-init/SKILL.md) | Initialize a new project end-to-end |
-| [repo-create](skills/repo-create/SKILL.md) | Create remote repo, clone locally, register with todu |
+| [repo-create](skills/repo-create/SKILL.md) | Create/verify remote repo and clone/verify locally; no registration or scaffolding |
 | [project-scaffold](skills/project-scaffold/SKILL.md) | Generate baseline project files and docs |
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |

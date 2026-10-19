@@ -59,13 +59,13 @@ Ask these questions sequentially and store the answers:
    Options: none, redis, s3
    ```
 
-After gathering, the flow should have `name`, `host`, `stack`, `framework`, `description`, `database`, and `services`.
+After gathering, the flow should have `name`, `host`, `stack`, `framework`, `description`, `database`, and `services`. Before repository creation, also resolve the intended `owner` (user/organization), `instance` (GitHub defaults to `github.com`; Forgejo requires an explicit host), and `visibility` from the request or an established preference. Ask when unspecified; never silently default to public.
 
 ## Determine Location
 
 Follow `project-location.md` to determine `baseDir` and `localPath`.
 
-If `{localPath}` already exists, use the existing directory. This allows rerunning project-init after partial setup.
+If `{localPath}` already exists, do not assume it belongs to the intended repository. Establish reuse intent and let repo-create verify the remote and local checkout before continuing after partial setup.
 
 ## Create Repository
 
@@ -73,8 +73,13 @@ Apply `repo-create` with:
 
 - `name`
 - `host`
+- `owner`
+- `instance`
+- `visibility`
 - `description`
 - `localPath`
+
+Map these to the helper's explicit options as documented in repo-create. For intended recovery, pass `--reuse-existing`; this mode verifies the remote without creating another repository. Return the verified URL/path to this orchestrator. Repo-create itself does not register or scaffold the project.
 
 Handle common errors this way:
 
@@ -82,8 +87,9 @@ Handle common errors this way:
 | ----- | ------ |
 | CLI not installed | Show install instructions, then stop. |
 | Not authenticated | Show auth instructions, then stop. |
-| Repo already exists | Use the existing repo when that matches the user's intent. |
-| Directory exists | Use the existing directory and skip clone. |
+| Repo already exists / creation outcome uncertain | Verify the selected owner, instance, and repository; use `--reuse-existing` only when intended, otherwise choose another name. |
+| Directory exists | Use `--reuse-existing` only with established intent; the helper must verify an empty destination or an exact matching checkout root/origin. Never blindly skip clone/verification. |
+| Remote created, clone or verification failed | Stop; retain the remote and local files. Recover using the same identity and `--reuse-existing`, choosing a fresh local path if existing contents cannot be verified. |
 
 ## Register Project
 

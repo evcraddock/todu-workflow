@@ -61,6 +61,9 @@ Track these variables across the flow:
 
 - `name` - project name
 - `host` - `github` or `forgejo`
+- `owner` - intended repository user/organization
+- `instance` - selected host; explicit for Forgejo, defaults to `github.com` for GitHub
+- `visibility` - explicit intent or established preference; passed to repo-create, never silently public
 - `stack` - `typescript`, `go`, `python`, or `rust`
 - `framework` - stack-appropriate framework or `none`
 - `description` - project description

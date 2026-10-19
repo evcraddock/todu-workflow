@@ -5,118 +5,63 @@ description: Create a remote repository and clone it locally. Use for explicit n
 
 # Repo Create
 
-Create a new repository on GitHub or Forgejo and clone it locally.
+Create and clone a GitHub or Forgejo repository. This skill does **not** register a Todu project, scaffold files, commit, or push. `project-init` coordinates those later phases; perform registration separately only when requested.
 
-## Prerequisites
+## Resolve intent before creation
 
-Verify the required CLI is installed and authenticated:
+Establish the repository name, description, local path, provider, owner (user or organization), instance, and visibility from the user's request or established preferences. Ask for any missing identity or visibility decision before invoking the helper. Never silently select public visibility. State the selected target and visibility before a remote write; follow any caller approval gate. An explicit repository-creation request authorizes its ordinary creation/cloning steps, not unrelated registration or scaffolding.
 
-**For GitHub:**
-```bash
-# Check installed
-command -v gh &>/dev/null && echo "OK" || echo "MISSING: install from https://cli.github.com/"
+## Helper
 
-# Check authenticated
-gh auth status
-```
+Run `scripts/repo-create` relative to this skill directory. Git and Bash are required, plus authenticated `gh` for GitHub or `fj` and interactive `zsh` for Forgejo. The helper checks authentication for the selected instance and reports installation/login instructions on failure.
 
-**For Forgejo:**
-```bash
-# Check installed
-command -v fj &>/dev/null && echo "OK" || echo "MISSING: cargo install forgejo-cli"
+| Option | Meaning |
+| ------ | ------- |
+| `--name`, `-n` | Required repository name, without owner prefix |
+| `--host`, `-h` | Required provider: `github` or `forgejo` |
+| `--owner` | Required intended user/organization |
+| `--instance` | HTTPS `host[:port]`; defaults to `github.com` only for GitHub; required for Forgejo |
+| `--visibility` | Required `private` or `public`; GitHub also accepts `internal` where supported |
+| `--description`, `-d` | Required nonempty description, quoted as one argument |
+| `--path`, `-p` | Required local destination |
+| `--reuse-existing` | Explicit recovery/reuse mode; verifies an existing remote, never creates one |
 
-# Check authenticated (needs zsh -ic for keyring)
-zsh -ic "fj whoami"
-```
-
-## Usage
-
-Run the script with required parameters:
+Names start with an ASCII letter/digit and contain only letters/digits/`._-`, without a `.git` suffix. Owners start with an ASCII letter/digit and contain only letters/digits/`_-`. Invalid identities are rejected before host commands; description quotes and shell characters stay literal arguments. Instances with schemes, credentials, IPv6 literals, or subpaths are not supported by this helper; stop rather than reinterpret them.
 
 ```bash
-/path/to/todu-workflow/skills/repo-create/scripts/repo-create \
-  --name NAME \
-  --host HOST \
-  --description "DESCRIPTION" \
-  --path LOCAL_PATH
-```
-
-### Parameters
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `--name`, `-n` | Yes | Repository name |
-| `--host`, `-h` | Yes | `github` or `forgejo` |
-| `--description`, `-d` | Yes | Brief description |
-| `--path`, `-p` | Yes | Local path to clone to |
-
-### Examples
-
-**GitHub:**
-```bash
-repo-create --name myapp --host github --description "My application" --path ~/code/github/myapp
-```
-
-**Forgejo:**
-```bash
-repo-create --name myapp --host forgejo --description "My application" --path ~/code/forgejo/myapp
-```
-
-## What It Does
-
-1. **Validates inputs** - Checks all required parameters
-2. **Checks CLI** - Verifies gh/fj is installed and authenticated
-3. **Creates remote repo** - Uses `gh repo create` or `fj repo create`
-4. **Clones locally** - Clones to the specified path
-
-Project registration in todu is intentionally handled separately via the `project-register` skill.
-
-## Error Handling
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| "Directory already exists" | Path already taken | Choose different path or remove existing |
-| "CLI not installed" | gh/fj missing | Install the CLI (see Prerequisites) |
-| "CLI not authenticated" | Not logged in | Run `gh auth login` or `fj auth login` |
-| "Repository already exists" | Name taken on remote | Choose different name or delete existing |
-| "Failed to clone" | Network or permissions | Check URL and try manual clone |
-
-## Integration with project-init
-
-When used as part of `project-init`, the skill is called after gathering project info:
-
-```bash
-# Variables from Phase 1a
-NAME="myproject"
-HOST="github"
-DESCRIPTION="My project description"
-LOCAL_PATH="$GITHUB_PROJECTS_DIR/$NAME"
-
-# Run repo-create
+# GitHub organization, explicit private visibility
 /path/to/skills/repo-create/scripts/repo-create \
-  --name "$NAME" \
-  --host "$HOST" \
-  --description "$DESCRIPTION" \
-  --path "$LOCAL_PATH"
+  --name myapp --host github --owner my-team --visibility private \
+  --description "My application" --path "$HOME/code/github/my-team/myapp"
+
+# Forgejo organization on an explicit instance
+/path/to/skills/repo-create/scripts/repo-create \
+  --name myapp --host forgejo --instance forge.example.org --owner my-team \
+  --visibility private --description "My application" \
+  --path "$HOME/code/forgejo/my-team/myapp"
 ```
 
-On success, apply the `project-register` skill to register the project in todu, then proceed to project scaffolding. On failure, show the error and stop.
+For GitHub Enterprise, supply its hostname with `--instance`; the helper sets `GH_HOST` explicitly, overriding ambient host selection. GitHub metadata is read using `gh repo view --json`; the returned owner/name, HTTPS URL, and visibility must match the selected target before cloning.
 
-## Manual Usage
+Forgejo uses the `fj` 0.5.x CLI contract (`whoami`, `repo create/view`, and `org repo create`). Commands run through a constant `zsh -ic` program with positional arguments to preserve keyring access without shell interpolation. The selected instance is passed to **every** command, and the login/instance is verified. If the owner matches that login, create a personal repository; otherwise use the organization endpoint. Creating for another individual user is not supported. The helper re-reads `repo view`, checks the full name and final API-returned `View online at` URL, and uses that verified HTTPS Git endpoint for cloning. Unexpected output fails closed; no URL is guessed from the login. `fj` view does not expose visibility: reuse does not verify or change existing Forgejo privacy settings, so check them separately if that matters to the request.
 
-The script can be run directly from the command line without an agent:
+## Recovery and conflicts
+
+A normal run refuses an existing local path and does not silently reuse a remote. If remote creation fails, it may be a conflict or an uncertain request outcome: inspect the selected owner/instance/repository before retrying. If creation succeeds but verification, directory setup, or cloning fails, the error explicitly reports remote-created/local-not-completed state. Do not create another remote to recover a clone failure.
+
+When the existing remote is confirmed to be the intended one, repeat the same inputs with `--reuse-existing`:
 
 ```bash
-# Add to PATH (optional)
-export PATH="$PATH:~/.local/share/todu-workflow/skills/repo-create/scripts"
-
-# Then use directly
-repo-create -n myapp -h github -d "My app" -p ~/code/github/myapp
+/path/to/skills/repo-create/scripts/repo-create \
+  --name myapp --host github --owner my-team --visibility private \
+  --description "My application" --path "$HOME/code/github/my-team/myapp" \
+  --reuse-existing
 ```
 
-## Notes
+Recovery verifies the remote before cloning or accepting a local checkout. It can clone into a missing or empty destination. For nonempty paths, it requires the exact Git worktree root and an origin matching the verified HTTPS endpoint (with optional `.git` suffix), or the SSH URL returned by GitHub metadata. Forgejo SSH/custom clone endpoints are not inferred; use a fresh destination or verify/manage those checkouts separately. Dirty/untracked files in a matching checkout are left untouched; no fetch, reset, checkout, or overwrite occurs. Symlinks, files, unrelated checkouts, nested directories, missing/multiple origins, and unverifiable partial clones stop the helper. Leave their contents intact and choose a fresh path or resolve them separately.
 
-- GitHub repos are created as public by default
-- Forgejo commands use `zsh -ic` wrapper for keyring access
-- Registration in todu is intentionally handled outside this skill via `project-register`
-- Parent directories are created automatically if needed
+A remote lookup failure in recovery mode never falls back to creation. For conflicts, verify identity and reuse only when intended, or choose another name/path. Deleting an existing repository is not a routine recovery step.
+
+## Integration boundary
+
+`project-init` must resolve and pass `name`, `host`, `owner`, `instance`, `visibility`, `description`, and `localPath`. If recovering partial setup, it must establish reuse intent and pass `--reuse-existing`; never skip verification merely because a directory exists. Stop the orchestration on helper failure. On success, return the verified remote URL and local path to the caller. `project-init` then owns Todu registration and scaffolding; a standalone repo-create request ends after creation/cloning or verified reuse.
