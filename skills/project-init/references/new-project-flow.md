@@ -59,31 +59,24 @@ Ask these questions sequentially and store the answers:
    Options: none, redis, s3
    ```
 
-After gathering, the flow should have `name`, `host`, `stack`, `framework`, `description`, `database`, and `services`.
+After gathering, the flow should have `name`, `host`, `stack`, `framework`, `description`, `database`, and `services`. Before repository creation, also resolve the intended `owner` (user/organization), `instance` (GitHub defaults to `github.com`; Forgejo requires an explicit host), and `visibility` from the request or an established preference. Ask when unspecified; never silently default to public.
 
 ## Determine Location
 
 Follow `project-location.md` to determine `baseDir` and `localPath`.
 
-If `{localPath}` already exists, use the existing directory. This allows rerunning project-init after partial setup.
+If `{localPath}` already exists, do not assume it belongs to the intended repository. Verify it in the repository phase before continuing after partial setup.
 
 ## Create Repository
 
-Apply `repo-create` with:
+Use the installed host CLI (`gh` or `fj`) directly to create/inspect the remote and clone it locally. Inspect CLI help as needed and follow environment-specific tool instructions for authentication/keyring behavior; do not add a replacement skill or script.
 
-- `name`
-- `host`
-- `description`
-- `localPath`
+- Before creation, confirm the selected instance, owner/organization, name, and visibility, honoring the remote-creation approval gate. Never silently select public visibility.
+- Pass names, descriptions, and other inputs as literal arguments. If a shell wrapper is required by the environment, use positional arguments rather than interpolating values into shell code.
+- Obtain the actual repository URL from host metadata and verify its instance and owner/name before cloning; do not guess it from the authenticated username.
+- For existing repositories/directories or partial failure, establish reuse intent and verify remote identity plus the local checkout root/origin before reusing anything. Preserve local files, do not blindly retry remote creation or overwrite an unrelated path, and do not suggest repository deletion as routine recovery. Report remote creation and local cloning outcomes separately; stop on unavailable tools, authentication failure, or uncertain identity.
 
-Handle common errors this way:
-
-| Error | Action |
-| ----- | ------ |
-| CLI not installed | Show install instructions, then stop. |
-| Not authenticated | Show auth instructions, then stop. |
-| Repo already exists | Use the existing repo when that matches the user's intent. |
-| Directory exists | Use the existing directory and skip clone. |
+After verified creation/cloning or intended reuse, continue with registration below. Registration and scaffolding remain this orchestrator's responsibility, not implicit side effects of ordinary standalone repository creation.
 
 ## Register Project
 

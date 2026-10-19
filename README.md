@@ -33,7 +33,6 @@ Projects can be code-heavy, service-heavy, CI/CD-enabled, or text-only. Initiali
 
 Primary skills:
 - [project-init](skills/project-init/SKILL.md)
-- [repo-create](skills/repo-create/SKILL.md)
 - [project-scaffold](skills/project-scaffold/SKILL.md)
 - [quality-tooling](skills/quality-tooling/SKILL.md)
 - [dev-environment](skills/dev-environment/SKILL.md)
@@ -101,7 +100,6 @@ That means each project is expected to customize:
 | Skill | Description |
 |---|---|
 | [project-init](skills/project-init/SKILL.md) | Initialize a new project end-to-end |
-| [repo-create](skills/repo-create/SKILL.md) | Create remote repo, clone locally, register with todu |
 | [project-scaffold](skills/project-scaffold/SKILL.md) | Generate baseline project files and docs |
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
