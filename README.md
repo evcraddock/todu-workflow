@@ -109,7 +109,7 @@ That means each project is expected to customize:
 | [task-perform](skills/task-perform/SKILL.md) | Own task readiness, confirmed start, updates, execution, and verified completion |
 | [task-close-gate](skills/task-close-gate/SKILL.md) | Evidence-based completion assessment without task mutations |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
-| [tmux](skills/tmux/SKILL.md) | Run commands in separate panes/sessions and orchestrate sub-agent style workflows |
+| [tmux](skills/tmux/SKILL.md) | Explicit tmux/terminal sessions with exact owned-resource handling; not generic agent delegation |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
 | [radicale-calendar](skills/radicale-calendar/SKILL.md) | Safely manage Radicale CalDAV events through a structured JSON CLI |
 

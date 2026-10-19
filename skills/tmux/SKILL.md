@@ -1,129 +1,56 @@
 ---
 name: tmux
-description: Orchestrate isolated tmux sessions for commands or sub-agents. Use when user asks for tmux, visible sessions, detached sessions, or sub-agents. Do not use for ordinary shell commands.
+description: Control tmux terminals when the user explicitly requests tmux, a visible terminal session, or a detached terminal session. Do not use for generic sub-agent requests, routine delegation, or ordinary shell commands.
 ---
 
-# tmux Skill
+# tmux
 
-Use this skill when you want to run work in a separate tmux session (optionally in a visible pane/window), wait for completion, capture final output, and clean up reliably.
+Use tmux only for an explicitly requested terminal/session capability. A generic request to use a sub-agent does not select this skill or prescribe any delegation mechanism. Report missing tmux honestly; do not install it or introduce another orchestration platform implicitly.
 
-## Defaults
+## Ownership first
 
-```bash
-SOCKET="${TMUX_SKILL_SOCKET_DIR:-${TMPDIR:-/tmp}/tmux-skill-sockets}/tmux-skill.sock"
-```
+- Use an isolated socket for workflow-created sessions, normally `${TMUX_SKILL_SOCKET_DIR:-${TMPDIR:-/tmp}/tmux-skill-sockets}/tmux-skill.sock`. Other workflows may share it: an isolated socket is **not** permission to remove every session on it.
+- Record each created resource's socket and exact session (`$N`), window (`@N`), or pane (`%N`) ID from tmux's creation output. Discovery does not establish ownership. Do not target resources by guessed names, prefixes, or ambient defaults.
+- Record observer resources separately, including their socket: a visible observer may be on another server. A new observer **pane** does not make its pre-existing window/session yours to close.
+- After capturing a completed result, promptly remove the created observer and worker resources before waiting for human approval or moving on. Also clean them up on failure, timeout, or interruption. Never close unrelated user resources. Keep an explicitly requested ongoing interactive session only while it is still in use, and report that ownership/lifetime clearly.
 
-All helper scripts default to this private socket path so automation sessions stay separate from personal tmux sessions.
+## Create and capture
 
-## Sub-agent shorthand (default behavior)
-
-When the user says **"use a sub-agent to <task>"**, treat it as this detached orchestration profile:
-
-```bash
-./scripts/run-agent-command.sh \
-  --session-base subagent \
-  --channel subagent-done-<id> \
-  --prompt "<task>" \
-  --detached \
-  --hold-open \
-  --wait \
-  --wait-timeout 1200 \
-  --print-result \
-  --cleanup
-```
-
-This is the default sub-agent mode unless the user explicitly asks for visible pane/window behavior.
-
-## Canonical workflows
-
-### 1) Run prompt in a pane, wait, print result, cleanup
+The focused helpers live in `scripts/` relative to this skill:
 
 ```bash
-./scripts/run-agent-command.sh \
-  --session-base preflight-2033 \
-  --channel preflight-done-2033 \
-  --prompt "start preflight for task 2033" \
-  --socket-path "$SOCKET" \
-  --visible \
-  --display-mode pane \
-  --split v \
-  --hold-open \
-  --wait \
-  --wait-timeout 900 \
-  --print-result \
-  --cleanup
+./scripts/start-session.sh --session debug-shell --detached
 ```
 
-### 2) Run detached prompt, wait, print result, cleanup
+Record its `SOCKET`, `SESSION`, `SESSION_ID`, `WINDOW_ID`, and `PANE_ID` output as data—never `eval` it. The helper starts an isolated server without sourcing personal tmux configuration. It does not reuse existing sessions or run a default agent. `--command` accepts an explicitly intended shell command; it is not a safe container for interpolated untrusted text.
+
+Successful creation hands resource ownership to the caller. Creation success says nothing about a command's exit status or task completion. The helper cleans up resources it created if startup fails or is interrupted; after successful startup the caller owns cleanup on **all** later exit paths.
+
+Use the recorded socket and pane ID to inspect or interact:
 
 ```bash
-./scripts/run-agent-command.sh \
-  --session-base subagent \
-  --channel subagent-done-001 \
-  --prompt "research popular llm agent harnesses" \
-  --detached \
-  --hold-open \
-  --wait \
-  --wait-timeout 1200 \
-  --print-result \
-  --cleanup
+tmux -S "$SOCKET" capture-pane -p -J -t "$PANE_ID" -S -200
+tmux -S "$SOCKET" send-keys -t "$PANE_ID" -l -- "$text"
 ```
 
-### 3) Start session only (manual tmux control)
+## Bound waits and clean up
 
 ```bash
-./scripts/start-session.sh -s debug-shell --visible
+./scripts/wait-for-text.sh -S "$SOCKET" -t "$PANE_ID" --fixed -p 'ready' -T 15
 ```
 
-Use this only when you explicitly want manual tmux control.
+Set a wait below the active tool timeout, leaving time for capture and cleanup. The helper accepts waits of 1–120 seconds, exits 124 on timeout, and reports capture/input errors immediately. It owns no sessions and never removes the caller's resources. Text or a synchronization signal is evidence of observation, **not** proof that a command succeeded; verify the actual requested outcome separately. Timeout capture is diagnostic output, not a successful result.
 
-## Script responsibilities
-
-- `scripts/run-agent-command.sh`
-  - high-level orchestrator (start session, optional visible pane/window, wait, result extraction, cleanup)
-  - recommended default for automation
-- `scripts/start-session.sh`
-  - create a named session on isolated socket
-- `scripts/wait-for-text.sh`
-  - poll pane text for regex/fixed-string prompt synchronization
-- `scripts/find-sessions.sh`
-  - list sessions on a specific/all sockets
-- `scripts/smoke.sh`
-  - quick integration check for wait/result/cleanup behavior
-
-## `run-agent-command.sh` output contract
-
-`run-agent-command.sh` writes machine-readable `KEY=VALUE` fields to stdout.
-Human progress and extracted result blocks are written to stderr.
-
-Common fields:
-- `SESSION`
-- `SOCKET`
-- `CHANNEL`
-- `WAIT_CMD`
-- `WAIT_EXIT` (when `--wait` used)
-- `RESULT_FOUND` (when `--print-result` used)
-- `CLEANUP_OK` (when `--cleanup` used)
-
-## Result markers
-
-In `--prompt` mode, the script injects instructions for the spawned agent to print final output between:
-
-- `<<<TMUX_RESULT_START>>>`
-- `<<<TMUX_RESULT_END>>>`
-
-If markers are missing, `--print-result` falls back to printing pane tail (`--result-fallback-tail`).
-
-## Validation
-
-Run smoke test after changing tmux scripts:
+On every completed/failed path, remove any recorded observer first: `kill-window -t "$OBSERVER_WINDOW_ID"` for an owned observer window, or `kill-pane -t "$OBSERVER_PANE_ID"` for an owned pane, using its recorded `OBSERVER_SOCKET`. Then remove the worker using its recorded socket and exact session ID:
 
 ```bash
-./scripts/smoke.sh
+tmux -S "$SOCKET" kill-session -t "$SESSION_ID"
 ```
 
-## Advanced tmux usage
+Verify only those resources are gone. If cleanup cannot be confirmed, report the exact remaining IDs instead of claiming success or broadening cleanup.
 
-For raw tmux techniques, pane targeting details, REPL recipes, and manual command patterns, see:
+## Optional recipes and checks
 
-- `./ADVANCED.md`
+Load [ADVANCED.md](ADVANCED.md) only for explicit observer windows/panes, raw terminal operations, or read-only discovery. There is no agent-command wrapper, completion-marker protocol, or default sub-agent profile.
+
+When developing this repository, run `uv run pytest tests/test_tmux_helpers.py` and `./scripts/pre-pr.sh`. Tests create only isolated local test sessions and record/clean their exact resource IDs; they do not launch agents or touch personal terminal servers.

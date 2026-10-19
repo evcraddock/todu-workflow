@@ -1,112 +1,72 @@
-# tmux Skill — Advanced Notes
+# tmux — Optional Terminal Recipes
 
-Use this file for raw tmux operations and lower-level control patterns.
+Load only for explicitly requested tmux/terminal work. These are terminal-control recipes, not a sub-agent or task lifecycle. Use the ownership and cleanup rules in [SKILL.md](SKILL.md).
 
-## Socket and targeting conventions
-
-```bash
-SOCKET="${TMUX_SKILL_SOCKET_DIR:-${TMPDIR:-/tmp}/tmux-skill-sockets}/tmux-skill.sock"
-```
-
-- Pane target format: `{session}:{window}.{pane}`
-- Defaults if omitted: `:0.0`
-- Inspect sessions/panes:
-  - `tmux -S "$SOCKET" list-sessions`
-  - `tmux -S "$SOCKET" list-panes -a`
-
-## Creating windows and panes
-
-### New window
+## Read-only discovery
 
 ```bash
-tmux -S "$SOCKET" new-window -t tmux-dev -n debug
-tmux -S "$SOCKET" new-window -t tmux-dev -n debug 'lldb ./myapp'
+./scripts/find-sessions.sh                    # skill's private socket
+./scripts/find-sessions.sh -S "$SOCKET"       # explicitly selected socket
+./scripts/find-sessions.sh --all              # skill socket directory only
+./scripts/find-sessions.sh -S "$SOCKET" -q debug
 ```
 
-### Split pane
+Queries are literal, case-insensitive session-name substrings. Output includes exact session IDs; it does not grant ownership or authorize stopping anything. An explicit `-L NAME` selects a named socket instead of the private default.
+
+For a user-selected existing server, inspect its sessions/windows/panes without guessing a target:
 
 ```bash
-# Horizontal (left/right)
-tmux -S "$SOCKET" split-window -h -t tmux-dev:0
-
-# Vertical (top/bottom)
-tmux -S "$SOCKET" split-window -v -t tmux-dev:0
-
-# Split + command
-tmux -S "$SOCKET" split-window -h -t tmux-dev:0 'tail -f app.log'
+tmux -S "$OBSERVER_SOCKET" list-panes -a \
+  -F '#{session_id} #{window_id} #{pane_id} #{pane_title}'
 ```
 
-## Sending input safely
+## Visible observer
 
-- Literal send:
-  - `tmux -S "$SOCKET" send-keys -t target -l -- "$cmd"`
-- Inline command:
-  - `tmux ... send-keys -t target -- $'python3 -m http.server 8000'`
-- Control keys:
-  - `tmux ... send-keys -t target C-c`
-  - `tmux ... send-keys -t target C-d`
-
-## Output capture
+First establish which existing terminal pane should host the observer. Supply its exact pane ID and socket explicitly; the helper never guesses them from the current terminal or modifies a default/personal server implicitly.
 
 ```bash
-tmux -S "$SOCKET" capture-pane -p -J -t target -S -200
+./scripts/start-session.sh --session debug-shell --visible \
+  --observer-socket "$OBSERVER_SOCKET" --observer-target "$EXISTING_PANE_ID" \
+  --display-mode window
 ```
 
-`-J` joins wrapped lines to reduce display artifacts.
+For a split observer, use `--display-mode pane --split h` (left/right) or `--split v` (top/bottom). Record all returned `OBSERVER_*` fields along with worker metadata. The helper selects the created window/pane; the original host pane remains unrelated and must survive cleanup. Startup failures/interruption clean up only newly created resources.
 
-## Session discovery
+After successful startup, the caller must clean observers and worker sessions on later completion, error, interruption, or timeout. Kill only the created observer **pane** in split mode, not its pre-existing window. Kill only the created observer **window** in window mode, not its existing host session. Do this promptly after collecting results, before any human approval gate. Then kill the owned worker session. There is no server-wide or enumerate-and-delete cleanup recipe; a shared automation socket does not make other workflows' sessions disposable.
+
+## Raw windows and panes
+
+Creation output is the ownership record. For example, inside an already authorized target session/window:
 
 ```bash
-./scripts/find-sessions.sh -S "$SOCKET"
-./scripts/find-sessions.sh --all
-./scripts/find-sessions.sh -S "$SOCKET" -q py
+WINDOW_ID=$(tmux -S "$SOCKET" new-window -d -t "$SESSION_ID:" \
+  -n debug -P -F '#{window_id}')
+PANE_ID=$(tmux -S "$SOCKET" split-window -d -h -t "$EXISTING_PANE_ID" \
+  -P -F '#{pane_id}')
 ```
 
-## Waiting patterns
+Record IDs immediately and arrange exact-resource cleanup before subsequent operations. Creating a pane inside an existing window does not transfer ownership of the window or session. Use IDs together with their recorded socket, not `:0.0`, a name prefix, or whichever terminal happens to be active.
 
-### A) Wait for prompt text
+## Input and output
 
 ```bash
-./scripts/wait-for-text.sh -S "$SOCKET" -t "$SESSION":0.0 -p '^>>>' -T 15 -l 4000
+# Literal text; press Enter separately only when intended.
+tmux -S "$SOCKET" send-keys -t "$PANE_ID" -l -- "$text"
+tmux -S "$SOCKET" send-keys -t "$PANE_ID" Enter
+# Control keys for an authorized interactive terminal.
+tmux -S "$SOCKET" send-keys -t "$PANE_ID" C-c
+# Joined wrapped lines from a selected pane.
+tmux -S "$SOCKET" capture-pane -p -J -t "$PANE_ID" -S -200
 ```
 
-### B) Wait-for channel signaling
+For Python REPLs, use `PYTHON_BASIC_REPL=1` when needed to avoid enhanced REPL control sequences. For debugging, use the project's available debugger (`lldb` or `gdb`), not a hardcoded default agent.
+
+## Synchronization
+
+Prefer the bounded read-only helper for a specific prompt:
 
 ```bash
-CHANNEL="done-$SESSION"
-
-tmux -S "$SOCKET" send-keys -t "$SESSION" "run-your-command; tmux -S $SOCKET wait-for -S $CHANNEL" Enter
-timeout 600 tmux -S "$SOCKET" wait-for "$CHANNEL"
+./scripts/wait-for-text.sh -S "$SOCKET" -t "$PANE_ID" -p '^>>>' -T 15 -l 4000
 ```
 
-## Interactive tool notes
-
-- Debugging default: `lldb`
-- Python REPL: always set `PYTHON_BASIC_REPL=1`
-
-Examples:
-
-```bash
-# Python REPL
-tmux -S "$SOCKET" send-keys -t "$SESSION" -- 'PYTHON_BASIC_REPL=1 python3 -q' Enter
-
-# lldb
-tmux -S "$SOCKET" send-keys -t "$SESSION" -- 'lldb ./a.out' Enter
-
-# gdb
-tmux -S "$SOCKET" send-keys -t "$SESSION" -- 'gdb --quiet ./a.out' Enter
-tmux -S "$SOCKET" send-keys -t "$SESSION" -- 'set pagination off' Enter
-```
-
-## Cleanup
-
-```bash
-# one session
-tmux -S "$SOCKET" kill-session -t "$SESSION"
-
-# all sessions on socket
-tmux -S "$SOCKET" list-sessions -F '#{session_name}' | xargs -r -n1 tmux -S "$SOCKET" kill-session -t
-
-# entire server on socket
-tmux -S "$SOCKET" kill-server
-```
+Raw `tmux wait-for` signals are not command exit statuses and provide no timeout by themselves. Use them only with a separate tool-driven bound and known ownership/cleanup; never wait beyond the active tool timeout. Do not instruct an agent to emit markers or signal completion as a substitute for command/task verification.

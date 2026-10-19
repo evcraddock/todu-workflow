@@ -70,31 +70,11 @@ Use E21 with the current repository skill catalog, plus E17-E19 as neighboring p
 
 For task-0769a4fb, three fresh Pi print-mode processes (`openai-codex/gpt-6.1-sol`, low thinking) received the updated catalog, complete project-init skill/new-project reference, and six independent cases: explicit standalone creation, unspecified owner/visibility/path, missing CLI, and E17-E19. Tools, extensions, MCP, skill/context discovery, prompt templates, and session persistence were disabled. All selected ordinary CLI handling for the standalone cases (clarification or an honest capability blocker where needed), project-init for full app setup, project-scaffold for foundational files, and quality-tooling for ESLint/Vitest (18/18 routing classifications). Expected answers were not supplied; no operations or live writes were executed. These supplied-catalog simulations do not establish automatic discovery or live CLI/keyring/recovery behavior. Installed copies and machine configuration were not changed.
 
-### tmux wait-for Signaling
+### Explicit tmux Support
 
-Test the wait-for pattern used for inter-agent communication:
+Use [tmux Evaluation](evals/tmux.md) for generic delegation versus explicit terminal routing, bounded waits, owned-resource cleanup, and failure behavior. Run the routing proposals in three fresh no-write contexts. Generic sub-agent requests must not automatically select tmux; explicit terminal requests must still receive useful support. Keep independent PR review and current-session close verification separate from this optional terminal capability.
 
-```bash
-cd ~/.pi/agent/skills/todu-workflow/tmux
-
-SOCKET="${CLAUDE_TMUX_SOCKET_DIR:-${TMPDIR:-/tmp}/claude-tmux-sockets}/claude.sock"
-
-# Start a test session
-OUTPUT=$(./scripts/start-session.sh -s test-waitfor --detached)
-SESSION=$(echo "$OUTPUT" | grep "Created session" | sed "s/Created session '\([^']*\)'.*/\1/")
-CHANNEL="test-done-$SESSION"
-
-# Send command with signal
-tmux -S "$SOCKET" send-keys -t "$SESSION" \
-  "echo 'Working...'; sleep 2; echo 'Done!'; tmux -S $SOCKET wait-for -S $CHANNEL" Enter
-
-# Wait for signal (blocks until complete)
-timeout 10 tmux -S "$SOCKET" wait-for "$CHANNEL"
-echo "Exit code: $?"
-
-# Cleanup
-tmux -S "$SOCKET" kill-session -t "$SESSION"
-```
+Run `uv run pytest tests/test_tmux_helpers.py` for real, local-only integration tests of the retained session/discovery/text-wait helpers. Bash and tmux must be installed; no `timeout` utility, agent CLI, or observer client is required. Tests use short, unique temporary socket paths and isolated HOME/configuration, record exact session IDs, and clean only fixture-created resources. They preserve unrelated test sessions/panes during worker/observer cleanup and exercise success, bounded timeout, immediate capture/input failure, observer startup failure, and interruption after observer creation. No personal tmux socket, Overmind process, or installed skill copy is modified. Command exit/result-marker tests are not applicable because the agent-command wrapper and its marker protocol are removed; text matching never claims command success.
 
 ### pr-review Skill
 
