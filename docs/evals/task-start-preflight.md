@@ -1,5 +1,7 @@
 # Task Start Preflight Evaluation — task-ab21a4af
 
+Historical integration: preflight remains a requested read-only assessment, not an automatic execution step. The execution-handoff expectations below are superseded; use [Direct Task Execution Evaluation](task-execution.md) for current routing.
+
 ## Method and limits
 
 Evaluate the shared readiness contract with controlled no-write fixtures, not live task mutations. Supply the complete task-start-preflight, task-perform, and task-pipeline skills. The recorded original runs supplied only the pipeline's then-current lifecycle integration section; the repeat command now supplies the complete rewritten reference. Each fixture is an independent conversation with the mock task/tool outcomes below. Return proposed native-tool calls and the actual concise readiness response; do not execute anything or grade yourself. Repeat in three fresh contexts without expected answers or recorded results.

@@ -1,5 +1,7 @@
 # Task Lifecycle Evaluation — task-30fd505d
 
+Historical workflow: automatic preflight/planning/completion handoffs and mandatory starting comments below are superseded. Use [Direct Task Execution Evaluation](task-execution.md) for the current executor; the recorded results here do not validate it.
+
 ## Method and limits
 
 Historical record: these runs included the now-removed `habit-perform` skill among their five input files. Their results are preserved below, not claimed as validation of the current catalog. The repeat command now loads only the four remaining task skills; the habit fixture checks that task execution does not trigger, without prescribing a replacement habit workflow.

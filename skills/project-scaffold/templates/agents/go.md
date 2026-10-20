@@ -1,14 +1,5 @@
 # AI Agent Guidelines for {name}
 
-## Before Starting ANY Task
-
-**ALWAYS use the `task-start-preflight` skill** when you hear:
-- "start task", "work on task", "get started", "pick up task"
-- "let's do task", "begin task", "tackle task"
-- Or any variation of starting work
-
-The preflight ensures you understand the task, check dependencies, and follow project guidelines.
-
 ## Required Reading
 
 Before working, read and follow:
@@ -49,8 +40,7 @@ Non-stable versions (canary, beta, alpha, rc) can have bugs or incomplete featur
 
 ## Task Lifecycle
 
-- **Starting**: ALWAYS run `task-start-preflight` skill first
-- **Closing**: Run `task-close-gate` skill
+Use `task-perform` to execute Todu tasks as written, record results, and close finished work. Readiness and completion-assessment skills are available when explicitly requested; they are not automatic steps. Follow the project development requirements below for repository changes.
 
 ## PR Workflow (Mandatory Sequence)
 

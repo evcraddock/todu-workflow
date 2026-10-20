@@ -1,5 +1,7 @@
 # Task Comment Evaluation — task-991dde58
 
+Historical lifecycle integration: mandatory completion-assessment handoffs below are superseded. Ordinary draft/post rules still apply; use [Direct Task Execution Evaluation](task-execution.md) for the current executor.
+
 ## Method and limits
 
 Use controlled no-write simulations with the current repository skill catalog, complete task-authoring, task-perform, task-close-gate, pr-review and its three supporting documents, plus README's Task Comments guidance. Each fixture is an independent conversation. Propose actions and actual concise content; do not execute anything or grade yourself. Repeat in three fresh contexts without inspection criteria or recorded results.

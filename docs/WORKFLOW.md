@@ -58,54 +58,28 @@ Drafting is not permission to post. An explicit posting request or an already-au
 
 ## Task Workflow
 
-### 1. Start a Task
+### Execute a Task
 
 ```
 "Start task #1234" / "Do task #1234" / "Pickup task #1234"
-→ Triggers task-perform
-→ Loads task/project instructions and uses shared read-only readiness checks
-→ Obtains required plan approval
-→ Confirms inprogress before work, then posts a starting/resuming comment
+→ task-perform reads the task and project instructions
+→ Confirms inprogress (or resumes without another status update)
+→ Does what the task says and checks the result
+→ Comments with the result, then marks done if finished
+→ Otherwise explains the gap and leaves the task open
 ```
 
-### 2. Do the Work
+A starting comment is optional. There is no automatic preflight, implementation-plan approval, close-gate handoff, or fallback contributing policy. Ask only for an actual ambiguity, blocker, or explicitly required approval.
 
-```
-task-perform owns the lifecycle for every execution wording
-→ Follows the agreed deliverable and project instructions
-→ Records meaningful progress, decisions, and blockers
-→ Loads task-pipeline development guidance for applicable repository changes
-→ Verifies completion and closes only after evidence and applicable gates pass
-```
+Explicit close/complete/verify-and-close requests check already-delivered work and finish without starting implementation or setting inprogress. Readiness-only and verification-only requests use their assessment skills and make no task writes. Lookup, comment-only, and habit requests do not start task execution.
 
-### 3. Verify Before Closing
+### Development Delivery
 
-```
-At the end of execution:
-→ task-perform uses task-close-gate in assessment-only mode in the current session
-→ Verifies the agreed outcome and any acceptance criteria with proportional evidence
-→ Requires merge completion when the delivery workflow calls for it
-→ Posts completion evidence, then marks done without another default approval prompt
-→ Leaves the task open with an explanation when blocked or evidence is inconclusive
+`task-pipeline` owns development planning and delivery when the user/task requests it or project instructions explicitly select it. Ordinary task execution, repository changes, or individual PR/merge requirements do not automatically select the whole pipeline. Follow project contributing instructions; only this selected development pipeline uses `skills/task-pipeline/DEFAULT_CONTRIBUTING.md` when no project contributing file exists. It returns the delivery result without changing task status or posting task comments.
 
-Explicit "Close task #1234" / "Verify and close task #1234" requests use task-perform's closure-only path: shared completion assessment, then owner-controlled comment/status writes if ready. They do not run start preflight, set inprogress, post a starting comment, or implement missing work. Verification-only requests stop after task-close-gate returns its verdict, with no lifecycle writes.
-```
+**For agents developing this repository**, the branch/PR/independent-review/human-approved-merge path below remains required for tracked changes. This repository policy does not impose a development pipeline on every task handled by the distributed skills. Small fixes and documentation changes still follow this repository's delivery rules. Resolve real scope or policy conflicts before editing; obtain any required plan/preview approval.
 
-### 4. Development Delivery Stages (Required When Applicable)
-
-For planned tracked repository changes, default to branch/PR/independent review/human-approved merge unless explicit project policy permits another delivery path. Resolve unclear policy before editing; small or documentation-only changes do not silently bypass applicable gates. Non-repository work does not automatically require these stages, and brainstorming has no fixed storage destination.
-
-`task-perform` owns lifecycle state and uses `task-pipeline` as development guidance, not as a competing executor. Loading the reference does not restart readiness, planning, task status, or comments. It returns development/check/review/merge evidence to the caller for current-session completion assessment, without a hidden verifier or another default approval prompt. Execution and completion verification do not require tmux delegation. Independent review must remain independent; report unavailable required review rather than substitute self-review silently.
-
-| Agreed deliverable/policy | Delivery path |
-| --- | --- |
-| Tracked code, a tiny fix, or committed documentation; no explicit alternative policy | Default branch/PR/independent review/human-approved merge |
-| Tracked change with an explicit applicable alternative policy | The permitted alternative, preserving its verification and approval gates |
-| Chat-only brainstorming, Todu-only conclusions, or an explicitly untracked local note | No automatic repository gates or fixed storage requirement |
-| Unclear/conflicting policy or substantial/ambiguous work without plan agreement | Resolve the decision/plan with task-perform before editing |
-
-For work using the PR delivery path, after implementation is complete, agents MUST execute these steps in order.
-Do not treat these as optional, and do not ask "want me to...?" when the next step is required.
+For work using the PR delivery path, after implementation is complete, execute these steps in order. Do not treat required next steps as optional.
 
 1. **Run local gate**
 
@@ -152,7 +126,7 @@ Do not treat these as optional, and do not ask "want me to...?" when the next st
      - delete remote feature branch
    - If cleanup policy is unclear for the host/workflow, ask the human before deleting branches.
 
-### 5. CI Failure Path (Required)
+### CI Failure Path (Required)
 
 When CI is available and a check fails, run this failure loop:
 
@@ -170,7 +144,7 @@ Expected status progression:
 - `local_checks=pass` (after fix)
 - `ci=pass`
 
-### 6. Agent Output Contract (Required)
+### PR Pipeline Output Contract (Required)
 
 At each gate, report state explicitly in this format:
 
@@ -188,17 +162,9 @@ Rules:
 - Do not present required next steps as optional questions.
 - If `ci=unavailable-needs-human-decision`, either apply a documented standing policy or ask the human before review request.
 
-### 7. Complete the Task Lifecycle
+### Completion and Write Failures
 
-```
-task-perform completion
-→ Confirm the agreed outcome and applicable delivery gates, including merge/cleanup when required
-→ Obtain a completion assessment without lifecycle writes from the verifier
-→ Post a completion comment with evidence and confirm success
-→ Mark done and report the actual result; no additional default completion approval
-
-If comment posting or the status update fails or has an uncertain outcome, report the partial result and reconcile before retrying. Never duplicate comments blindly or claim closure without confirmation.
-```
+Check the actual requested outcome and explicit project requirements, including merge when required. Task-perform records completion with a confirmed comment before marking done; it does not require another skill or default approval. If unfinished, blocked, or unverified, record the gap and leave the task open. Reconcile failed/uncertain writes without blindly duplicating comments or claiming success.
 
 ## Workflow Diagram
 
@@ -206,20 +172,17 @@ If comment posting or the status update fails or has an uncertain outcome, repor
 Project initialization
   project-init -> repo/scaffold/tooling/dev-environment helpers
 
-Task execution (task-perform owns every lifecycle write)
-  task + project instructions
-    -> shared readiness + required plan approval
-    -> confirmed inprogress + starting/resuming comment
-    -> agreed work + meaningful updates
-    -> applicable delivery path:
-         repository PR path -> checks -> independent review
-                            -> human merge approval -> merge/cleanup
-         non-repository or explicit alternate policy -> agreed deliverable
-    -> current-session completion assessment (no lifecycle writes)
-    -> confirmed completion comment -> done
+Task execution
+  read task/instructions -> confirm inprogress -> do requested work
+    -> check result -> completion comment -> done
+    -> unfinished/blocked: explain and leave open
 
-Any unresolved readiness, verification, write, or approval issue
-  -> explain/record the issue, keep the task open, and reconcile before retry
+Development delivery (only when requested or required by project instructions)
+  task-pipeline -> plan -> implement/checks -> PR -> independent review
+                -> human merge approval -> merge/cleanup -> return result
+
+Requested readiness or completion assessment
+  task-start-preflight or task-close-gate -> read-only assessment
 ```
 
 ## Skills Reference
@@ -233,18 +196,18 @@ Any unresolved readiness, verification, write, or approval issue
 | `task-authoring` | "create a task", "new issue", "create bug", "draft a task", "help me write a task" |
 | Ordinary comment handling (no skill handoff) | "draft a task comment" returns content only; "comment on task #X" uses native task_comment_create when authorized |
 | `task-start-preflight` | "check readiness", "run preflight" (read-only) |
-| `task-pipeline` | Development reference loaded by task-perform, not a direct execution trigger |
+| `task-pipeline` | "run the development pipeline", or task/project instructions explicitly requiring it |
 | `task-perform` | Execution: "do/work on/start/pickup task #X"; closure-only: "close/complete/verify and close task #X" |
-| `task-close-gate` | "verify completion only", "is task #X complete?"; shared assessment for task-perform, never lifecycle writes |
+| `task-close-gate` | "verify completion only", "is task #X complete?"; requested assessment, never lifecycle writes |
 | `pr-review` | "request review", "get this reviewed", "need review", "review PR #X", "review pull request", "check PR" |
 
 ## Best Practices
 
-### Always Use Preflights
+### Keep Task Execution Direct
 
-- **Readiness**: `task-start-preflight` is the shared read-only check for starting active tasks, resuming inprogress tasks, and standalone readiness requests. Return a concise explanation of status, intent, and actual blockers; implementation-ready specifications and a full report template are not required. Resolve explicit dependencies directly with native `task_show`, including cross-project references; missing or failed lookups never imply completion. Project planning/approval and execution remain separate.
-- **Execution**: `task-perform` confirms inprogress before work, records meaningful comments, and loads applicable development guidance.
-- **Completion**: `task-close-gate` always returns an assessment without task mutations. It assesses formal criteria or the agreed outcome, reuses relevant evidence, and permits targeted proportionate checks when needed. task-perform owns explicit and automatic closure after applicable gates pass; verification-only requests stop at the verdict. An unsupported done claim is not evidence, and explicit close requests never start implementation.
+- Do the requested work without adding workflow stages. Use readiness/completion assessment skills only when requested or explicitly required.
+- Follow actual task/project requirements; simplifying task-perform does not waive approval, review, or verification rules.
+- Check results proportionally. An unsupported "done" claim is not evidence, and explicit close requests never start missing implementation.
 
 ### Keep PRs Focused
 

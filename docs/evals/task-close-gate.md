@@ -1,5 +1,7 @@
 # Task Close Gate Evaluation — task-25854af5
 
+Historical integration: close-gate remains a requested read-only assessment, not a mandatory completion handoff. Use [Direct Task Execution Evaluation](task-execution.md) for direct execution/closure; the recorded results here do not validate that path.
+
 ## Method and limits
 
 Use controlled no-write simulations of the complete task-close-gate, task-perform, task-pipeline, and task-start-preflight skills. Each fixture is an independent conversation. Return proposed calls/actions, the assessment and actual concise response, lifecycle owner, and supported final status. Do not execute actions or grade yourself. Repeat in three fresh contexts without inspection criteria or recorded results.

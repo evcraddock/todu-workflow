@@ -51,24 +51,19 @@ Draft comments directly in chat or the posting workflow; no separate authoring s
 
 Purpose: pick up a task, execute it using project-owned rules, and close it correctly.
 
-`task-perform` is the single lifecycle entry point for do, work-on, start, and pickup requests:
-1. load the task/project instructions, check shared readiness (`task-start-preflight`), and obtain any required plan approval
-2. confirm `inprogress` before work and post a starting/resuming comment
-3. execute the agreed work and record meaningful progress, decisions, and blockers
-4. for tracked repository changes, load `task-pipeline` development guidance and default to branch/PR/independent review/human-approved merge unless explicit project policy permits another delivery path
-5. assess completion in the current session using `task-close-gate` in assessment-only mode
-6. after verification and applicable gates pass, post the completion evidence and mark `done` without another default approval prompt
+[task-perform](skills/task-perform/SKILL.md) does what the task says:
+1. read the task/project instructions and confirm `inprogress`
+2. execute the requested work and check the actual result
+3. comment with the result, then mark `done` if finished; otherwise explain the gap and leave it open
 
-Explicit close/complete/verify-and-close requests use task-perform's closure-only path: assess already-delivered work without starting implementation, then perform completion writes only after evidence and applicable gates pass. Verification-only requests stop at task-close-gate's assessment; that verifier never posts comments or changes status.
+There is no automatic preflight, implementation-plan approval, starting-comment requirement, close-gate handoff, or development pipeline. Explicit task/project requirements still apply. Close/complete requests check existing work and finish without starting implementation. Lookup, readiness-only, verification-only, comment-only, and habit requests do not start execution.
 
-Non-repository deliverables do not automatically require PR/merge stages or a particular storage destination. Failed or inconclusive verification leaves the task open. Execution and completion verification do not mandate tmux delegation; required independent review and explicit project approval gates still apply.
-
-[task-pipeline](skills/task-pipeline/SKILL.md) contains only delivery-path selection and applicable repository development stages, then returns development evidence to task-perform. It does not restart readiness or own task status, comments, or closure. Small tracked fixes and committed documentation retain the default review/merge path unless explicit project policy permits an alternative; chat-only or untracked local results do not inherit that path.
+[task-pipeline](skills/task-pipeline/SKILL.md) is a separate development delivery workflow, selected only when the user/task requests that pipeline or project instructions explicitly select it—not by repository changes or individual PR/merge requirements alone. It owns development planning and delivery stages (checks, PR, independent review, human-approved merge) and returns the result without changing task status or posting task comments. `task-start-preflight` and `task-close-gate` remain available for requested read-only assessments; neither is mandatory for ordinary execution.
 
 Primary skills:
 - [task-authoring](skills/task-authoring/SKILL.md)
 - [task-perform](skills/task-perform/SKILL.md)
-- [task-pipeline](skills/task-pipeline/SKILL.md) (development reference)
+- [task-pipeline](skills/task-pipeline/SKILL.md) (requested development delivery)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
 - [task-close-gate](skills/task-close-gate/SKILL.md)
 - [pr-review](skills/pr-review/SKILL.md)
@@ -79,7 +74,7 @@ The task pipeline depends on artifacts created by initialization, especially:
 - `docs/CONTRIBUTING.md`
 - `docs/CODE_STANDARDS.md`
 
-If a project has no `docs/CONTRIBUTING.md`, task workflow can use:
+When task-pipeline is selected and a project has no `docs/CONTRIBUTING.md`, the development pipeline uses:
 - [`skills/task-pipeline/DEFAULT_CONTRIBUTING.md`](skills/task-pipeline/DEFAULT_CONTRIBUTING.md)
 
 That fallback is intentionally minimal. Real projects should customize their own docs.
@@ -104,9 +99,9 @@ That means each project is expected to customize:
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, testing, hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development process management |
 | [task-authoring](skills/task-authoring/SKILL.md) | Capture user intent in task descriptions without inventing scope |
-| [task-pipeline](skills/task-pipeline/SKILL.md) | Development-workflow guidance loaded by task-perform |
-| [task-start-preflight](skills/task-start-preflight/SKILL.md) | Task readiness gate |
-| [task-perform](skills/task-perform/SKILL.md) | Own task readiness, confirmed start, updates, execution, and verified completion |
+| [task-pipeline](skills/task-pipeline/SKILL.md) | Development delivery when requested or required by project policy |
+| [task-start-preflight](skills/task-start-preflight/SKILL.md) | Requested read-only readiness assessment |
+| [task-perform](skills/task-perform/SKILL.md) | Execute the task as written, record the result, and close finished work |
 | [task-close-gate](skills/task-close-gate/SKILL.md) | Evidence-based completion assessment without task mutations |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Explicit tmux/terminal sessions with exact owned-resource handling; not generic agent delegation |

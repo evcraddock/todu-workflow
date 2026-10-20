@@ -18,11 +18,11 @@ Use the fixtures and inspection criteria in [Task Authoring Evaluation](evals/ta
 
 ### Task Lifecycle
 
-Recorded dry-run fixtures, invocation details, results, and limitations are in [Task Lifecycle Evaluation](evals/task-lifecycle.md).
+Use [Direct Task Execution Evaluation](evals/task-execution.md) and E06-E09/E30-E41 in [skill-evals.md](skill-evals.md) for the current thin executor. Repeat controlled no-write proposed action traces in three fresh contexts. Check direct execution without automatic preflight, planning approval, starting comments, development pipeline, or close-gate. Include actual ambiguities/blockers, explicit project requirements, requested helper skills, terminal/resumed states, and failed writes.
 
-Use E06-E09 and E30-E41 in [skill-evals.md](skill-evals.md) to evaluate the shared task-perform lifecycle. Supply controlled task/project state and mocked tool outcomes in a fresh context; require a proposed tool/action trace only, with no real task, Git, or external writes. Include active and resumed tasks, terminal status, failed/uncertain writes, incomplete verification, non-repository deliverables, and explicit merge/review gates. Repeat high-risk cases at least three times. Record the model, loaded skill versions, verdict, and observed ordering; static document checks alone do not establish model compliance.
+Expected ordering is confirmed inprogress, requested work and proportionate result checks, confirmed completion comment, then done. Starting comments are optional; resumed tasks need no status reset. An unsatisfied explicit project requirement still prevents closure. Static tests in `tests/test_task_skill_contracts.py` guard document wiring only, not model behavior.
 
-Expected write ordering is confirmed inprogress, starting/resuming comment, meaningful work updates, assessment-only completion verification, confirmed completion comment, then done. Existing inprogress status does not require a redundant update. A failed start/comment or an unsatisfied project gate must prevent the corresponding later work/closure. Report limitations honestly if fresh-context behavioral evaluations cannot be run.
+Earlier lifecycle, pipeline, preflight, close-gate, and comment evaluation reports retain historical results. Their automatic readiness/planning/completion-handoff and mandatory starting-comment expectations are superseded, not regression requirements for the simplified executor.
 
 ### Habit/Task Routing After Skill Removal
 
@@ -48,9 +48,9 @@ Use E13-E14 in [skill-evals.md](skill-evals.md) with the current repository cata
 
 For the search-toolkit removal, three fresh Pi print-mode processes (`openai-codex/gpt-6.1-sol`, low thinking) received the current catalog and six independent routing cases with explicit capability availability. Tools, extensions, MCP, skill/context discovery, prompt templates, and session persistence were disabled. All selected the external search/extraction capability when available, reported a capability gap otherwise, and preserved external browser/Electron routing (18/18 classifications). Expected answers were not supplied; no network requests, installations, browser actions, credential access, or backend mutations were executed. These supplied-catalog simulations do not establish automatic discovery or live external-tool behavior. Installed copies and local caches were not changed.
 
-### Task Pipeline Development Reference
+### Task Pipeline Development Delivery
 
-Use [Task Pipeline Evaluation](evals/task-pipeline.md) to evaluate the complete development reference together with the lifecycle/readiness/completion skills. Cover do/work-on/pickup equivalence, tiny tracked changes, explicit alternative policy, policy conflicts, planning requirements, chat/backend/untracked versus committed results, failed gates, independent review, human merge approval, and current-session completion handoff. Use controlled no-write proposals in three fresh contexts, not real task or repository writes; distinguish author verification from independent review and report simulation limits.
+Use the explicit-pipeline and project-policy fixtures in [Direct Task Execution Evaluation](evals/task-execution.md). Pipeline selection must come from the user/task or project instructions, not merely a tracked change. Once selected, retain its planning and development delivery rules, independent review, and human merge approval. It must return results without task lifecycle writes or automatic preflight/close-gate handoffs. Earlier [Task Pipeline Evaluation](evals/task-pipeline.md) results are historical.
 
 ### Task Comments
 
@@ -58,7 +58,7 @@ Use [Task Comment Evaluation](evals/task-comments.md) for direct drafting versus
 
 ### Task Start Preflight
 
-Use [Task Start Preflight Evaluation](evals/task-start-preflight.md) for the shared read-only readiness contract. Cover active/resumed/terminal/waiting tasks, genuinely missing intent versus pickup details, direct cross-project lookups, incomplete/cancelled/missing/failed dependencies, unresolved references, and standalone-versus-execution ownership. Repeat controlled no-write simulations in three fresh contexts. Inspect proposed calls and actual concise responses; no-tool simulations do not validate live tool behavior or automatic discovery.
+Test requested readiness with E39/E42-E46 and [Direct Task Execution Evaluation](evals/task-execution.md). Keep readiness read-only and resolve explicit dependencies directly. Do not require this skill during ordinary task execution. Earlier [Task Start Preflight Evaluation](evals/task-start-preflight.md) status/dependency fixtures remain useful, but its automatic execution-handoff expectation is historical.
 
 ### Next Actions
 
@@ -82,12 +82,10 @@ Use [PR Review Evaluation](evals/pr-review.md) for controlled no-write scenarios
 
 For an authorized live review, use `review PR #<number> for task <task-id>` on a known open PR. Verify that the fresh reviewer assesses the correct revision, the matching host command posts the PR artifact, native `task_comment_create` posts the linked-task summary, and both are confirmed with accurate references/statuses. The report must preserve evidence and limitations, stop before remediation/merge, and leave human merge approval outstanding. No tmux wrapper, marker-delimited output, mandatory criteria counts, or separate comment-authoring handoff is required. Test write failures with mocks rather than deliberately creating duplicate or broken live artifacts.
 
-### Task Close Gate and Closure-only Requests
+### Requested Completion Assessment and Close-only Requests
 
-Use [Task Close Gate Evaluation](evals/task-close-gate.md) with complete verifier/caller skills, explicit mock evidence, native input schemas, and no live writes. Repeat in three fresh contexts. Cover outcomes without formal sections, supported versus unsupported/stale evidence, missing/partial completion, artifact reuse, targeted permitted checks and failures, outstanding project gates, and verification-only versus explicit/automatic closure.
-
-The verifier returns only a concise assessment and evidence; it never posts comments, changes status, launches tmux, implements missing work, or initiates another PR review. For authorized closure, task-perform uses its closure-only path or existing execution completion path, confirms the completion comment via native task_comment_create before task_update(done), and accurately handles failures. Explicit close requests must not start preflight, set inprogress, or post starting comments. Verification-only requests must not write or imply actual closure. Check these ownership/order boundaries rather than requiring a rigid report or redundant tests.
+Use E09/E41/E52-E56 and [Direct Task Execution Evaluation](evals/task-execution.md). Task-perform checks results directly for ordinary completion and explicit close requests; it does not automatically invoke task-close-gate. Close-only requests must not start work or set inprogress. Verification-only requests select task-close-gate and stop at an assessment without writes. An explicitly required assessment returns to its caller without owning closure. Earlier [Task Close Gate Evaluation](evals/task-close-gate.md) evidence-integrity cases remain useful; automatic caller handoffs are historical.
 
 ## Automated Testing
 
-TODO: Add automated tests for skills.
+Run `uv sync --extra test` to install the existing test dependencies, then `./scripts/pre-pr.sh` for Ruff and pytest. `tests/test_task_skill_contracts.py` checks routing guardrails in skill/template text; fresh-context simulations are still needed to assess model behavior.

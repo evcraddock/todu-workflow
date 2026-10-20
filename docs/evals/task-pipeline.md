@@ -1,5 +1,7 @@
 # Task Pipeline Evaluation — task-d9b978d2
 
+Historical workflow: automatic pipeline selection from tracked changes and caller-owned planning/completion handoffs below are superseded. Use [Direct Task Execution Evaluation](task-execution.md) for current routing; the recorded results here do not validate it.
+
 ## Method and limits
 
 Evaluate delivery-policy selection and lifecycle ownership with controlled no-write simulations. Supply the complete current task-perform, task-pipeline, task-start-preflight, and task-close-gate skills. Treat each fixture as an independent conversation. Return a proposed route/action trace, actual short response, remaining gates, and supported final task state. Do not execute tools, create artifacts, or grade yourself. Repeat in three fresh contexts without inspection criteria or recorded results.
