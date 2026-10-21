@@ -26,11 +26,11 @@ For the default PR path, follow these stages under project instructions. For an 
 
 1. **Implement on the task branch.** Make scoped changes for the agreed outcome, using existing project conventions and proportional tests/checks.
 2. **Verify and publish.** Run required local checks, address failures, push the branch, and open/update the PR. When CI exists, resolve failures and wait for required checks to pass. If CI is unavailable, follow an explicit fallback policy or obtain the needed decision; do not silently count absence as success.
-3. **Obtain independent review.** Use [pr-review](../pr-review/SKILL.md) and its existing mechanism. Fix requested changes and non-waived warnings, recheck, and obtain review of the updated changes. Current-session author verification is not independent review. If required review is unavailable, report the blocker rather than substitute self-review or skip it.
+3. **Obtain independent review.** Use [pr-review](../pr-review/SKILL.md) for the assessment. Fix requested changes and non-waived warnings, recheck, and obtain review of the updated changes. Current-session author verification is not independent review. If required review is unavailable, report the blocker rather than substitute self-review or skip it.
 4. **Wait for human merge approval.** Report the review result and stop until explicit approval is given. Review approval is not human merge approval; do not merge automatically or treat waiting as completed delivery.
 5. **Merge and normalize.** After approval and satisfied gates, merge the reviewed changes, update the local target branch, and clean up the task branch locally/remotely according to project policy. The default is branch cleanup after merge; ask if cleanup policy is uncertain. Do not force updates or discard unrelated work.
 
-No tmux delegation is required for development execution or completion verification. This does not redefine the PR-review skill's independent-review mechanism or waive explicit project gates.
+No tmux delegation is required for development execution or completion verification. Applicable project review gates still apply.
 
 ## Return the delivery result
 

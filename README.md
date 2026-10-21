@@ -16,7 +16,7 @@ Project instructions define the workflow policy. Ordinary task execution uses na
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Check explicit prerequisites from supplied context when requested or required |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Deliver development work through review and approved merge |
 | [nextactions](skills/nextactions/SKILL.md) | Recommend work by priority and dependencies |
-| [pr-review](skills/pr-review/SKILL.md) | Run independent PR review |
+| [pr-review](skills/pr-review/SKILL.md) | Review PRs for actionable findings |
 | [tmux](skills/tmux/SKILL.md) | Manage explicitly requested terminal sessions |
 | [electron-testing](skills/electron-testing/SKILL.md) | Test Electron apps with Playwright |
 | [radicale-calendar](skills/radicale-calendar/SKILL.md) | Manage CalDAV events with the bundled `radicale-calendar` CLI |
