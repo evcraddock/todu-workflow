@@ -1,17 +1,19 @@
 ---
 name: task-pipeline
-description: Run the development delivery pipeline when explicitly requested by the user/task or explicitly selected by project instructions. Covers planning, implementation, checks, PR, independent review, and human-approved merge. Does not own task status or comments.
+description: Run the development delivery pipeline when the user asks to "pick up" or "pickup" a task.
 ---
 
 # Task Pipeline — Development Delivery
 
-Use this pipeline only when the user/task requests it or project instructions explicitly select it. Repository changes or individual PR/merge requirements alone do not select the whole pipeline. Plain task execution uses ordinary agent handling and native task tools, not a dedicated execution skill.
+Use this pipeline when the user asks to "pick up" or "pickup" a task, when the user/task requests the pipeline, or when project instructions explicitly select it. Repository changes or individual PR/merge requirements alone do not select the whole pipeline. Plain task execution uses ordinary agent handling and native task tools, not a dedicated execution skill.
 
 ## Planning and lifecycle boundary
 
 Read the applicable project instructions and agree on a plan for substantial or ambiguous development work. Honor explicit project preview/approval requirements before implementation. Follow `docs/CONTRIBUTING.md` when present, otherwise [DEFAULT_CONTRIBUTING.md](DEFAULT_CONTRIBUTING.md). These development rules belong here, not in every task execution.
 
-This pipeline handles development delivery, not task status or comments. Continue the requested development stages without restarting task execution.
+When the work is associated with a todu task, before starting work, set its status to `inprogress` using its explicit task ID and verify the update succeeded. If it is already `inprogress`, leave its status unchanged.
+
+Continue the requested development stages without restarting task execution. Close an associated todu task only after the completion requirements below are satisfied.
 
 ## Choose the delivery path before editing
 
@@ -36,3 +38,9 @@ Applicable project review gates still apply.
 Check the requested development outcome and applicable gates against concrete evidence. Return what changed, relevant check results, PR/review artifacts, approval and merge state, branch/worktree normalization and cleanup, and any unresolved issue. Do not claim a gate passed without evidence or treat waiting for approval as completion.
 
 Follow the applicable contributing document (`docs/CONTRIBUTING.md` or the default fallback) to determine whether to automatically start a preflight handoff. Return the result to the caller or user.
+
+## Close the task
+
+When the work is associated with a todu task, close it only after all task instructions and applicable project checks, reviews, approvals, and delivery requirements are satisfied. Add a comment summarizing the completed work and verification results, then set the task's status to `done`. Use the explicit task ID for both actions and verify they succeeded. An existing result comment containing this summary can satisfy the comment requirement; do not duplicate it.
+
+If any instructions or requirements remain incomplete, do not mark the task `done`; inform the user what remains incomplete and ask for guidance. Waiting for approval is not completion.

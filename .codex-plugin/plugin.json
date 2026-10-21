@@ -1,6 +1,6 @@
 {
   "name": "todu-workflow",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Project initialization and task execution workflows for todu, with authoring, review, and development tools.",
   "author": {
     "name": "Erik Craddock",
