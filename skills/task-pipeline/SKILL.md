@@ -36,4 +36,4 @@ No tmux delegation is required for development execution or completion verificat
 
 Check the requested development outcome and applicable gates against concrete evidence. Return what changed, relevant check results, PR/review artifacts, approval and merge state, branch normalization/cleanup, and any unresolved issue. Do not claim a gate passed without evidence or treat waiting for approval as completion.
 
-Do not automatically start a preflight or close-gate handoff, post task comments, or change task status. Return the result to the caller or user.
+Do not automatically start a preflight handoff, post task comments, or change task status. Return the result to the caller or user.

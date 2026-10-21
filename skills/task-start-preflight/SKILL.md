@@ -1,33 +1,16 @@
 ---
 name: task-start-preflight
-description: Check whether a Todu task is ready to start or resume without starting work. Use when readiness/preflight is explicitly requested or required by task/project instructions, not automatically for task execution. Do not plan or implement the task.
+description: Read-only check of explicit task prerequisites, only when requested or required by task/project instructions.
 ---
 
 # Task Start Preflight
 
-A read-only readiness check when requested. It is not a mandatory step of task execution. Determine whether the next action is clear and unblocked, not whether a complete implementation plan exists.
+Use the task details and context already supplied by the caller. Do not call `task_show`, repeat task lookups, or reassess the task's status or intent.
 
-## Check readiness
+- Check only explicit prerequisites. Related work, examples, and suggestions are not dependencies.
+- Use existing evidence of prerequisite completion. Known unfinished prerequisites block; cancelled prerequisites need a decision. Missing or uncertain evidence remains unresolved, not satisfied; report the gap without fetching it.
+Do not query task lists or run unrelated checks.
 
-1. Load the requested task with the native `task_show` tool (`taskId`). A fresh successful result already loaded by the caller may be reused. If the task is missing or cannot be loaded, report that explicitly and stop; do not guess its state.
-2. Check status: `active` can start and `inprogress` can resume without a reset. For `waiting`, explain the blocker/decision needed before starting; for `done` or `cancelled`, report terminal status and any reopening decision needed. Do not silently reopen or transition any task.
-3. Check intent using the description and relevant supplied context. A known target and desired outcome sufficient for the next action are enough; do not require a formal requirements checklist, acceptance-criteria section, or implementation-ready specification. If missing intent prevents progress, ask only for that clarification and report not ready. Details that can be resolved at pickup are not readiness blockers.
-4. Identify explicit task prerequisites in the description/context (for example, "depends on", "blocked by", or "after task-X"). Interpret the references, not just keywords: related work, examples, and optional suggestions are not automatically dependencies. Resolve actual dependencies as described below.
+Report **prerequisites satisfied**, **blocked**, **unresolved**, or **no explicit prerequisites**, with a brief reason and relevant dependency IDs/statuses. No fixed template or default approval prompt.
 
-Stop when status or missing intent already prevents progress; do not run dependency queries or unrelated checks just to fill a report.
-
-## Resolve dependencies directly
-
-- Use native `task_show` for each explicit dependency ID, including IDs in other projects. Do not substitute a same-project or in-flight `task_list` comparison; absence from a list is not evidence of completion.
-- Confirmed `done` satisfies a dependency. `active`, `waiting`, and `inprogress` dependencies block readiness: report their IDs, titles, and statuses.
-- A cancelled dependency is not completed work. Report the decision needed about whether the prerequisite still applies; do not silently waive it.
-- A missing task, failed/uncertain lookup, unknown status, or reference that cannot be resolved to a task ID remains unresolved. Explain the actual problem and ask only for the missing reference/decision when needed. Never count unresolved or unchecked dependencies as satisfied.
-- If there are no explicit prerequisites, no dependency lookup or task-list query is needed. Do not invent dependencies or require a dependency section.
-
-## Return a concise result
-
-State ready to start/resume or not ready, identify the task/status, and briefly explain the evidence or actual blockers. Include dependency IDs/statuses or a focused clarification only when relevant. No mandatory report template, empty sections, numbered gate ceremony, or default approval prompt.
-
-A ready result returns control to the caller; it is not permission to mutate or evidence that work has started. Standalone checks end with the readiness result. If explicitly required during execution, return to the existing caller without restarting it or taking over task writes.
-
-Preflight never changes task metadata, posts comments, plans implementation, creates branches, or performs the work. Keep required project planning/approval separate in the execution workflow; do not turn a readiness-only request into execution.
+Never edit tasks, post comments, plan implementation, or create branches. Project planning/approval stays in the execution workflow.

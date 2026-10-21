@@ -51,13 +51,12 @@ Draft comments directly in chat or the posting workflow; no separate authoring s
 
 Ordinary task execution and completion use native task tools and project instructions. There is no dedicated task-execution skill or replacement workflow.
 
-[task-pipeline](skills/task-pipeline/SKILL.md) is a separate development delivery workflow, selected only when the user/task requests that pipeline or project instructions explicitly select it—not by repository changes or individual PR/merge requirements alone. It owns development planning and delivery stages (checks, PR, independent review, human-approved merge) and returns the result without changing task status or posting task comments. `task-start-preflight` and `task-close-gate` remain available for requested read-only assessments; neither is mandatory for ordinary execution.
+[task-pipeline](skills/task-pipeline/SKILL.md) is a separate development delivery workflow, selected only when the user/task requests that pipeline or project instructions explicitly select it—not by repository changes or individual PR/merge requirements alone. It owns development planning and delivery stages (checks, PR, independent review, human-approved merge) and returns the result without changing task status or posting task comments. `task-start-preflight` remains available for requested read-only readiness assessments; it is not mandatory for ordinary execution.
 
 Primary skills:
 - [task-authoring](skills/task-authoring/SKILL.md)
 - [task-pipeline](skills/task-pipeline/SKILL.md) (requested development delivery)
 - [task-start-preflight](skills/task-start-preflight/SKILL.md)
-- [task-close-gate](skills/task-close-gate/SKILL.md)
 - [pr-review](skills/pr-review/SKILL.md)
 
 ## How the pipelines depend on each other
@@ -93,7 +92,6 @@ That means each project is expected to customize:
 | [task-authoring](skills/task-authoring/SKILL.md) | Capture user intent in task descriptions without inventing scope |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Development delivery when requested or required by project policy |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Requested read-only readiness assessment |
-| [task-close-gate](skills/task-close-gate/SKILL.md) | Evidence-based completion assessment without task mutations |
 | [pr-review](skills/pr-review/SKILL.md) | PR review flow with host-specific workers |
 | [tmux](skills/tmux/SKILL.md) | Explicit tmux/terminal sessions with exact owned-resource handling; not generic agent delegation |
 | [electron-testing](skills/electron-testing/SKILL.md) | Electron app testing workflows |
