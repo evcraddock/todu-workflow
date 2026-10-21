@@ -16,4 +16,4 @@ These instructions apply to agents developing this repository, not machine-wide 
 - Include the old and new plugin versions in the PR summary when a bump is required. For a repository-only change, explain why no plugin bump is needed.
 - Parse `.codex-plugin/plugin.json` as JSON and confirm its `version` is the intended semantic version. Run the applicable local checks, including `./scripts/pre-pr.sh` under the existing development workflow.
 - Review the version bump as part of the final PR revision. If a later version adjustment changes the reviewed revision, rerun applicable checks and obtain review of the updated changes; do not append an unreviewed bump immediately before merging.
-- Recheck the version against the latest target branch before merging. A valid version bump does not replace required independent review or explicit human merge approval.
+- Recheck the version against the latest target branch before merging.
