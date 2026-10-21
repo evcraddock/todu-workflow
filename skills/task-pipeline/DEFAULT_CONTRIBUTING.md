@@ -36,10 +36,6 @@ Planned Steps:
 
 ## Required workflow
 
-1. Work only within the requested scope.
-2. Read relevant files before editing.
-3. Make the smallest change that satisfies the request.
-4. If blocked by missing information, ambiguity, or conflicts, stop and report `BLOCKED` with reason.
-5. Do not add manual line breaks in markdown paragraphs.
-6. Run relevant verification for the change.
-7. Report changed files and verification results clearly, including whether the request appears satisfied.
+1. Make the smallest change that satisfies the request.
+2. If blocked by missing information, ambiguity, or conflicts, stop and report `BLOCKED` with reason.
+3. Report changed files and verification results clearly, including whether the request appears satisfied. If the work is associated with a todu task, also add a comment to that task containing this report.
