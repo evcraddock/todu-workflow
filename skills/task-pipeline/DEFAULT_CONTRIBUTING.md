@@ -32,6 +32,7 @@ Planned Steps:
 - After showing the preview, ask a separate short confirmation question: `Continue?`
 - user confirms (`yes`) → return `READY` and continue
 - user declines/defers (`no`) → return `BLOCKED`
+- After confirmation and before implementation, if the work is associated with a task, add a comment to that task containing the confirmed implementation plan using the preview template above.
 
 ## Required workflow
 
