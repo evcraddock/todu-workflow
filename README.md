@@ -13,6 +13,7 @@ Project instructions define the workflow policy. Ordinary task execution uses na
 | [quality-tooling](skills/quality-tooling/SKILL.md) | Set up linting, formatting, tests, and hooks |
 | [dev-environment](skills/dev-environment/SKILL.md) | Set up local development processes |
 | [task-authoring](skills/task-authoring/SKILL.md) | Draft task titles and descriptions without inventing scope |
+| [perform-task](skills/perform-task/SKILL.md) | Find a todu task and follow its instructions |
 | [task-start-preflight](skills/task-start-preflight/SKILL.md) | Check explicit prerequisites from supplied context when requested or required |
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Deliver development work through review and approved merge |
 | [nextactions](skills/nextactions/SKILL.md) | Recommend work by priority and dependencies |
