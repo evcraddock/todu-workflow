@@ -19,7 +19,6 @@ Project instructions define the workflow policy. Ordinary task execution uses na
 | [nextactions](skills/nextactions/SKILL.md) | Recommend work by priority and dependencies |
 | [pr-review](skills/pr-review/SKILL.md) | Review PRs for actionable findings |
 | [tmux](skills/tmux/SKILL.md) | Manage explicitly requested terminal sessions |
-| [electron-testing](skills/electron-testing/SKILL.md) | Test Electron apps with Playwright |
 | [radicale-calendar](skills/radicale-calendar/SKILL.md) | Manage CalDAV events with the bundled `radicale-calendar` CLI |
 
 ## Installation
