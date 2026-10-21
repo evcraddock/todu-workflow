@@ -1,11 +1,11 @@
 ---
 name: task-close-gate
-description: Assess task completion against the agreed outcome and evidence without task mutations. Use for verification-only requests and task-perform completion checks. Explicit close/complete/verify-and-close requests use task-perform's closure-only path. Do not start or implement work.
+description: Assess task completion without task mutations when verification-only or a close-gate assessment is explicitly requested or required by task/project instructions. Close/complete requests use ordinary task-tool handling. Do not start or implement work.
 ---
 
 # Task Close Gate — Completion Assessment
 
-One shared verifier for completion, always assessment-only. Return evidence and a readiness verdict; never post task comments or change task status. [task-perform](../task-perform/SKILL.md) owns lifecycle writes for automatic completion and explicit close requests.
+Return evidence and a readiness verdict; never post task comments or change task status. Task writes belong to the caller's native task-tool handling.
 
 ## Assess the agreed outcome
 
@@ -26,4 +26,4 @@ Run in the current session; no tmux wrapper, detached verifier, or separate veri
 
 ## Handoff boundary
 
-When invoked by task-perform, return the assessment to that existing caller without recursively invoking it. For a verification-only request, stop after the verdict: verification does not authorize closure. For an explicit close/complete/verify-and-close request, [task-perform's closure-only path](../task-perform/SKILL.md#closure-only-requests) owns the request and calls this verifier; it must not start implementation just to close already-delivered work. After successful verification and applicable gates, that owner records completion and changes status without an extra default approval prompt. This verifier performs neither write.
+Stop after the assessment: verification does not authorize closure. If explicitly requested by a caller, return the assessment without restarting execution or taking over writes. Close/complete/verify-and-close requests use ordinary native task-tool handling; this skill is not a mandatory handoff or a task closer.

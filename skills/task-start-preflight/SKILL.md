@@ -1,11 +1,11 @@
 ---
 name: task-start-preflight
-description: Check whether a Todu task is ready to start or resume without starting work. Use for "check readiness", "start preflight", "run preflight", or shared readiness checks from task-perform/task-pipeline. Do not plan or implement the task.
+description: Check whether a Todu task is ready to start or resume without starting work. Use when readiness/preflight is explicitly requested or required by task/project instructions, not automatically for task execution. Do not plan or implement the task.
 ---
 
 # Task Start Preflight
 
-One shared, read-only readiness check for standalone requests and task execution. Determine whether the next action is clear and unblocked, not whether a complete implementation plan exists.
+A read-only readiness check when requested. It is not a mandatory step of task execution. Determine whether the next action is clear and unblocked, not whether a complete implementation plan exists.
 
 ## Check readiness
 
@@ -28,6 +28,6 @@ Stop when status or missing intent already prevents progress; do not run depende
 
 State ready to start/resume or not ready, identify the task/status, and briefly explain the evidence or actual blockers. Include dependency IDs/statuses or a focused clarification only when relevant. No mandatory report template, empty sections, numbered gate ceremony, or default approval prompt.
 
-A ready result returns control to the caller; it is not permission to mutate or evidence that work has started. For execution, [task-perform](../task-perform/SKILL.md) owns the confirmed `inprogress` transition and starting/resuming comment. [task-pipeline](../task-pipeline/SKILL.md) uses this same contract rather than maintaining another readiness definition. Standalone checks end with the readiness result.
+A ready result returns control to the caller; it is not permission to mutate or evidence that work has started. Standalone checks end with the readiness result. If explicitly required during execution, return to the existing caller without restarting it or taking over task writes.
 
 Preflight never changes task metadata, posts comments, plans implementation, creates branches, or performs the work. Keep required project planning/approval separate in the execution workflow; do not turn a readiness-only request into execution.

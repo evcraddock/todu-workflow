@@ -1,17 +1,17 @@
 ---
 name: task-pipeline
-description: Development-delivery reference loaded by task-perform for applicable repository changes. Not a standalone execution workflow; route do, work-on, start, and pickup requests to task-perform.
+description: Run the development delivery pipeline when explicitly requested by the user/task or explicitly selected by project instructions. Covers planning, implementation, checks, PR, independent review, and human-approved merge. Does not own task status or comments.
 ---
 
-# Task Pipeline — Development Reference
+# Task Pipeline — Development Delivery
 
-Use this reference for the development stages of work owned by [task-perform](../task-perform/SKILL.md), not as another task executor.
+Use this pipeline only when the user/task requests it or project instructions explicitly select it. Repository changes or individual PR/merge requirements alone do not select the whole pipeline. Plain task execution uses ordinary agent handling and native task tools, not a dedicated execution skill.
 
-## Lifecycle boundary
+## Planning and lifecycle boundary
 
-`task-perform` owns task/instruction loading, the shared [readiness check](../task-start-preflight/SKILL.md), plan agreement, confirmed start/resume, task comments, completion assessment, and closure. Direct execution requests enter through that skill regardless of wording. If it has already loaded this reference, continue the applicable development stages without recursively invoking it or repeating its lifecycle actions.
+Read the applicable project instructions and agree on a plan for substantial or ambiguous development work. Honor explicit project preview/approval requirements before implementation. Follow `docs/CONTRIBUTING.md` when present, otherwise [DEFAULT_CONTRIBUTING.md](DEFAULT_CONTRIBUTING.md). These development rules belong here, not in every task execution.
 
-The caller obtains plan agreement for substantial or ambiguous work and honors additional explicit project preview/approval requirements before implementation. Do not add a second default planning gate here. Project contributing instructions apply; when none exist, the caller uses [DEFAULT_CONTRIBUTING.md](DEFAULT_CONTRIBUTING.md).
+This pipeline handles development delivery, not task status or comments. Continue the requested development stages without restarting task execution.
 
 ## Choose the delivery path before editing
 
@@ -32,8 +32,8 @@ For the default PR path, follow these stages under project instructions. For an 
 
 No tmux delegation is required for development execution or completion verification. This does not redefine the PR-review skill's independent-review mechanism or waive explicit project gates.
 
-## Return evidence to the lifecycle owner
+## Return the delivery result
 
-Return concise development evidence to `task-perform`: what changed, relevant check results, PR/review artifacts, approval and merge state, branch normalization/cleanup, and any unresolved issue. Do not claim a required gate passed without evidence or continue past a blocker as though delivery succeeded.
+Check the requested development outcome and applicable gates against concrete evidence. Return what changed, relevant check results, PR/review artifacts, approval and merge state, branch normalization/cleanup, and any unresolved issue. Do not claim a gate passed without evidence or treat waiting for approval as completion.
 
-The caller uses [task-close-gate](../task-close-gate/SKILL.md) in assessment-only mode in the current session to verify the agreed outcome and applicable gates with concrete evidence. This reference does not launch a hidden verifier, require another default permission prompt, or own task closure. After successful verification and applicable gates, `task-perform` posts its completion comment through native `task_comment_create` and then marks done through native `task_update`. If blocked or evidence is inconclusive, it records what remains and keeps the task open. Do not duplicate those lifecycle writes here.
+Do not automatically start a preflight or close-gate handoff, post task comments, or change task status. Return the result to the caller or user.

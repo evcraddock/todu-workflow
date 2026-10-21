@@ -1,14 +1,5 @@
 # AI Agent Guidelines for {name}
 
-## Before Starting ANY Task
-
-**ALWAYS use the `task-start-preflight` skill** when you hear:
-- "start task", "work on task", "get started", "pick up task"
-- "let's do task", "begin task", "tackle task"
-- Or any variation of starting work
-
-The preflight ensures you understand the task, check dependencies, and follow project guidelines.
-
 ## Required Reading
 
 Before working, read and follow:
@@ -46,11 +37,6 @@ When installing packages:
 - Check PyPI for stable releases: `pip index versions <package>`
 
 Non-stable versions (canary, beta, alpha, rc) can have bugs or incomplete features. Always ask before using them.
-
-## Task Lifecycle
-
-- **Starting**: ALWAYS run `task-start-preflight` skill first
-- **Closing**: Run `task-close-gate` skill
 
 ## PR Workflow (Mandatory Sequence)
 
