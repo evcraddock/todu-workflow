@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "radicale-calendar-cli"
 version = "0.1.0"
 description = "Structured JSON CLI for safe Radicale CalDAV event management"
-readme = "docs/radicale-calendar.md"
+readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [

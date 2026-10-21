@@ -1,11 +1,11 @@
 ---
 name: task-close-gate
-description: Assess task completion without task mutations when verification-only or a close-gate assessment is explicitly requested or required by task/project instructions. Not a mandatory task-perform completion step. Close/complete requests belong to task-perform. Do not start or implement work.
+description: Assess task completion without task mutations when verification-only or a close-gate assessment is explicitly requested or required by task/project instructions. Close/complete requests use ordinary task-tool handling. Do not start or implement work.
 ---
 
 # Task Close Gate — Completion Assessment
 
-One shared verifier for completion, always assessment-only. Return evidence and a readiness verdict; never post task comments or change task status. [task-perform](../task-perform/SKILL.md) owns lifecycle writes for automatic completion and explicit close requests.
+Return evidence and a readiness verdict; never post task comments or change task status. Task writes belong to the caller's native task-tool handling.
 
 ## Assess the agreed outcome
 
@@ -26,4 +26,4 @@ Run in the current session; no tmux wrapper, detached verifier, or separate veri
 
 ## Handoff boundary
 
-Stop after the assessment: verification does not authorize closure. If an execution workflow explicitly requested this assessment, return to that existing caller without restarting it. This skill is not an automatic completion step. Explicit close/complete/verify-and-close requests belong to [task-perform's close-only path](../task-perform/SKILL.md#close-only-requests), which checks the result directly unless task/project instructions require this assessment. This verifier never posts comments or changes status.
+Stop after the assessment: verification does not authorize closure. If explicitly requested by a caller, return the assessment without restarting execution or taking over writes. Close/complete/verify-and-close requests use ordinary native task-tool handling; this skill is not a mandatory handoff or a task closer.

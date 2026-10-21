@@ -38,10 +38,6 @@ When adding packages:
 
 Non-stable versions (canary, beta, alpha, rc) can have bugs or incomplete features. Always ask before using them.
 
-## Task Lifecycle
-
-Use `task-perform` to execute Todu tasks as written, record results, and close finished work. Readiness and completion-assessment skills are available when explicitly requested; they are not automatic steps. Follow the project development requirements below for repository changes.
-
 ## PR Workflow (Mandatory Sequence)
 
 After implementation is complete, execute this exact order:

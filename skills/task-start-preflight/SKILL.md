@@ -28,6 +28,6 @@ Stop when status or missing intent already prevents progress; do not run depende
 
 State ready to start/resume or not ready, identify the task/status, and briefly explain the evidence or actual blockers. Include dependency IDs/statuses or a focused clarification only when relevant. No mandatory report template, empty sections, numbered gate ceremony, or default approval prompt.
 
-A ready result returns control to the caller; it is not permission to mutate or evidence that work has started. Standalone checks end with the readiness result. If explicitly required during execution, return to the existing caller without restarting it; [task-perform](../task-perform/SKILL.md) owns task status and comments.
+A ready result returns control to the caller; it is not permission to mutate or evidence that work has started. Standalone checks end with the readiness result. If explicitly required during execution, return to the existing caller without restarting it or taking over task writes.
 
 Preflight never changes task metadata, posts comments, plans implementation, creates branches, or performs the work. Keep required project planning/approval separate in the execution workflow; do not turn a readiness-only request into execution.

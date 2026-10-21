@@ -13,7 +13,7 @@ Capture enough intent for a later session to understand the task, without treati
 - A draft title or description needs clarification or refinement.
 - A workflow needs authored content before writing the task record.
 
-Execution/pickup requests belong to `task-perform`; progress notes and comments are not task descriptions.
+Execution/pickup requests use ordinary agent handling and native task tools; progress notes and comments are not task descriptions.
 
 ## Capture intent, not an implementation plan
 

@@ -5,13 +5,13 @@ description: Run the development delivery pipeline when explicitly requested by 
 
 # Task Pipeline — Development Delivery
 
-Use this pipeline only when the user/task requests it or project instructions explicitly select it. Repository changes or individual PR/merge requirements alone do not select the whole pipeline. A plain task execution request belongs to [task-perform](../task-perform/SKILL.md).
+Use this pipeline only when the user/task requests it or project instructions explicitly select it. Repository changes or individual PR/merge requirements alone do not select the whole pipeline. Plain task execution uses ordinary agent handling and native task tools, not a dedicated execution skill.
 
 ## Planning and lifecycle boundary
 
 Read the applicable project instructions and agree on a plan for substantial or ambiguous development work. Honor explicit project preview/approval requirements before implementation. Follow `docs/CONTRIBUTING.md` when present, otherwise [DEFAULT_CONTRIBUTING.md](DEFAULT_CONTRIBUTING.md). These development rules belong here, not in every task execution.
 
-This pipeline handles development delivery, not task status or comments. If task-perform is the caller, continue the requested development stages without restarting the task or recursively invoking task-perform.
+This pipeline handles development delivery, not task status or comments. Continue the requested development stages without restarting task execution.
 
 ## Choose the delivery path before editing
 
@@ -36,4 +36,4 @@ No tmux delegation is required for development execution or completion verificat
 
 Check the requested development outcome and applicable gates against concrete evidence. Return what changed, relevant check results, PR/review artifacts, approval and merge state, branch normalization/cleanup, and any unresolved issue. Do not claim a gate passed without evidence or treat waiting for approval as completion.
 
-Do not automatically start a preflight or close-gate handoff, post task comments, or change task status. If task-perform is the caller, return the result to that existing invocation; otherwise report it to the user.
+Do not automatically start a preflight or close-gate handoff, post task comments, or change task status. Return the result to the caller or user.
