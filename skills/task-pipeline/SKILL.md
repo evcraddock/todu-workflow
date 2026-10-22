@@ -18,7 +18,7 @@ Continue the requested development stages without restarting task execution. Clo
 ## Choose the delivery path before editing
 
 - Use the agreed deliverable and explicit applicable project policy, not request wording, file type, or a judgment that a change is too small for review.
-- For planned tracked repository changes, default to a task branch (with a task worktree when used), PR, independent review, and explicit human-approved merge unless project policy explicitly permits a different delivery path. Small fixes and documentation-only changes do not bypass applicable gates.
+- For planned tracked repository changes, default to a task branch (with a task worktree when used), PR, and independent review unless project policy explicitly permits a different delivery path. Small fixes and documentation-only changes do not bypass applicable gates.
 - If policy is conflicting or unclear, return the specific decision needed to the caller for resolution during planning, before editing. An absent alternative policy uses the default repository path; it is not itself a conflict.
 - Non-repository deliverables do not automatically need branch/worktree setup, PR, review, or merge stages. Brainstorming may stay in chat, Todu, or an untracked local document, or become committed repository documentation as agreed. There is no fixed storage destination; planned tracked documentation uses the repository delivery path.
 
