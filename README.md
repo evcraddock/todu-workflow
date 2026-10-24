@@ -18,8 +18,15 @@ Project instructions define the workflow policy. Ordinary task execution uses na
 | [task-pipeline](skills/task-pipeline/SKILL.md) | Deliver development work through review and approved merge |
 | [nextactions](skills/nextactions/SKILL.md) | Recommend work by priority and dependencies |
 | [pr-review](skills/pr-review/SKILL.md) | Review PRs for actionable findings |
-| [tmux](skills/tmux/SKILL.md) | Manage explicitly requested terminal sessions |
 | [radicale-calendar](skills/radicale-calendar/SKILL.md) | Manage CalDAV events with the bundled `radicale-calendar` CLI |
+
+## tmux migration in 1.0.0
+
+The standalone `tmux` skill, optional recipes, and helper scripts have moved to [Workbench's tmux package](https://github.com/evcraddock/workbench/tree/main/packages/tmux) (`@evcraddock/pi-tmux`). They are no longer bundled here. See that package's README for requirements and migration guidance.
+
+Before updating an installation that uses this skill, coordinate a separately approved Workbench installation and verify the replacement is available and enabled. Do not assume the npm package is published just because its source is merged. During a staged cutover, avoid loading both copies of the `tmux` skill; preserve the other `todu-workflow` skills. This repository change does not publish or install the replacement or modify agent settings.
+
+The `dev-environment` skill still uses tmux through Overmind and for log inspection; that functionality and its tmux requirement remain unchanged.
 
 ## Installation
 
@@ -78,7 +85,7 @@ Install the tools needed by the skills you use:
 - [todu](https://github.com/evcraddock/todu): task management
 - [gh](https://cli.github.com/): GitHub operations
 - [fj](https://codeberg.org/Cyborus/forgejo-cli): Forgejo operations
-- [tmux](https://github.com/tmux/tmux): terminal sessions
+- [tmux](https://github.com/tmux/tmux): `dev-environment` Overmind sessions and log inspection
 
 ## License
 
