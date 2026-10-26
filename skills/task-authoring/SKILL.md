@@ -12,6 +12,10 @@ Write enough for a later session to understand the task. Use the conversation an
 - Ask only when missing intent prevents a useful draft. Leave implementation planning and nonblocking questions for pickup.
 - For bugs, include observed/expected behavior, environment, and reproduction details when supplied; do not demand a bug template.
 
-Return a clear title of 60 characters or fewer and a concise markdown description. Use prose or bullets, with headings only when helpful. No mandatory sections, empty placeholders, or implementation-ready specification.
+Return a clear title of 60 characters or fewer and a concise markdown description. Use polished, direct language that defines the work rather than informal planning notes.
+
+When helpful, separate **Purpose** (why the work matters or the desired outcome) from **Scope** (what work is included), or use another structure suited to the task. Use prose or bullets for simple tasks; do not add headings that merely repeat the same information. No mandatory sections, including requirements or acceptance criteria; no empty placeholders or implementation-ready specification.
+
+For example, for “Help Drew set up his personal blog website,” the purpose is to create a Slugkit blog and introduce AI-assisted application development; the scope is helping Drew set up and customize the site. Use this distinction to organize supplied intent, not to add goals or work the user did not provide.
 
 This skill drafts task content, not progress comments or execution plans. Draft-only requests stop at the draft; requested backend creation or updates use native task tools separately.
